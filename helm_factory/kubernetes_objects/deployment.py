@@ -1,0 +1,70 @@
+from typing import List, Optional
+
+from helm_factory.kubernetes_objects.base_objects import KubernetesBaseObject
+from helm_factory.kubernetes_objects.key_values_pairs import (
+    Annotation,
+    Label,
+    LabelSelector,
+)
+from helm_factory.kubernetes_objects.pod import PodTemplateSpec
+
+ROLLING_UPDATE = "RollingUpdate"
+RECREATE = "Recreate"
+
+
+class RollingUpdateDeployment:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#rollingupdatedeployment-v1-apps
+    """
+
+    def __init__(self, max_surge: int, max_unavailable: int):
+        self.maxSurge = max_surge
+        self.maxUnavailable = max_unavailable
+
+
+class DeploymentStrategy:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#deploymentstrategy-v1-apps
+    """
+
+    def __init__(
+        self, rolling_update: RollingUpdateDeployment, type: str = ROLLING_UPDATE
+    ):
+        assert type in [RECREATE, ROLLING_UPDATE]
+
+        if type == ROLLING_UPDATE:
+            self.rollingUpdate = rolling_update
+
+
+class Deployment(KubernetesBaseObject):
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#deploymentspec-v1-apps
+    """
+
+    def __init__(
+        self,
+        api_version: str,
+        name: str,
+        labels: Optional[List[Label]] = None,
+        namespace: Optional[str] = "",
+        annotations: Optional[List[Annotation]] = None,
+        min_ready_seconds: Optional[int] = 0,
+        paused: bool = False,
+        progress_deadline_seconds: Optional[int] = None,
+        replicas: int = 1,
+        revision_history_limit: Optional[int] = None,
+        selector: Optional[LabelSelector] = None,
+        strategy: Optional[DeploymentStrategy] = None,
+        pod_template_spec: Optional[PodTemplateSpec] = None,
+    ):
+        super().__init__(
+            api_version, "Deployment", name, namespace, labels, annotations
+        )
+        self.minReadySeconds = min_ready_seconds
+        self.paused = paused
+        self.progressDeadlineSeconds = progress_deadline_seconds
+        self.replicas = replicas
+        self.revisionHistoryLimit = revision_history_limit
+        self.selector = selector
+        self.strategy = strategy
+        self.template = pod_template_spec

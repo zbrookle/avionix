@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from yaml import dump
 
+from helm_factory.kubernetes_objects.key_values_pairs import Annotation, Label
+
 
 class HelmYaml:
     def __clean_nested(self, dictionary: dict):
@@ -17,25 +19,6 @@ class HelmYaml:
         dictionary = deepcopy(self.__dict__)
         self.__clean_nested(dictionary)
         return dump(dictionary)
-
-
-class KubernetesKeyValue:
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-    def get_label_dict(self):
-        return {self.key: self.value}
-
-
-class Label(KubernetesKeyValue):
-    def __init__(self, key, value):
-        super().__init__(key, value)
-
-
-class Annotation(KubernetesKeyValue):
-    def __init__(self, key, value):
-        super().__init__(key, value)
 
 
 class KubernetesBaseObject(HelmYaml):
@@ -66,3 +49,8 @@ class KubernetesBaseObject(HelmYaml):
             "annotations": [annotation.get_label_dict() for annotation in annotations],
             "namespace": namespace,
         }
+
+
+class BaseSpec(HelmYaml):
+    def to_dict(self):
+        return {"spec": self.__dict__}

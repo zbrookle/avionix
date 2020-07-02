@@ -1,9 +1,9 @@
 from typing import List, Optional
 
 from helm_factory.kubernetes_objects.base_objects import (
+    Annotation,
     KubernetesBaseObject,
     Label,
-    Annotation,
 )
 
 

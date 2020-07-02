@@ -76,19 +76,19 @@ conda list
 # Clean up any left-over from a previous build
 # (note workaround for https://github.com/conda/conda/issues/2679:
 #  `conda env remove` issue)
-conda remove --all -q -y -n helm-factory
+conda remove --all -q -y -n helm_factory
 
 echo
-echo "conda create -n helm-factory python=3.7 -y"
-time conda create -n helm-factory python=3.7 -y
+echo "conda create -n helm_factory python=3.7 -y"
+time conda create -n helm_factory python=3.7 -y
 
 if [[ "$BITS32" == "yes" ]]; then
     # activate 32-bit compiler
     export CONDA_BUILD=1
 fi
 
-echo "activate helm-factory"
-conda activate helm-factory
+echo "activate helm_factory"
+conda activate helm_factory
 pip install -r ci/test-requirements.txt
 pip install -r requirements.txt
 

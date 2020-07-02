@@ -25,6 +25,7 @@ class KubernetesBaseObject(HelmYaml):
     Required fields come from
     https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
     """
+
     def __init__(
         self,
         api_version: str,

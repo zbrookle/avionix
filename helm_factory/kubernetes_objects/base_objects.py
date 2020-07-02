@@ -19,6 +19,25 @@ class HelmYaml:
         return dump(dictionary)
 
 
+class KubernetesKeyValue:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def get_label_dict(self):
+        return {self.key: self.value}
+
+
+class Label(KubernetesKeyValue):
+    def __init__(self, key, value):
+        super().__init__(key, value)
+
+
+class Annotation(KubernetesKeyValue):
+    def __init__(self, key, value):
+        super().__init__(key, value)
+
+
 class KubernetesBaseObject(HelmYaml):
     """
     Base object for other kubernetes objects to inherit from
@@ -30,22 +49,20 @@ class KubernetesBaseObject(HelmYaml):
         self,
         api_version: str,
         kind: str,
-        uid: str,
         name: str,
         namespace: Optional[str] = "",
-        labels: Optional[List[str]] = None,
-        annotations: Optional[List[str]] = None,
+        labels: Optional[List[Label]] = None,
+        annotations: Optional[List[Annotation]] = None,
     ):
         if not labels:
             labels = []
         if not annotations:
             annotations = []
-        self.api_version = api_version
+        self.apiVersion = api_version
         self.kind = kind
         self.metadata = {
             "name": name,
-            "labels": labels,
-            "annotations": annotations,
+            "labels": [label.get_label_dict() for label in labels],
+            "annotations": [annotation.get_label_dict() for annotation in annotations],
             "namespace": namespace,
-            "uid": uid,
         }

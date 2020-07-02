@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Setting conda path
+      run: echo "::add-path::${HOME}/miniconda3/bin"
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup environment
+      run: |
+        chmod +x ci/setup_env.sh
+        ci/setup_env.sh
+      if: always()
+
+    - name: Looking for unwanted patterns
+      run: |
+        chmod +x ci/code_checks.sh
+        ci/code_checks.sh patterns
+      if: always()
+
+    - name: Linting
+      run: |
+        source activate sql_to_ibis
+        ci/code_checks.sh lint
+      if: always()
+
+    - name: Dependencies consistency
+      run: |
+        source activate sql_to_ibis
+        ci/code_checks.sh dependencies
+      if: always()
+
+    - name: Checks on imported code
+      run: |
+        source activate sql_to_ibis
+        ci/code_checks.sh code
+      if: always()
+
+    - name: Running doctests
+      run: |
+        source activate sql_to_ibis
+        ci/code_checks.sh doctests
+      if: always()
+
+    - name: Docstring validation
+      run: |
+        source activate sql_to_ibis
+        ci/code_checks.sh docstrings
+      if: always()
+
+    - name: Typing validation
+      run: |
+        source activate sql_to_ibis
+        ci/code_checks.sh typing
+      if: always()
+
+    - name: Unit tests
+      run: |
+        source activate sql_to_ibis
+        chmod +x ci/run_tests.sh
+        ci/run_tests.sh
+      if: always()

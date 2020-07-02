@@ -1,7 +1,7 @@
-from helm_factory.kubernetes_objects.container import Container
 from helm_factory.kubernetes_objects.volumes import Volume
 from helm_factory.kubernetes_objects.shared_objects import Toleration
-from helm_factory.kubernetes_objects.base_objects import BaseSpec
+from helm_factory.kubernetes_objects.base_objects import BaseSpec, HelmYaml
+from helm_factory.kubernetes_objects.key_values_pairs import Label
 from typing import List, Optional
 
 
@@ -10,7 +10,95 @@ class Affinity:
     https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#affinity-v1-core
     """
 
-    pass
+
+class EnvVar:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envvar-v1-core
+    """
+
+
+class EnvFromSource:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envfromsource-v1-core
+    """
+
+
+class LifeCycle:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#lifecycle-v1-core
+    """
+
+
+class Probe:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#probe-v1-core
+    """
+
+
+class ContainerPort:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#containerport-v1-core
+    """
+
+
+class VolumeMount:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#volumemount-v1-core
+    """
+
+
+class VolumeDevice:
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#volumedevice-v1-core
+    """
+
+
+class Container(HelmYaml):
+    """
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#container-v1-core
+    """
+
+    def __init__(
+        self,
+        args: Optional[List[str]] = None,
+        command: Optional[List[str]] = None,
+        env: List[EnvVar] = None,
+        env_from: List[EnvFromSource] = None,
+        image: Optional[str] = None,
+        image_pull_policy: Optional[str] = None,
+        lifecycle: Optional[LifeCycle] = None,
+        liveness_probe: Optional[Probe] = None,
+        name: Optional[str] = None,
+        ports: Optional[List[ContainerPort]] = None,
+        readiness_probe: Optional[List[Probe]] = None,
+        stdin: Optional[bool] = None,
+        stdin_once: Optional[bool] = None,
+        termination_message_path: Optional[str] = None,
+        termination_message_policy: Optional[str] = None,
+        tty: Optional[bool] = None,
+        volume_devices: Optional[List[VolumeDevice]] = None,
+        volume_mounts: Optional[List[VolumeMount]] = None,
+        working_dir: Optional[str] = None,
+    ):
+        self.args = args
+        self.command = command
+        self.env = env
+        self.envFrom = env_from
+        self.image = image
+        self.imagePullPolicy = image_pull_policy
+        self.lifecycle = lifecycle
+        self.livenessProbe = liveness_probe
+        self.name = name
+        self.ports = ports
+        self.readinessProbe = readiness_probe
+        self.stdin = stdin
+        self.stdinOnce = stdin_once
+        self.terminationMessagePath = termination_message_path
+        self.terminationMessagePolicy = termination_message_policy
+        self.tty = tty
+        self.volumeDevices = volume_devices
+        self.volumeMounts = volume_mounts
+        self.workingDir = working_dir
 
 
 class PodDnsConfig:
@@ -54,8 +142,9 @@ class EphemeralContainer:
 class PodTemplateSpec(BaseSpec):
     def __init__(
         self,
-        automount_service_account_token: bool,
         containers: List[Container],
+        labels: List[Label] = None,
+        automount_service_account_token: Optional[bool] = None,
         active_deadline_seconds: Optional[int] = None,
         affinity: Optional[Affinity] = None,
         dns_config: Optional[PodDnsConfig] = None,
@@ -89,6 +178,10 @@ class PodTemplateSpec(BaseSpec):
         volumes: List[Volume] = None,
     ):
         assert containers, "Must give at least one container for a pod"
+        self.containers = containers
+        if labels is None:
+            labels = []
+        self.metadata = {"labels": [label.get_label_dict() for label in labels]}
         self.activeDeadlineSeconds = active_deadline_seconds
         self.affinity = affinity
         self.automountServiceAccountToken = automount_service_account_token

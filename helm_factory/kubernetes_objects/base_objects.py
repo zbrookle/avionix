@@ -8,17 +8,24 @@ from helm_factory.kubernetes_objects.key_values_pairs import Annotation, Label
 
 class HelmYaml:
     def __clean_nested(self, dictionary: dict):
+        # TODO Need to handle lists in this as well
         for key in list(dictionary):
             value = dictionary[key]
             if isinstance(value, dict):
                 self.__clean_nested(value)
+            elif isinstance(value, HelmYaml):
+                print(repr(value))
+                dictionary[key] = value.to_dict()
             elif not value:
                 del dictionary[key]
 
     def __str__(self):
+        return dump(self.to_dict())
+
+    def to_dict(self):
         dictionary = deepcopy(self.__dict__)
         self.__clean_nested(dictionary)
-        return dump(dictionary)
+        return dictionary
 
 
 class KubernetesBaseObject(HelmYaml):
@@ -52,5 +59,4 @@ class KubernetesBaseObject(HelmYaml):
 
 
 class BaseSpec(HelmYaml):
-    def to_dict(self):
-        return {"spec": self.__dict__}
+    pass

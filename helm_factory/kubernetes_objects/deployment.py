@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from helm_factory.kubernetes_objects.base_objects import KubernetesBaseObject, BaseSpec
+from helm_factory.kubernetes_objects.base_objects import BaseSpec, KubernetesBaseObject
 from helm_factory.kubernetes_objects.key_values_pairs import (
     Annotation,
     Label,

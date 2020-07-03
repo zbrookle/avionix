@@ -1,5 +1,5 @@
 from helm_factory.kubernetes_objects.deployment import Deployment, Label
-from helm_factory.kubernetes_objects.pod import PodTemplateSpec, Container
+from helm_factory.kubernetes_objects.pod import Container, PodTemplateSpec
 
 
 def test_create_deployment():
@@ -11,7 +11,9 @@ def test_create_deployment():
             [Container(image="test_image")], labels=[Label("container_type", "master")],
         ),
     )
-    assert str(deployment) == """apiVersion: v1
+    assert (
+        str(deployment)
+        == """apiVersion: v1
 kind: Deployment
 metadata:
   labels:
@@ -27,3 +29,4 @@ spec:
         labels:
         - container_type: master
 """
+    )

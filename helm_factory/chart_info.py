@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Optional
+
 from helm_factory.kubernetes_objects.base_objects import HelmYaml
 
 
@@ -9,17 +10,19 @@ class ChartInfo(HelmYaml):
     structure. Can also perform the installation onto the server
     """
 
-    def __init__(self,
-                 api_version: str,
-                 name: str,
-                 version: str,
-                 kube_version: str = '',
-                 description: str = '',
-                 type: str = '',
-                 key_words: List[str] = None,
-                 home: str = '',
-                 sources: List[str] = None,
-                 **kwargs):
+    def __init__(
+        self,
+        api_version: str,
+        name: str,
+        version: str,
+        kube_version: str = "",
+        description: str = "",
+        type: str = "",
+        key_words: Optional[List[str]] = None,
+        home: str = "",
+        sources: Optional[List[str]] = None,
+        **kwargs
+    ):
 
         if not key_words:
             key_words = []

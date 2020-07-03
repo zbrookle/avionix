@@ -39,8 +39,8 @@ class DeploymentStrategy:
 class DeploymentSpec(BaseSpec):
     def __init__(
         self,
-        min_ready_seconds: Optional[int] = 0,
-        paused: bool = False,
+        min_ready_seconds: Optional[int] = None,
+        paused: Optional[bool] = None,
         progress_deadline_seconds: Optional[int] = None,
         replicas: int = 1,
         revision_history_limit: Optional[int] = None,
@@ -55,7 +55,6 @@ class DeploymentSpec(BaseSpec):
         self.revisionHistoryLimit = revision_history_limit
         self.selector = selector
         self.strategy = strategy
-        self.template = pod_template_spec
         if pod_template_spec:
             self.template = {"spec": pod_template_spec}
 

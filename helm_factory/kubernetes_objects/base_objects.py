@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from yaml import dump
 
@@ -7,7 +7,7 @@ from helm_factory.kubernetes_objects.key_values_pairs import Annotation, Label
 
 
 class HelmYaml:
-    def __clean_nested(self, dictionary_or_list: dict):
+    def __clean_nested(self, dictionary_or_list: Union[dict, list]):
         if isinstance(dictionary_or_list, list):
             for i, value in enumerate(dictionary_or_list):
                 if isinstance(value, (dict, list)):

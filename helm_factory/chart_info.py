@@ -21,16 +21,7 @@ class ChartInfo(HelmYaml):
         key_words: Optional[List[str]] = None,
         home: Optional[str] = None,
         sources: Optional[List[str]] = None,
-        **kwargs
     ):
-
-        if not key_words:
-            key_words = []
-
-        if not sources:
-            sources = []
-
-        self.__dict__.update(kwargs)
 
         self.apiVersion = api_version
         self.name = name

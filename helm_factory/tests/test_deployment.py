@@ -11,5 +11,19 @@ def test_create_deployment():
             [Container(image="test_image")], labels=[Label("container_type", "master")],
         ),
     )
-    print(str(deployment))
-    assert str(deployment) == ""
+    assert str(deployment) == """apiVersion: v1
+kind: Deployment
+metadata:
+  labels:
+  - type: master
+  name: test_deployment
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - image: test_image
+      metadata:
+        labels:
+        - container_type: master
+"""

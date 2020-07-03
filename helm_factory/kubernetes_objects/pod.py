@@ -175,7 +175,7 @@ class PodTemplateSpec(BaseSpec):
         service_account_name: Optional[str] = None,
         subdomain: Optional[str] = None,
         tolerations: Optional[List[Toleration]] = None,
-        topology_spread_constraints: List[TopologySpreadConstraint] = None,
+        topology_spread_constraints: Optional[List[TopologySpreadConstraint]] = None,
         volumes: Optional[List[Volume]] = None,
     ):
         assert containers, "Must give at least one container for a pod"

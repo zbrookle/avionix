@@ -1,5 +1,6 @@
-from helm_factory.kubernetes_objects import Annotation, KubernetesBaseObject, Label
 import pytest
+
+from helm_factory.kubernetes_objects import Annotation, KubernetesBaseObject, Label
 
 
 @pytest.mark.parametrize(

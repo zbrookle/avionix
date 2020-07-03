@@ -1,5 +1,6 @@
-from kubernetes import client, config
 import pytest
+
+from kubernetes import client, config
 
 
 @pytest.fixture(scope="module")

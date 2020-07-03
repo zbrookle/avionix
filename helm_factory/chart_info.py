@@ -15,11 +15,11 @@ class ChartInfo(HelmYaml):
         api_version: str,
         name: str,
         version: str,
-        kube_version: str = "",
-        description: str = "",
-        type: str = "",
+        kube_version: Optional[str] = None,
+        description: Optional[str] = None,
+        type: Optional[str] = None,
         key_words: Optional[List[str]] = None,
-        home: str = "",
+        home: Optional[str] = None,
         sources: Optional[List[str]] = None,
         **kwargs
     ):

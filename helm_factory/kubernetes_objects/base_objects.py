@@ -45,14 +45,20 @@ class KubernetesBaseObject(HelmYaml):
         api_version: str,
         kind: str,
         name: str,
-        namespace: Optional[str] = "",
+        namespace: Optional[str] = None,
         labels: Optional[List[Label]] = None,
         annotations: Optional[List[Annotation]] = None,
     ):
-        if not labels:
+
+        if labels is None:
             labels = []
-        if not annotations:
+
+        if annotations is None:
             annotations = []
+
+        if namespace is None:
+            namespace = ""
+
         self.apiVersion = api_version
         self.kind = kind
         self.metadata = {

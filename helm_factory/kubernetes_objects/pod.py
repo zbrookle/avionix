@@ -182,7 +182,7 @@ class PodTemplateSpec(BaseSpec):
         self.containers = containers
         if labels is None:
             labels = []
-        self.metadata = {"labels": [label.get_label_dict() for label in labels]}
+        self.metadata = {"labels": labels}
         self.activeDeadlineSeconds = active_deadline_seconds
         self.affinity = affinity
         self.automountServiceAccountToken = automount_service_account_token

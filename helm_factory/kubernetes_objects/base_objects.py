@@ -1,41 +1,36 @@
 from copy import deepcopy
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from yaml import dump
 
+from helm_factory.kubernetes_objects.key_values_pairs import Annotation, Label
+
 
 class HelmYaml:
-    def __clean_nested(self, dictionary: dict):
-        for key in list(dictionary):
-            value = dictionary[key]
-            if isinstance(value, dict):
-                self.__clean_nested(value)
-            elif not value:
-                del dictionary[key]
+    def __clean_nested(self, dictionary_or_list: Union[dict, list]):
+        if isinstance(dictionary_or_list, list):
+            for i, value in enumerate(dictionary_or_list):
+                if isinstance(value, (dict, list)):
+                    self.__clean_nested(value)
+                elif isinstance(value, HelmYaml):
+                    dictionary_or_list[i] = value.to_dict()
+        if isinstance(dictionary_or_list, dict):
+            for key in list(dictionary_or_list):
+                value = dictionary_or_list[key]
+                if isinstance(value, (dict, list)) and value:
+                    self.__clean_nested(value)
+                elif isinstance(value, HelmYaml):
+                    dictionary_or_list[key] = value.to_dict()
+                elif not value:
+                    del dictionary_or_list[key]
 
     def __str__(self):
+        return dump(self.to_dict())
+
+    def to_dict(self):
         dictionary = deepcopy(self.__dict__)
         self.__clean_nested(dictionary)
-        return dump(dictionary)
-
-
-class KubernetesKeyValue:
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-    def get_label_dict(self):
-        return {self.key: self.value}
-
-
-class Label(KubernetesKeyValue):
-    def __init__(self, key, value):
-        super().__init__(key, value)
-
-
-class Annotation(KubernetesKeyValue):
-    def __init__(self, key, value):
-        super().__init__(key, value)
+        return dictionary
 
 
 class KubernetesBaseObject(HelmYaml):
@@ -66,3 +61,7 @@ class KubernetesBaseObject(HelmYaml):
             "annotations": [annotation.get_label_dict() for annotation in annotations],
             "namespace": namespace,
         }
+
+
+class BaseSpec(HelmYaml):
+    pass

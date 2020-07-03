@@ -9,28 +9,56 @@ from helm_factory.kubernetes_objects.key_values_pairs import Annotation, Label
 class HelmYaml:
     def __clean_nested(self, dictionary_or_list: Union[dict, list]):
         if isinstance(dictionary_or_list, list):
-            for i, value in enumerate(dictionary_or_list):
+            cleaned_list = []
+            for value in dictionary_or_list:
+                # If value is None, [], {}, '' do not include value
+                if not value:
+                    continue
+
                 if isinstance(value, (dict, list)):
-                    self.__clean_nested(value)
+                    cleaned_dict_or_list = self.__clean_nested(value)
+
+                    if cleaned_dict_or_list:
+                        cleaned_list.append(self.__clean_nested(value))
+
                 elif isinstance(value, HelmYaml):
-                    dictionary_or_list[i] = value.to_dict()
-        if isinstance(dictionary_or_list, dict):
-            for key in list(dictionary_or_list):
-                value = dictionary_or_list[key]
-                if isinstance(value, (dict, list)) and value:
-                    self.__clean_nested(value)
+                    cleaned_dict_or_list = value.to_dict()
+
+                    if cleaned_dict_or_list:
+                        cleaned_list.append(cleaned_dict_or_list)
+
+                else:
+                    cleaned_list.append(value)
+            return cleaned_list
+
+        elif isinstance(dictionary_or_list, dict):
+            cleaned_dict = {}
+            for key, value in dictionary_or_list.items():
+                # If value is None, [] or {}, '' do not include key
+                if not value:
+                    continue
+
+                elif isinstance(value, (dict, list)):
+                    cleaned_dict_or_list = self.__clean_nested(value)
+
+                    if cleaned_dict_or_list:
+                        cleaned_dict[key] = cleaned_dict_or_list
+
                 elif isinstance(value, HelmYaml):
-                    dictionary_or_list[key] = value.to_dict()
-                elif not value:
-                    del dictionary_or_list[key]
+                    cleaned_dict_or_list = value.to_dict()
+
+                    if cleaned_dict_or_list:
+                        cleaned_dict[key] = cleaned_dict_or_list
+                else:
+                    cleaned_dict[key] = value
+            return cleaned_dict
 
     def __str__(self):
         return dump(self.to_dict())
 
     def to_dict(self):
         dictionary = deepcopy(self.__dict__)
-        self.__clean_nested(dictionary)
-        return dictionary
+        return self.__clean_nested(dictionary)
 
 
 class KubernetesBaseObject(HelmYaml):

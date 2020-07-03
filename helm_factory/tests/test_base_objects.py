@@ -39,8 +39,30 @@ metadata:
   namespace: default
 """,
         ),
+        (
+            {
+                "api_version": "v1",
+                "kind": "Deployment",
+                "name": "test",
+                "labels": None,
+                "namespace": "default",
+                "annotations": [
+                    Annotation("role", "user"),
+                    Annotation("type", "worker"),
+                ],
+            },
+            """apiVersion: v1
+kind: Deployment
+metadata:
+  annotations:
+  - role: user
+  - type: worker
+  name: test
+  namespace: default
+""",
+        ),
     ],
 )
 def test_kube_base_object(args: dict, yaml: str):
     base_object = KubernetesBaseObject(**args)
-    assert yaml == str(base_object)
+    assert str(base_object) == yaml

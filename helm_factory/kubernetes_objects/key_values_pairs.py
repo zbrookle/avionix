@@ -1,12 +1,15 @@
 from typing import List
 
+from helm_factory.yaml.yaml_handling import HelmYaml
 
-class KubernetesKeyValue:
+
+class KubernetesKeyValue(HelmYaml):
     def __init__(self, key, value):
+        assert key is not None and value is not None
         self.key = key
         self.value = value
 
-    def get_label_dict(self):
+    def to_dict(self):
         return {self.key: self.value}
 
 
@@ -38,4 +41,4 @@ class LabelSelector:
 
     def __init__(self, match_expressions: List, match_labels: List[Label]):
         self.matchExpressions = match_expressions.__dict__
-        self.matchLabels = [label.get_label_dict() for label in match_labels]
+        self.matchLabels = match_labels

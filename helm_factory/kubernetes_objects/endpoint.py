@@ -85,7 +85,7 @@ class EndpointSubset(HelmYaml):
 class Endpoints(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param subsets: The set of all endpoints is the union of all subsets. Addresses \
         are placed into subsets according to the IPs they share. A single address with \
         multiple ports, some of which are ready and some of which are not (because \
@@ -96,7 +96,7 @@ class Endpoints(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -114,11 +114,11 @@ class EndpointsList(KubernetesBaseObject):
     """
     :param items: List of endpoints.
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

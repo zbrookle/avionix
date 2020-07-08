@@ -22,7 +22,7 @@ class SecretEnvSource(HelmYaml):
     """
     :param optional: Specify whether the Secret must be defined
     :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
     """
 
     def __init__(self, optional: bool, name: Optional[str] = None):
@@ -35,7 +35,7 @@ class SecretKeySelector(HelmYaml):
     :param key: The key of the secret to select from.  Must be a valid secret key.
     :param optional: Specify whether the Secret or its key must be defined
     :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
     """
 
     def __init__(self, key: str, optional: bool, name: Optional[str] = None):
@@ -55,7 +55,7 @@ class SecretProjection(HelmYaml):
         error unless it is marked optional. Paths must be relative and may not contain \
         the '..' path or start with '..'.
     :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
     """
 
     def __init__(
@@ -80,7 +80,7 @@ class Secret(KubernetesBaseObject):
         true, the field can be modified at any time. Defaulted to nil. This is an \
         alpha field enabled by ImmutableEphemeralVolumes feature gate.
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param string_data: stringData allows specifying non-binary secret data in string \
         form. It is provided as a write-only convenience method. All keys and values \
         are merged into the data field on write, overwriting any existing values. It \
@@ -89,7 +89,7 @@ class Secret(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -114,11 +114,11 @@ class SecretList(KubernetesBaseObject):
     :param items: Items is a list of secret objects. More info: \
         https://kubernetes.io/docs/concepts/configuration/secret
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

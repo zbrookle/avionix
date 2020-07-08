@@ -38,7 +38,7 @@ class DeleteOptions(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :param grace_period_seconds: The duration in seconds before the object should be \
         deleted. Value must be non-negative integer. The value zero indicates delete \
         immediately. If this value is nil, the default grace period for the specified \

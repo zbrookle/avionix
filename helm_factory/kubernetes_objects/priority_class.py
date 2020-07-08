@@ -15,13 +15,13 @@ class PriorityClass(KubernetesBaseObject):
         true, the smallest value of such global default PriorityClasses will be used \
         as the default priority.
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param value: The value of this priority class. This is the actual priority that \
         pods receive when they have the name of this class in their pod spec.
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :param preemption_policy: PreemptionPolicy is the Policy for preempting pods with \
         lower priority. One of Never, PreemptLowerPriority. Defaults to \
         PreemptLowerPriority if unset. This field is alpha-level and is only honored \
@@ -49,11 +49,11 @@ class PriorityClassList(KubernetesBaseObject):
     """
     :param items: items is the list of PriorityClasses
     :param metadata: Standard list metadata More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

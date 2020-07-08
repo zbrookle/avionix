@@ -3,32 +3,6 @@ from typing import List, Optional
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
-class TCPSocketAction(HelmYaml):
-    """
-    :param port: Number or name of the port to access on the container. Number must be \
-        in the range 1 to 65535. Name must be an IANA_SVC_NAME.
-    :param host: Optional: Host name to connect to, defaults to the pod IP.
-    """
-
-    def __init__(self, port: str, host: Optional[str] = None):
-        self.port = port
-        self.host = host
-
-
-class ExecAction(HelmYaml):
-    """
-    :param command: Command is the command line to execute inside the container, the \
-        working directory for the command  is root ('/') in the container's \
-        filesystem. The command is simply exec'd, it is not run inside a shell, so \
-        traditional shell instructions ('|', etc) won't work. To use a shell, you need \
-        to explicitly call out to that shell. Exit status of 0 is treated as \
-        live/healthy and non-zero is unhealthy.
-    """
-
-    def __init__(self, command: List[str]):
-        self.command = command
-
-
 class HTTPHeader(HelmYaml):
     """
     :param value: The header field value
@@ -67,6 +41,32 @@ class HTTPGetAction(HelmYaml):
         self.scheme = scheme
 
 
+class ExecAction(HelmYaml):
+    """
+    :param command: Command is the command line to execute inside the container, the \
+        working directory for the command  is root ('/') in the container's \
+        filesystem. The command is simply exec'd, it is not run inside a shell, so \
+        traditional shell instructions ('|', etc) won't work. To use a shell, you need \
+        to explicitly call out to that shell. Exit status of 0 is treated as \
+        live/healthy and non-zero is unhealthy.
+    """
+
+    def __init__(self, command: List[str]):
+        self.command = command
+
+
+class TCPSocketAction(HelmYaml):
+    """
+    :param port: Number or name of the port to access on the container. Number must be \
+        in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+    :param host: Optional: Host name to connect to, defaults to the pod IP.
+    """
+
+    def __init__(self, port: str, host: Optional[str] = None):
+        self.port = port
+        self.host = host
+
+
 class Probe(HelmYaml):
     """
     :param exec: One and only one of the following should be specified. Exec specifies \
@@ -74,7 +74,7 @@ class Probe(HelmYaml):
     :param http_get: HTTPGet specifies the http request to perform.
     :param initial_delay_seconds: Number of seconds after the container has started \
         before liveness probes are initiated. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
     :param period_seconds: How often (in seconds) to perform the probe. Default to 10 \
         seconds. Minimum value is 1.
     :param tcp_socket: TCPSocket specifies an action involving a TCP port. TCP hooks \
@@ -86,7 +86,7 @@ class Probe(HelmYaml):
         liveness and startup. Minimum value is 1.
     :param timeout_seconds: Number of seconds after which the probe times out. \
         Defaults to 1 second. Minimum value is 1. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
     """
 
     def __init__(
@@ -133,7 +133,7 @@ class Lifecycle(HelmYaml):
         If the handler fails, the container is terminated and restarted according to \
         its restart policy. Other management of the container blocks until the hook \
         completes. More info: \
-        https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+        https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks  # noqa
     :param pre_stop: PreStop is called immediately before a container is terminated \
         due to an API request or management event such as liveness/startup probe \
         failure, preemption, resource contention, etc. The handler is not called if \
@@ -143,7 +143,7 @@ class Lifecycle(HelmYaml):
         container will eventually terminate within the Pod's termination grace period. \
         Other management of the container blocks until the hook completes or until the \
         termination grace period is reached. More info: \
-        https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+        https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks  # noqa
     """
 
     def __init__(self, post_start: Handler, pre_stop: Handler):

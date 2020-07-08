@@ -15,7 +15,7 @@ class StorageClass(KubernetesBaseObject):
         restriction. This field is only honored by servers that enable the \
         VolumeScheduling feature.
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param mount_options: Dynamically provisioned PersistentVolumes of this storage \
         class are created with these mountOptions, e.g. ["ro", "soft"]. Not validated \
         - mount of the PVs will simply fail if one is invalid.
@@ -29,7 +29,7 @@ class StorageClass(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :param reclaim_policy: Dynamically provisioned PersistentVolumes of this storage \
         class are created with this reclaimPolicy. Defaults to Delete.
     """
@@ -61,11 +61,11 @@ class StorageClassList(KubernetesBaseObject):
     """
     :param items: Items is the list of StorageClasses
     :param metadata: Standard list metadata More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

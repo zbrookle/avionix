@@ -49,13 +49,13 @@ class LimitRangeSpec(HelmYaml):
 class LimitRange(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: Spec defines the limits enforced. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -72,13 +72,13 @@ class LimitRange(KubernetesBaseObject):
 class LimitRangeList(KubernetesBaseObject):
     """
     :param items: Items is a list of LimitRange objects. More info: \
-        https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+        https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/  # noqa
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

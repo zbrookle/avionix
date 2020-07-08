@@ -7,6 +7,25 @@ from helm_factory.kubernetes_objects.service import ServiceReference
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
+class APIServiceCondition(HelmYaml):
+    """
+    :param last_transition_time: Last time the condition transitioned from one status \
+        to another.
+    :param message: Human-readable message indicating details about last transition.
+    :param reason: Unique, one-word, CamelCase reason for the condition's last \
+        transition.
+    :param type: Type is the type of the condition.
+    """
+
+    def __init__(
+        self, last_transition_time: time, message: str, reason: str, type: str
+    ):
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
+
+
 class APIServiceSpec(HelmYaml):
     """
     :param ca_bundle: CABundle is a PEM encoded CA bundle which will be used to \
@@ -64,25 +83,6 @@ class APIServiceSpec(HelmYaml):
         self.versionPriority = version_priority
 
 
-class APIServiceCondition(HelmYaml):
-    """
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: Human-readable message indicating details about last transition.
-    :param reason: Unique, one-word, CamelCase reason for the condition's last \
-        transition.
-    :param type: Type is the type of the condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class APIService(KubernetesBaseObject):
     """
     :param metadata: None
@@ -91,7 +91,7 @@ class APIService(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -148,7 +148,7 @@ class APIGroup(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :param name: name is the name of the group.
     """
 
@@ -225,7 +225,7 @@ class APIServiceList(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -254,7 +254,7 @@ class APIVersions(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

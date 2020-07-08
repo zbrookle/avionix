@@ -61,16 +61,6 @@ class CrossVersionObjectReference(KubernetesBaseObject):
         self.name = name
 
 
-class LocalObjectReference(HelmYaml):
-    """
-    :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    """
-
-    def __init__(self, name: Optional[str] = None):
-        self.name = name
-
-
 class TypedLocalObjectReference(KubernetesBaseObject):
     """
     :param api_group: APIGroup is the group for the resource being referenced. If \
@@ -81,6 +71,16 @@ class TypedLocalObjectReference(KubernetesBaseObject):
 
     def __init__(self, api_group: Optional[str] = None, name: Optional[str] = None):
         self.apiGroup = api_group
+        self.name = name
+
+
+class LocalObjectReference(HelmYaml):
+    """
+    :param name: Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+    """
+
+    def __init__(self, name: Optional[str] = None):
         self.name = name
 
 
@@ -96,12 +96,12 @@ class ObjectReference(KubernetesBaseObject):
         well-defined way of referencing a part of an object.
     :param resource_version: Specific resourceVersion to which this reference is made, \
         if any. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency  # noqa
     :param uid: UID of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
     :param api_version: API version of the referent.
     :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
     :param namespace: Namespace of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     """

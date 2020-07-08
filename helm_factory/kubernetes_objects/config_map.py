@@ -10,7 +10,7 @@ class ConfigMapEnvSource(HelmYaml):
     """
     :param optional: Specify whether the ConfigMap must be defined
     :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
     """
 
     def __init__(self, optional: bool, name: Optional[str] = None):
@@ -29,7 +29,7 @@ class ConfigMapProjection(HelmYaml):
         will error unless it is marked optional. Paths must be relative and may not \
         contain the '..' path or start with '..'.
     :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
     """
 
     def __init__(
@@ -59,11 +59,11 @@ class ConfigMap(KubernetesBaseObject):
         to true, the field can be modified at any time. Defaulted to nil. This is an \
         alpha field enabled by ImmutableEphemeralVolumes feature gate.
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -85,11 +85,11 @@ class ConfigMapList(KubernetesBaseObject):
     """
     :param items: Items is the list of ConfigMaps.
     :param metadata: More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

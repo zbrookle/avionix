@@ -52,13 +52,13 @@ class HorizontalPodAutoscalerSpec(HelmYaml):
 class HorizontalPodAutoscaler(KubernetesBaseObject):
     """
     :param metadata: Standard object metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: behaviour of autoscaler. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status.
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status.  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -79,7 +79,7 @@ class HorizontalPodAutoscalerList(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -91,167 +91,6 @@ class HorizontalPodAutoscalerList(KubernetesBaseObject):
         super().__init__(api_version)
         self.items = items
         self.metadata = metadata
-
-
-class PodDNSConfigOption(HelmYaml):
-    """
-    :param value: None
-    :param name: Required.
-    """
-
-    def __init__(self, value: str, name: Optional[str] = None):
-        self.value = value
-        self.name = name
-
-
-class PodDNSConfig(HelmYaml):
-    """
-    :param nameservers: A list of DNS name server IP addresses. This will be appended \
-        to the base nameservers generated from DNSPolicy. Duplicated nameservers will \
-        be removed.
-    :param options: A list of DNS resolver options. This will be merged with the base \
-        options generated from DNSPolicy. Duplicated entries will be removed. \
-        Resolution options given in Options will override those that appear in the \
-        base DNSPolicy.
-    :param searches: A list of DNS search domains for host-name lookup. This will be \
-        appended to the base search paths generated from DNSPolicy. Duplicated search \
-        paths will be removed.
-    """
-
-    def __init__(
-        self,
-        nameservers: List[str],
-        options: List[PodDNSConfigOption],
-        searches: List[str],
-    ):
-        self.nameservers = nameservers
-        self.options = options
-        self.searches = searches
-
-
-class Sysctl(HelmYaml):
-    """
-    :param value: Value of a property to set
-    :param name: Name of a property to set
-    """
-
-    def __init__(self, value: str, name: Optional[str] = None):
-        self.value = value
-        self.name = name
-
-
-class PodSecurityContext(HelmYaml):
-    """
-    :param fs_group: A special supplemental group that applies to all containers in a \
-        pod. Some volume types allow the Kubelet to change the ownership of that \
-        volume to be owned by the pod:  1. The owning GID will be the FSGroup 2. The \
-        setgid bit is set (new files created in the volume will be owned by FSGroup) \
-        3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not \
-        modify the ownership and permissions of any volume.
-    :param run_as_group: The GID to run the entrypoint of the container process. Uses \
-        runtime default if unset. May also be set in SecurityContext.  If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence for that container.
-    :param run_as_non_root: Indicates that the container must run as a non-root user. \
-        If true, the Kubelet will validate the image at runtime to ensure that it does \
-        not run as UID 0 (root) and fail to start the container if it does. If unset \
-        or false, no such validation will be performed. May also be set in \
-        SecurityContext.  If set in both SecurityContext and PodSecurityContext, the \
-        value specified in SecurityContext takes precedence.
-    :param se_linux_options: The SELinux context to be applied to all containers. If \
-        unspecified, the container runtime will allocate a random SELinux context for \
-        each container.  May also be set in SecurityContext.  If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence for that container.
-    :param supplemental_groups: A list of groups applied to the first process run in \
-        each container, in addition to the container's primary GID.  If unspecified, \
-        no groups will be added to any container.
-    :param sysctls: Sysctls hold a list of namespaced sysctls used for the pod. Pods \
-        with unsupported sysctls (by the container runtime) might fail to launch.
-    :param windows_options: The Windows specific settings applied to all containers. \
-        If unspecified, the options within a container's SecurityContext will be used. \
-        If set in both SecurityContext and PodSecurityContext, the value specified in \
-        SecurityContext takes precedence.
-    :param fs_group_change_policy: fsGroupChangePolicy defines behavior of changing \
-        ownership and permission of the volume before being exposed inside Pod. This \
-        field will only apply to volume types which support fsGroup based \
-        ownership(and permissions). It will have no effect on ephemeral volume types \
-        such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" \
-        and "Always". If not specified defaults to "Always".
-    :param run_as_user: The UID to run the entrypoint of the container process. \
-        Defaults to user specified in image metadata if unspecified. May also be set \
-        in SecurityContext.  If set in both SecurityContext and PodSecurityContext, \
-        the value specified in SecurityContext takes precedence for that container.
-    """
-
-    def __init__(
-        self,
-        fs_group: int,
-        run_as_group: int,
-        run_as_non_root: bool,
-        se_linux_options: SELinuxOptions,
-        supplemental_groups: List[int],
-        sysctls: List[Sysctl],
-        windows_options: WindowsSecurityContextOptions,
-        fs_group_change_policy: Optional[str] = None,
-        run_as_user: Optional[int] = None,
-    ):
-        self.fsGroup = fs_group
-        self.runAsGroup = run_as_group
-        self.runAsNonRoot = run_as_non_root
-        self.seLinuxOptions = se_linux_options
-        self.supplementalGroups = supplemental_groups
-        self.sysctls = sysctls
-        self.windowsOptions = windows_options
-        self.fsGroupChangePolicy = fs_group_change_policy
-        self.runAsUser = run_as_user
-
-
-class HostAlias(HelmYaml):
-    """
-    :param hostnames: Hostnames for the above IP address.
-    :param ip: IP address of the host file entry.
-    """
-
-    def __init__(self, hostnames: List[str], ip: str):
-        self.hostnames = hostnames
-        self.ip = ip
-
-
-class Toleration(HelmYaml):
-    """
-    :param effect: Effect indicates the taint effect to match. Empty means match all \
-        taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule \
-        and NoExecute.
-    :param key: Key is the taint key that the toleration applies to. Empty means match \
-        all taint keys. If the key is empty, operator must be Exists; this combination \
-        means to match all values and all keys.
-    :param toleration_seconds: TolerationSeconds represents the period of time the \
-        toleration (which must be of effect NoExecute, otherwise this field is \
-        ignored) tolerates the taint. By default, it is not set, which means tolerate \
-        the taint forever (do not evict). Zero and negative values will be treated as \
-        0 (evict immediately) by the system.
-    :param value: Value is the taint value the toleration matches to. If the operator \
-        is Exists, the value should be empty, otherwise just a regular string.
-    :param operator: Operator represents a key's relationship to the value. Valid \
-        operators are Exists and Equal. Defaults to Equal. Exists is equivalent to \
-        wildcard for value, so that a pod can tolerate all taints of a particular \
-        category.
-    """
-
-    def __init__(
-        self,
-        effect: str,
-        key: str,
-        toleration_seconds: int,
-        value: str,
-        operator: Optional[str] = None,
-    ):
-        self.effect = effect
-        self.key = key
-        self.tolerationSeconds = toleration_seconds
-        self.value = value
-        self.operator = operator
 
 
 class PodAffinityTerm(HelmYaml):
@@ -391,6 +230,167 @@ class PodReadinessGate(HelmYaml):
         self.conditionType = condition_type
 
 
+class Sysctl(HelmYaml):
+    """
+    :param value: Value of a property to set
+    :param name: Name of a property to set
+    """
+
+    def __init__(self, value: str, name: Optional[str] = None):
+        self.value = value
+        self.name = name
+
+
+class PodSecurityContext(HelmYaml):
+    """
+    :param fs_group: A special supplemental group that applies to all containers in a \
+        pod. Some volume types allow the Kubelet to change the ownership of that \
+        volume to be owned by the pod:  1. The owning GID will be the FSGroup 2. The \
+        setgid bit is set (new files created in the volume will be owned by FSGroup) \
+        3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not \
+        modify the ownership and permissions of any volume.
+    :param run_as_group: The GID to run the entrypoint of the container process. Uses \
+        runtime default if unset. May also be set in SecurityContext.  If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence for that container.
+    :param run_as_non_root: Indicates that the container must run as a non-root user. \
+        If true, the Kubelet will validate the image at runtime to ensure that it does \
+        not run as UID 0 (root) and fail to start the container if it does. If unset \
+        or false, no such validation will be performed. May also be set in \
+        SecurityContext.  If set in both SecurityContext and PodSecurityContext, the \
+        value specified in SecurityContext takes precedence.
+    :param se_linux_options: The SELinux context to be applied to all containers. If \
+        unspecified, the container runtime will allocate a random SELinux context for \
+        each container.  May also be set in SecurityContext.  If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence for that container.
+    :param supplemental_groups: A list of groups applied to the first process run in \
+        each container, in addition to the container's primary GID.  If unspecified, \
+        no groups will be added to any container.
+    :param sysctls: Sysctls hold a list of namespaced sysctls used for the pod. Pods \
+        with unsupported sysctls (by the container runtime) might fail to launch.
+    :param windows_options: The Windows specific settings applied to all containers. \
+        If unspecified, the options within a container's SecurityContext will be used. \
+        If set in both SecurityContext and PodSecurityContext, the value specified in \
+        SecurityContext takes precedence.
+    :param fs_group_change_policy: fsGroupChangePolicy defines behavior of changing \
+        ownership and permission of the volume before being exposed inside Pod. This \
+        field will only apply to volume types which support fsGroup based \
+        ownership(and permissions). It will have no effect on ephemeral volume types \
+        such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" \
+        and "Always". If not specified defaults to "Always".
+    :param run_as_user: The UID to run the entrypoint of the container process. \
+        Defaults to user specified in image metadata if unspecified. May also be set \
+        in SecurityContext.  If set in both SecurityContext and PodSecurityContext, \
+        the value specified in SecurityContext takes precedence for that container.
+    """
+
+    def __init__(
+        self,
+        fs_group: int,
+        run_as_group: int,
+        run_as_non_root: bool,
+        se_linux_options: SELinuxOptions,
+        supplemental_groups: List[int],
+        sysctls: List[Sysctl],
+        windows_options: WindowsSecurityContextOptions,
+        fs_group_change_policy: Optional[str] = None,
+        run_as_user: Optional[int] = None,
+    ):
+        self.fsGroup = fs_group
+        self.runAsGroup = run_as_group
+        self.runAsNonRoot = run_as_non_root
+        self.seLinuxOptions = se_linux_options
+        self.supplementalGroups = supplemental_groups
+        self.sysctls = sysctls
+        self.windowsOptions = windows_options
+        self.fsGroupChangePolicy = fs_group_change_policy
+        self.runAsUser = run_as_user
+
+
+class Toleration(HelmYaml):
+    """
+    :param effect: Effect indicates the taint effect to match. Empty means match all \
+        taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule \
+        and NoExecute.
+    :param key: Key is the taint key that the toleration applies to. Empty means match \
+        all taint keys. If the key is empty, operator must be Exists; this combination \
+        means to match all values and all keys.
+    :param toleration_seconds: TolerationSeconds represents the period of time the \
+        toleration (which must be of effect NoExecute, otherwise this field is \
+        ignored) tolerates the taint. By default, it is not set, which means tolerate \
+        the taint forever (do not evict). Zero and negative values will be treated as \
+        0 (evict immediately) by the system.
+    :param value: Value is the taint value the toleration matches to. If the operator \
+        is Exists, the value should be empty, otherwise just a regular string.
+    :param operator: Operator represents a key's relationship to the value. Valid \
+        operators are Exists and Equal. Defaults to Equal. Exists is equivalent to \
+        wildcard for value, so that a pod can tolerate all taints of a particular \
+        category.
+    """
+
+    def __init__(
+        self,
+        effect: str,
+        key: str,
+        toleration_seconds: int,
+        value: str,
+        operator: Optional[str] = None,
+    ):
+        self.effect = effect
+        self.key = key
+        self.tolerationSeconds = toleration_seconds
+        self.value = value
+        self.operator = operator
+
+
+class HostAlias(HelmYaml):
+    """
+    :param hostnames: Hostnames for the above IP address.
+    :param ip: IP address of the host file entry.
+    """
+
+    def __init__(self, hostnames: List[str], ip: str):
+        self.hostnames = hostnames
+        self.ip = ip
+
+
+class PodDNSConfigOption(HelmYaml):
+    """
+    :param value: None
+    :param name: Required.
+    """
+
+    def __init__(self, value: str, name: Optional[str] = None):
+        self.value = value
+        self.name = name
+
+
+class PodDNSConfig(HelmYaml):
+    """
+    :param nameservers: A list of DNS name server IP addresses. This will be appended \
+        to the base nameservers generated from DNSPolicy. Duplicated nameservers will \
+        be removed.
+    :param options: A list of DNS resolver options. This will be merged with the base \
+        options generated from DNSPolicy. Duplicated entries will be removed. \
+        Resolution options given in Options will override those that appear in the \
+        base DNSPolicy.
+    :param searches: A list of DNS search domains for host-name lookup. This will be \
+        appended to the base search paths generated from DNSPolicy. Duplicated search \
+        paths will be removed.
+    """
+
+    def __init__(
+        self,
+        nameservers: List[str],
+        options: List[PodDNSConfigOption],
+        searches: List[str],
+    ):
+        self.nameservers = nameservers
+        self.options = options
+        self.searches = searches
+
+
 class PodSpec(HelmYaml):
     """
     :param containers: List of containers belonging to the pod. Containers cannot \
@@ -434,7 +434,7 @@ class PodSpec(HelmYaml):
         this PodSpec. If specified, these secrets will be passed to individual puller \
         implementations for them to use. For example, in the case of docker, only \
         DockerConfig type secrets are honored. More info: \
-        https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod
+        https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod  # noqa
     :param init_containers: List of initialization containers belonging to the pod. \
         Init containers are executed in order prior to containers being started. If \
         any init container fails, the pod is considered to have failed and is handled \
@@ -486,7 +486,7 @@ class PodSpec(HelmYaml):
         info: https://git.k8s.io/enhancements/keps/sig-network/0007-pod-ready%2B%2B.md
     :param restart_policy: Restart policy for all containers within the pod. One of \
         Always, OnFailure, Never. Default to Always. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
+        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy  # noqa
     :param runtime_class_name: RuntimeClassName refers to a RuntimeClass object in the \
         node.k8s.io group, which should be used to run this pod.  If no RuntimeClass \
         resource matches the named class, the pod will not be run. If unset or empty, \
@@ -503,7 +503,7 @@ class PodSpec(HelmYaml):
         ServiceAccountName. Deprecated: Use serviceAccountName instead.
     :param service_account_name: ServiceAccountName is the name of the ServiceAccount \
         to use to run this pod. More info: \
-        https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+        https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/  # noqa
     :param share_process_namespace: Share a single process namespace between all of \
         the containers in a pod. When this is set containers will be able to view and \
         signal processes from other containers in the same pod, and the first process \
@@ -606,9 +606,9 @@ class PodSpec(HelmYaml):
 class PodTemplateSpec(HelmYaml):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: Specification of the desired behavior of the pod. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     """
 
     def __init__(self, metadata: ObjectMeta, spec: PodSpec):
@@ -637,15 +637,6 @@ class SessionAffinityConfig(HelmYaml):
         self.clientIP = client_ip
 
 
-class PodIP(HelmYaml):
-    """
-    :param ip: ip is an IP address (IPv4 or IPv6) assigned to the pod
-    """
-
-    def __init__(self, ip: str):
-        self.ip = ip
-
-
 class PodCondition(HelmYaml):
     """
     :param last_probe_time: Last time we probed the condition.
@@ -655,7 +646,7 @@ class PodCondition(HelmYaml):
     :param reason: Unique, one-word, CamelCase reason for the condition's last \
         transition.
     :param type: Type is the type of the condition. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions
+        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions  # noqa
     """
 
     def __init__(
@@ -673,16 +664,25 @@ class PodCondition(HelmYaml):
         self.type = type
 
 
+class PodIP(HelmYaml):
+    """
+    :param ip: ip is an IP address (IPv4 or IPv6) assigned to the pod
+    """
+
+    def __init__(self, ip: str):
+        self.ip = ip
+
+
 class Pod(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: Specification of the desired behavior of the pod. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -696,13 +696,13 @@ class Pod(KubernetesBaseObject):
 class PodList(KubernetesBaseObject):
     """
     :param items: List of pods. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md  # noqa
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -716,14 +716,14 @@ class PodList(KubernetesBaseObject):
 class PodTemplate(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param template: Template defines the pods that will be created from this pod \
         template. \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -741,11 +741,11 @@ class PodTemplateList(KubernetesBaseObject):
     """
     :param items: List of pod templates
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

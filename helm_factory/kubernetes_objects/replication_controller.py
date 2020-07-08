@@ -30,20 +30,20 @@ class ReplicationControllerSpec(HelmYaml):
     :param template: Template is the object that describes the pod that will be \
         created if insufficient replicas are detected. This takes precedence over a \
         TemplateRef. More info: \
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template
+        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template  # noqa
     :param min_ready_seconds: Minimum number of seconds for which a newly created pod \
         should be ready without any of its container crashing, for it to be considered \
         available. Defaults to 0 (pod will be considered available as soon as it is \
         ready)
     :param replicas: Replicas is the number of desired replicas. This is a pointer to \
         distinguish between explicit zero and unspecified. Defaults to 1. More info: \
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#what-is-a-replicationcontroller
+        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#what-is-a-replicationcontroller  # noqa
     :param selector: Selector is a label query over pods that should match the \
         Replicas count. If Selector is empty, it is defaulted to the labels present on \
         the Pod template. Label keys and values that must match in order to be \
         controlled by this replication controller, if empty defaulted to labels on Pod \
         template. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
     """
 
     def __init__(
@@ -64,14 +64,14 @@ class ReplicationController(KubernetesBaseObject):
     :param metadata: If the Labels of a ReplicationController are empty, they are \
         defaulted to be the same as the Pod(s) that the replication controller \
         manages. Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: Spec defines the specification of the desired behavior of the \
         replication controller. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -88,13 +88,13 @@ class ReplicationController(KubernetesBaseObject):
 class ReplicationControllerList(KubernetesBaseObject):
     """
     :param items: List of replication controllers. More info: \
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller
+        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller  # noqa
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

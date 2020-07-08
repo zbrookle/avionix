@@ -21,14 +21,14 @@ class ExternalDocumentation(HelmYaml):
         self.url = url
 
 
-class JSON(HelmYaml):
+class JSONSchemaPropsOrBool(HelmYaml):
     """
     """
 
     pass
 
 
-class JSONSchemaPropsOrBool(HelmYaml):
+class JSON(HelmYaml):
     """
     """
 
@@ -72,7 +72,7 @@ class JSONSchemaProps(HelmYaml):
         "978-0321751041" - isbn10: an ISBN10 number string like "0321751043" - isbn13: \
         an ISBN13 number string like "978-0321751041" - creditcard: a credit card \
         number defined by the regex \
-        ^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$ \
+        ^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$  # noqa \
         with any non digit characters mixed in - ssn: a U.S. social security number \
         following the regex ^\d{3}[- ]?\d{2}[- ]?\d{4}$ - hexcolor: an hexadecimal \
         color code like "#FFFFFF: following the regex \

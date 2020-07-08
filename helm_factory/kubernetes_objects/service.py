@@ -28,7 +28,7 @@ class ServicePort(HelmYaml):
         it will be allocated to the service if unused or else creation of the service \
         will fail. Default is to auto-allocate a port if the ServiceType of this \
         Service requires one. More info: \
-        https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+        https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport  # noqa
     :param protocol: The IP protocol for this port. Supports "TCP", "UDP", and "SCTP". \
         Default is TCP.
     :param target_port: Number or name of the port to access on the pods targeted by \
@@ -38,7 +38,7 @@ class ServicePort(HelmYaml):
         'port' field is used (an identity map). This field is ignored for services \
         with clusterIP=None, and should be omitted or set equal to the 'port' field. \
         More info: \
-        https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service
+        https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service  # noqa
     """
 
     def __init__(
@@ -68,7 +68,7 @@ class ServiceSpec(HelmYaml):
         specified for headless services when proxying is not required. Only applies to \
         types ClusterIP, NodePort, and LoadBalancer. Ignored if type is ExternalName. \
         More info: \
-        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
+        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
     :param external_ips: externalIPs is a list of IP addresses for which nodes in the \
         cluster will also accept traffic for this service.  These IPs are not managed \
         by Kubernetes.  The user is responsible for ensuring that traffic arrives at a \
@@ -116,9 +116,9 @@ class ServiceSpec(HelmYaml):
         this will restrict traffic through the cloud-provider load-balancer will be \
         restricted to the specified client IPs. This field will be ignored if the \
         cloud-provider does not support the feature." More info: \
-        https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/
+        https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/  # noqa
     :param ports: The list of ports that are exposed by this service. More info: \
-        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
+        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
     :param selector: Route service traffic to pods with label keys and values matching \
         this selector. If empty or not present, the service is assumed to have an \
         external process managing its endpoints, which Kubernetes will not modify. \
@@ -128,7 +128,7 @@ class ServiceSpec(HelmYaml):
     :param session_affinity: Supports "ClientIP" and "None". Used to maintain session \
         affinity. Enable client IP based session affinity. Must be ClientIP or None. \
         Defaults to None. More info: \
-        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
+        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
     :param topology_keys: topologyKeys is a preference-order list of topology keys \
         which implementations of services should use to preferentially sort endpoints \
         when accessing this Service, it can not be used at the same time as \
@@ -151,7 +151,7 @@ class ServiceSpec(HelmYaml):
         to the clusterIP. "LoadBalancer" builds on NodePort and creates an external \
         load-balancer (if supported in the current cloud) which routes to the \
         clusterIP. More info: \
-        https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+        https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types  # noqa
     """
 
     def __init__(
@@ -192,13 +192,13 @@ class ServiceSpec(HelmYaml):
 class Service(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: Spec defines the behavior of a service. \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -236,16 +236,16 @@ class ServiceAccount(KubernetesBaseObject):
         ServiceAccount. ImagePullSecrets are distinct from Secrets because Secrets can \
         be mounted in the pod, but ImagePullSecrets are only accessed by the kubelet. \
         More info: \
-        https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+        https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod  # noqa
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param secrets: Secrets is the list of secrets allowed to be used by pods running \
         using this ServiceAccount. More info: \
         https://kubernetes.io/docs/concepts/configuration/secret
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :param automount_service_account_token: AutomountServiceAccountToken indicates \
         whether pods running as this service account should have an API token \
         automatically mounted. Can be overridden at the pod level.
@@ -269,13 +269,13 @@ class ServiceAccount(KubernetesBaseObject):
 class ServiceAccountList(KubernetesBaseObject):
     """
     :param items: List of ServiceAccounts. More info: \
-        https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+        https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/  # noqa
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -293,11 +293,11 @@ class ServiceList(KubernetesBaseObject):
     """
     :param items: List of services
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

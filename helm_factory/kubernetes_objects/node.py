@@ -95,22 +95,50 @@ class NodeAffinity(HelmYaml):
         )
 
 
-class DaemonEndpoint(HelmYaml):
+class NodeSystemInfo(HelmYaml):
     """
-    :param port: Port number of the given endpoint.
+    :param architecture: The Architecture reported by the node
+    :param boot_id: Boot ID reported by the node.
+    :param container_runtime_version: ContainerRuntime Version reported by the node \
+        through runtime remote API (e.g. docker://1.5.0).
+    :param kernel_version: Kernel Version reported by the node from 'uname -r' (e.g. \
+        3.16.0-0.bpo.4-amd64).
+    :param kube_proxy_version: KubeProxy Version reported by the node.
+    :param kubelet_version: Kubelet Version reported by the node.
+    :param machine_id: MachineID reported by the node. For unique machine \
+        identification in the cluster this field is preferred. Learn more from man(5) \
+        machine-id: http://man7.org/linux/man-pages/man5/machine-id.5.html
+    :param operating_system: The Operating System reported by the node
+    :param os_image: OS Image reported by the node from /etc/os-release (e.g. Debian \
+        GNU/Linux 7 (wheezy)).
+    :param system_uuid: SystemUUID reported by the node. For unique machine \
+        identification MachineID is preferred. This field is specific to Red Hat hosts \
+        https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/getting-system-uuid.html  # noqa
     """
 
-    def __init__(self, port: int):
-        self.Port = port
-
-
-class NodeDaemonEndpoints(HelmYaml):
-    """
-    :param kubelet_endpoint: Endpoint on which Kubelet is listening.
-    """
-
-    def __init__(self, kubelet_endpoint: DaemonEndpoint):
-        self.kubeletEndpoint = kubelet_endpoint
+    def __init__(
+        self,
+        architecture: str,
+        boot_id: str,
+        container_runtime_version: str,
+        kernel_version: str,
+        kube_proxy_version: str,
+        kubelet_version: str,
+        machine_id: str,
+        operating_system: str,
+        os_image: str,
+        system_uuid: str,
+    ):
+        self.architecture = architecture
+        self.bootID = boot_id
+        self.containerRuntimeVersion = container_runtime_version
+        self.kernelVersion = kernel_version
+        self.kubeProxyVersion = kube_proxy_version
+        self.kubeletVersion = kubelet_version
+        self.machineID = machine_id
+        self.operatingSystem = operating_system
+        self.osImage = os_image
+        self.systemUUID = system_uuid
 
 
 class ConfigMapNodeConfigSource(HelmYaml):
@@ -164,6 +192,24 @@ class NodeAddress(HelmYaml):
         self.type = type
 
 
+class DaemonEndpoint(HelmYaml):
+    """
+    :param port: Port number of the given endpoint.
+    """
+
+    def __init__(self, port: int):
+        self.Port = port
+
+
+class NodeDaemonEndpoints(HelmYaml):
+    """
+    :param kubelet_endpoint: Endpoint on which Kubelet is listening.
+    """
+
+    def __init__(self, kubelet_endpoint: DaemonEndpoint):
+        self.kubeletEndpoint = kubelet_endpoint
+
+
 class NodeCondition(HelmYaml):
     """
     :param last_heartbeat_time: Last time we got an update on a given condition.
@@ -187,52 +233,6 @@ class NodeCondition(HelmYaml):
         self.message = message
         self.reason = reason
         self.type = type
-
-
-class NodeSystemInfo(HelmYaml):
-    """
-    :param architecture: The Architecture reported by the node
-    :param boot_id: Boot ID reported by the node.
-    :param container_runtime_version: ContainerRuntime Version reported by the node \
-        through runtime remote API (e.g. docker://1.5.0).
-    :param kernel_version: Kernel Version reported by the node from 'uname -r' (e.g. \
-        3.16.0-0.bpo.4-amd64).
-    :param kube_proxy_version: KubeProxy Version reported by the node.
-    :param kubelet_version: Kubelet Version reported by the node.
-    :param machine_id: MachineID reported by the node. For unique machine \
-        identification in the cluster this field is preferred. Learn more from man(5) \
-        machine-id: http://man7.org/linux/man-pages/man5/machine-id.5.html
-    :param operating_system: The Operating System reported by the node
-    :param os_image: OS Image reported by the node from /etc/os-release (e.g. Debian \
-        GNU/Linux 7 (wheezy)).
-    :param system_uuid: SystemUUID reported by the node. For unique machine \
-        identification MachineID is preferred. This field is specific to Red Hat hosts \
-        https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/getting-system-uuid.html
-    """
-
-    def __init__(
-        self,
-        architecture: str,
-        boot_id: str,
-        container_runtime_version: str,
-        kernel_version: str,
-        kube_proxy_version: str,
-        kubelet_version: str,
-        machine_id: str,
-        operating_system: str,
-        os_image: str,
-        system_uuid: str,
-    ):
-        self.architecture = architecture
-        self.bootID = boot_id
-        self.containerRuntimeVersion = container_runtime_version
-        self.kernelVersion = kernel_version
-        self.kubeProxyVersion = kube_proxy_version
-        self.kubeletVersion = kubelet_version
-        self.machineID = machine_id
-        self.operatingSystem = operating_system
-        self.osImage = os_image
-        self.systemUUID = system_uuid
 
 
 class VolumeNodeAffinity(HelmYaml):
@@ -302,13 +302,13 @@ class NodeSpec(HelmYaml):
 class Node(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: Spec defines the behavior of a node. \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -323,11 +323,11 @@ class NodeList(KubernetesBaseObject):
     """
     :param items: List of nodes
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

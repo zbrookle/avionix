@@ -26,7 +26,7 @@ class CustomResourceSubresourceScale(HelmYaml):
         `.spec`. Must be set to work with HorizontalPodAutoscaler. The field pointed \
         by this JSON path must be a string field (not a complex selector struct) which \
         contains a serialized label selector in string form. More info: \
-        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions#scale-subresource \
+        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions#scale-subresource  # noqa \
         If there is no value under the given path in the custom resource, the \
         `status.selector` value in the `/scale` subresource will default to the empty \
         string.
@@ -107,21 +107,14 @@ class CustomResourceDefinitionCondition(HelmYaml):
         self.type = type
 
 
-class CustomResourceConversion(HelmYaml):
+class CustomResourceSubresources(HelmYaml):
     """
-    :param webhook: webhook describes how to call the conversion webhook. Required \
-        when `strategy` is set to `Webhook`.
-    :param strategy: strategy specifies how custom resources are converted between \
-        versions. Allowed values are: - `None`: The converter only change the \
-        apiVersion and would not touch any other field in the custom resource. - \
-        `Webhook`: API Server will call to an external webhook to do the conversion. \
-        Additional information   is needed for this option. This requires \
-        spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
+    :param scale: scale indicates the custom resource should serve a `/scale` \
+        subresource that returns an `autoscaling/v1` Scale object.
     """
 
-    def __init__(self, webhook: WebhookConversion, strategy: Optional[str] = None):
-        self.webhook = webhook
-        self.strategy = strategy
+    def __init__(self, scale: CustomResourceSubresourceScale):
+        self.scale = scale
 
 
 class CustomResourceColumnDefinition(HelmYaml):
@@ -130,13 +123,13 @@ class CustomResourceColumnDefinition(HelmYaml):
     :param format: format is an optional OpenAPI type definition for this column. The \
         'name' format is applied to the primary identifier column to assist in clients \
         identifying column is the resource name. See \
-        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types \
+        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
         for details.
     :param json_path: jsonPath is a simple JSON path (i.e. with array notation) which \
         is evaluated against each custom resource to produce the value for this \
         column.
     :param type: type is an OpenAPI type definition for this column. See \
-        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types \
+        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
         for details.
     :param name: name is a human readable name for the column.
     :param priority: priority is an integer defining the relative importance of this \
@@ -162,21 +155,11 @@ class CustomResourceColumnDefinition(HelmYaml):
         self.priority = priority
 
 
-class CustomResourceSubresources(HelmYaml):
-    """
-    :param scale: scale indicates the custom resource should serve a `/scale` \
-        subresource that returns an `autoscaling/v1` Scale object.
-    """
-
-    def __init__(self, scale: CustomResourceSubresourceScale):
-        self.scale = scale
-
-
 class CustomResourceDefinitionVersion(HelmYaml):
     """
     :param additional_printer_columns: additionalPrinterColumns specifies additional \
         columns returned in Table output. See \
-        https://kubernetes.io/docs/reference/using-api/api-concepts/#receiving-resources-as-tables \
+        https://kubernetes.io/docs/reference/using-api/api-concepts/#receiving-resources-as-tables  # noqa \
         for details. If no columns are specified, a single column displaying the age \
         of the custom resource is used.
     :param schema: schema describes the schema used for validation, pruning, and \
@@ -210,6 +193,23 @@ class CustomResourceDefinitionVersion(HelmYaml):
         self.name = name
 
 
+class CustomResourceConversion(HelmYaml):
+    """
+    :param webhook: webhook describes how to call the conversion webhook. Required \
+        when `strategy` is set to `Webhook`.
+    :param strategy: strategy specifies how custom resources are converted between \
+        versions. Allowed values are: - `None`: The converter only change the \
+        apiVersion and would not touch any other field in the custom resource. - \
+        `Webhook`: API Server will call to an external webhook to do the conversion. \
+        Additional information   is needed for this option. This requires \
+        spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
+    """
+
+    def __init__(self, webhook: WebhookConversion, strategy: Optional[str] = None):
+        self.webhook = webhook
+        self.strategy = strategy
+
+
 class CustomResourceDefinitionSpec(HelmYaml):
     """
     :param conversion: conversion defines conversion settings for the CRD.
@@ -223,7 +223,7 @@ class CustomResourceDefinitionSpec(HelmYaml):
         metadata are always preserved. This field is deprecated in favor of setting \
         `x-preserve-unknown-fields` to true in \
         `spec.versions[*].schema.openAPIV3Schema`. See \
-        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#pruning-versus-preserving-unknown-fields \
+        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#pruning-versus-preserving-unknown-fields  # noqa \
         for details.
     :param scope: scope indicates whether the defined custom resource is cluster- or \
         namespace-scoped. Allowed values are `Cluster` and `Namespaced`.
@@ -264,7 +264,7 @@ class CustomResourceDefinition(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -285,7 +285,7 @@ class CustomResourceDefinitionList(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

@@ -63,30 +63,6 @@ class NetworkPolicyPeer(HelmYaml):
         self.podSelector = pod_selector
 
 
-class NetworkPolicyEgressRule(HelmYaml):
-    """
-    :param to: List of destinations for outgoing traffic of pods selected for this \
-        rule. Items in this list are combined using a logical OR operation. If this \
-        field is empty or missing, this rule matches all destinations (traffic not \
-        restricted by destination). If this field is present and contains at least one \
-        item, this rule allows traffic only if the traffic matches at least one item \
-        in the to list.
-    :param ports: List of destination ports for outgoing traffic. Each item in this \
-        list is combined using a logical OR. If this field is empty or missing, this \
-        rule matches all ports (traffic not restricted by port). If this field is \
-        present and contains at least one item, then this rule allows traffic only if \
-        the traffic matches at least one port in the list.
-    """
-
-    def __init__(
-        self,
-        to: List[NetworkPolicyPeer],
-        ports: Optional[List[NetworkPolicyPort]] = None,
-    ):
-        self.to = to
-        self.ports = ports
-
-
 class NetworkPolicyIngressRule(HelmYaml):
     """
     :param from_: List of sources which should be able to access the pods selected for \
@@ -108,6 +84,30 @@ class NetworkPolicyIngressRule(HelmYaml):
         ports: Optional[List[NetworkPolicyPort]] = None,
     ):
         self["from"] = from_
+        self.ports = ports
+
+
+class NetworkPolicyEgressRule(HelmYaml):
+    """
+    :param to: List of destinations for outgoing traffic of pods selected for this \
+        rule. Items in this list are combined using a logical OR operation. If this \
+        field is empty or missing, this rule matches all destinations (traffic not \
+        restricted by destination). If this field is present and contains at least one \
+        item, this rule allows traffic only if the traffic matches at least one item \
+        in the to list.
+    :param ports: List of destination ports for outgoing traffic. Each item in this \
+        list is combined using a logical OR. If this field is empty or missing, this \
+        rule matches all ports (traffic not restricted by port). If this field is \
+        present and contains at least one item, then this rule allows traffic only if \
+        the traffic matches at least one port in the list.
+    """
+
+    def __init__(
+        self,
+        to: List[NetworkPolicyPeer],
+        ports: Optional[List[NetworkPolicyPort]] = None,
+    ):
+        self.to = to
         self.ports = ports
 
 
@@ -162,12 +162,12 @@ class NetworkPolicySpec(HelmYaml):
 class NetworkPolicy(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param spec: Specification of the desired behavior for this NetworkPolicy.
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -185,11 +185,11 @@ class NetworkPolicyList(KubernetesBaseObject):
     """
     :param items: Items is a list of schema objects.
     :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

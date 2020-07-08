@@ -74,7 +74,7 @@ class StatefulSetSpec(HelmYaml):
         unspecified, defaults to 1.
     :param selector: selector is a label query over pods that should match the replica \
         count. It must match the pod template's labels. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
     """
 
     def __init__(
@@ -123,7 +123,7 @@ class StatefulSet(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -144,7 +144,7 @@ class StatefulSetList(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

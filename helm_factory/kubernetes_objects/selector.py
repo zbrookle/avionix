@@ -75,7 +75,7 @@ class ConfigMapKeySelector(HelmYaml):
     :param key: The key to select.
     :param optional: Specify whether the ConfigMap or its key must be defined
     :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
     """
 
     def __init__(self, key: str, optional: bool, name: Optional[str] = None):

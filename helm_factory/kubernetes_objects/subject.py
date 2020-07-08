@@ -5,17 +5,6 @@ from helm_factory.kubernetes_objects.metadata import ObjectMeta
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
-class NonResourceAttributes(HelmYaml):
-    """
-    :param path: Path is the URL path of the request
-    :param verb: Verb is the standard HTTP verb
-    """
-
-    def __init__(self, path: str, verb: str):
-        self.path = path
-        self.verb = verb
-
-
 class ResourceAttributes(HelmYaml):
     """
     :param group: Group is the API Group of the Resource.  "*" means all.
@@ -53,6 +42,17 @@ class ResourceAttributes(HelmYaml):
         self.namespace = namespace
 
 
+class NonResourceAttributes(HelmYaml):
+    """
+    :param path: Path is the URL path of the request
+    :param verb: Verb is the standard HTTP verb
+    """
+
+    def __init__(self, path: str, verb: str):
+        self.path = path
+        self.verb = verb
+
+
 class SelfSubjectAccessReviewSpec(HelmYaml):
     """
     :param non_resource_attributes: NonResourceAttributes describes information for a \
@@ -78,7 +78,7 @@ class SelfSubjectAccessReview(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -184,7 +184,7 @@ class SubjectAccessReview(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -227,7 +227,7 @@ class SelfSubjectRulesReview(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(
@@ -250,7 +250,7 @@ class LocalSubjectAccessReview(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
     def __init__(

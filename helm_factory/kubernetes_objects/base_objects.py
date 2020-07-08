@@ -1,8 +1,7 @@
-from typing import List, Optional
+from typing import Optional
 
-from helm_factory.kubernetes_objects.key_values_pairs import Annotation, Label
 from helm_factory.yaml.yaml_handling import HelmYaml
-
+from helm_factory.options import DEFAULTS
 
 class KubernetesBaseObject(HelmYaml):
     """
@@ -11,33 +10,19 @@ class KubernetesBaseObject(HelmYaml):
     https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
     """
 
-    def __init__(
-        self,
-        api_version: str,
-        kind: str,
-        name: str,
-        namespace: Optional[str] = None,
-        labels: Optional[List[Label]] = None,
-        annotations: Optional[List[Annotation]] = None,
-    ):
+    def __init__(self, api_version: Optional[str] = None, kind: Optional[str] = None,
+                 metadata=None):
+        if kind is None:
+            self.kind = type(self).__name__
+        else:
+            self.kind = kind
 
-        if labels is None:
-            labels = []
+        if api_version is None:
+            self.apiVersion = DEFAULTS["default_api_version"]
+        else:
+            self.apiVersion = api_version
 
-        if annotations is None:
-            annotations = []
-
-        if namespace is None:
-            namespace = ""
-
-        self.apiVersion = api_version
-        self.kind = kind
-        self.metadata = {
-            "name": name,
-            "labels": labels,
-            "annotations": annotations,
-            "namespace": namespace,
-        }
+        self.metadata = metadata
 
 
 class BaseSpec(HelmYaml):

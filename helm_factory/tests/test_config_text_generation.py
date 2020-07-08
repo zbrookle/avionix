@@ -5,6 +5,7 @@ from helm_factory.kubernetes_objects.metadata import ObjectMeta
 from helm_factory.kubernetes_objects.deployment import DeploymentSpec, Deployment
 from helm_factory.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from helm_factory.kubernetes_objects.container import Container
+from helm_factory.options import DEFAULTS
 
 
 @pytest.fixture
@@ -78,6 +79,7 @@ def test_kube_base_object(args: dict, yaml: str):
     base_object = KubernetesBaseObject(**args)
     assert str(base_object) == yaml
 
+
 def test_create_deployment():
     deployment = Deployment(
         api_version="v1",
@@ -109,3 +111,25 @@ spec:
       - image: test-image
 """
     )
+
+
+def get_test_deployment():
+    return Deployment(
+        metadata=ObjectMeta(name="test_deployment", labels={"type": "master"}),
+        spec=DeploymentSpec(
+            replicas=1,
+            template=PodTemplateSpec(
+                ObjectMeta(labels={"container_type": "master"}),
+                spec=PodSpec(containers=[Container(image="test-image")]),
+            ),
+        ),
+    )
+
+
+def test_default_version_option():
+    preset_default_version = get_test_deployment()
+    assert preset_default_version.apiVersion == "v1"
+
+    DEFAULTS["default_api_version"] = "v2"
+    changed_default_version = get_test_deployment()
+    assert changed_default_version.apiVersion == "v2"

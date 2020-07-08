@@ -5,6 +5,17 @@ from helm_factory.kubernetes_objects.metadata import ObjectMeta
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
+class NonResourceAttributes(HelmYaml):
+    """
+    :param path: Path is the URL path of the request
+    :param verb: Verb is the standard HTTP verb
+    """
+
+    def __init__(self, path: str, verb: str):
+        self.path = path
+        self.verb = verb
+
+
 class ResourceAttributes(HelmYaml):
     """
     :param group: Group is the API Group of the Resource.  "*" means all.
@@ -40,17 +51,6 @@ class ResourceAttributes(HelmYaml):
         self.version = version
         self.name = name
         self.namespace = namespace
-
-
-class NonResourceAttributes(HelmYaml):
-    """
-    :param path: Path is the URL path of the request
-    :param verb: Verb is the standard HTTP verb
-    """
-
-    def __init__(self, path: str, verb: str):
-        self.path = path
-        self.verb = verb
 
 
 class SelfSubjectAccessReviewSpec(HelmYaml):
@@ -101,6 +101,20 @@ class SelfSubjectRulesReviewSpec(HelmYaml):
         self.namespace = namespace
 
 
+class NonResourceRule(HelmYaml):
+    """
+    :param non_resource_urls: NonResourceURLs is a set of partial urls that a user \
+        should have access to.  *s are allowed, but only as the full, final step in \
+        the path.  "*" means all.
+    :param verbs: Verb is a list of kubernetes non-resource API verbs, like: get, \
+        post, put, delete, patch, head, options.  "*" means all.
+    """
+
+    def __init__(self, non_resource_urls: List[str], verbs: List[str]):
+        self.nonResourceURLs = non_resource_urls
+        self.verbs = verbs
+
+
 class ResourceRule(HelmYaml):
     """
     :param api_groups: APIGroups is the name of the APIGroup that contains the \
@@ -128,20 +142,6 @@ class ResourceRule(HelmYaml):
         self.resourceNames = resource_names
         self.verbs = verbs
         self.resources = resources
-
-
-class NonResourceRule(HelmYaml):
-    """
-    :param non_resource_urls: NonResourceURLs is a set of partial urls that a user \
-        should have access to.  *s are allowed, but only as the full, final step in \
-        the path.  "*" means all.
-    :param verbs: Verb is a list of kubernetes non-resource API verbs, like: get, \
-        post, put, delete, patch, head, options.  "*" means all.
-    """
-
-    def __init__(self, non_resource_urls: List[str], verbs: List[str]):
-        self.nonResourceURLs = non_resource_urls
-        self.verbs = verbs
 
 
 class SubjectAccessReviewSpec(HelmYaml):

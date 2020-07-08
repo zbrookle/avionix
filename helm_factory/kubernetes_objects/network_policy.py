@@ -24,8 +24,8 @@ class IPBlock(HelmYaml):
     """
     :param cidr: CIDR is a string representing the IP Block Valid examples are \
         "192.168.1.1/24" or "2001:db9::/64"
-    :param except: Except is a slice of CIDRs that should not be included within an IP \
-        Block Valid examples are "192.168.1.1/24" or "2001:db9::/64" Except values \
+    :param except_: Except is a slice of CIDRs that should not be included within an \
+        IP Block Valid examples are "192.168.1.1/24" or "2001:db9::/64" Except values \
         will be rejected if they are outside the CIDR range
     """
 
@@ -63,30 +63,6 @@ class NetworkPolicyPeer(HelmYaml):
         self.podSelector = pod_selector
 
 
-class NetworkPolicyIngressRule(HelmYaml):
-    """
-    :param from: List of sources which should be able to access the pods selected for \
-        this rule. Items in this list are combined using a logical OR operation. If \
-        this field is empty or missing, this rule matches all sources (traffic not \
-        restricted by source). If this field is present and contains at least one \
-        item, this rule allows traffic only if the traffic matches at least one item \
-        in the from list.
-    :param ports: List of ports which should be made accessible on the pods selected \
-        for this rule. Each item in this list is combined using a logical OR. If this \
-        field is empty or missing, this rule matches all ports (traffic not restricted \
-        by port). If this field is present and contains at least one item, then this \
-        rule allows traffic only if the traffic matches at least one port in the list.
-    """
-
-    def __init__(
-        self,
-        from_: List[NetworkPolicyPeer],
-        ports: Optional[List[NetworkPolicyPort]] = None,
-    ):
-        self["from"] = from_
-        self.ports = ports
-
-
 class NetworkPolicyEgressRule(HelmYaml):
     """
     :param to: List of destinations for outgoing traffic of pods selected for this \
@@ -108,6 +84,30 @@ class NetworkPolicyEgressRule(HelmYaml):
         ports: Optional[List[NetworkPolicyPort]] = None,
     ):
         self.to = to
+        self.ports = ports
+
+
+class NetworkPolicyIngressRule(HelmYaml):
+    """
+    :param from_: List of sources which should be able to access the pods selected for \
+        this rule. Items in this list are combined using a logical OR operation. If \
+        this field is empty or missing, this rule matches all sources (traffic not \
+        restricted by source). If this field is present and contains at least one \
+        item, this rule allows traffic only if the traffic matches at least one item \
+        in the from list.
+    :param ports: List of ports which should be made accessible on the pods selected \
+        for this rule. Each item in this list is combined using a logical OR. If this \
+        field is empty or missing, this rule matches all ports (traffic not restricted \
+        by port). If this field is present and contains at least one item, then this \
+        rule allows traffic only if the traffic matches at least one port in the list.
+    """
+
+    def __init__(
+        self,
+        from_: List[NetworkPolicyPeer],
+        ports: Optional[List[NetworkPolicyPort]] = None,
+    ):
+        self["from"] = from_
         self.ports = ports
 
 

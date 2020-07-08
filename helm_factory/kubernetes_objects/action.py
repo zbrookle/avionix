@@ -3,6 +3,32 @@ from typing import List, Optional
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
+class TCPSocketAction(HelmYaml):
+    """
+    :param port: Number or name of the port to access on the container. Number must be \
+        in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+    :param host: Optional: Host name to connect to, defaults to the pod IP.
+    """
+
+    def __init__(self, port: str, host: Optional[str] = None):
+        self.port = port
+        self.host = host
+
+
+class ExecAction(HelmYaml):
+    """
+    :param command: Command is the command line to execute inside the container, the \
+        working directory for the command  is root ('/') in the container's \
+        filesystem. The command is simply exec'd, it is not run inside a shell, so \
+        traditional shell instructions ('|', etc) won't work. To use a shell, you need \
+        to explicitly call out to that shell. Exit status of 0 is treated as \
+        live/healthy and non-zero is unhealthy.
+    """
+
+    def __init__(self, command: List[str]):
+        self.command = command
+
+
 class HTTPHeader(HelmYaml):
     """
     :param value: The header field value
@@ -39,32 +65,6 @@ class HTTPGetAction(HelmYaml):
         self.port = port
         self.host = host
         self.scheme = scheme
-
-
-class ExecAction(HelmYaml):
-    """
-    :param command: Command is the command line to execute inside the container, the \
-        working directory for the command  is root ('/') in the container's \
-        filesystem. The command is simply exec'd, it is not run inside a shell, so \
-        traditional shell instructions ('|', etc) won't work. To use a shell, you need \
-        to explicitly call out to that shell. Exit status of 0 is treated as \
-        live/healthy and non-zero is unhealthy.
-    """
-
-    def __init__(self, command: List[str]):
-        self.command = command
-
-
-class TCPSocketAction(HelmYaml):
-    """
-    :param port: Number or name of the port to access on the container. Number must be \
-        in the range 1 to 65535. Name must be an IANA_SVC_NAME.
-    :param host: Optional: Host name to connect to, defaults to the pod IP.
-    """
-
-    def __init__(self, port: str, host: Optional[str] = None):
-        self.port = port
-        self.host = host
 
 
 class Probe(HelmYaml):

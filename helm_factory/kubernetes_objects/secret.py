@@ -18,6 +18,18 @@ class SecretReference(HelmYaml):
         self.namespace = namespace
 
 
+class SecretEnvSource(HelmYaml):
+    """
+    :param optional: Specify whether the Secret must be defined
+    :param name: Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+
+    def __init__(self, optional: bool, name: Optional[str] = None):
+        self.optional = optional
+        self.name = name
+
+
 class SecretKeySelector(HelmYaml):
     """
     :param key: The key of the secret to select from.  Must be a valid secret key.
@@ -28,18 +40,6 @@ class SecretKeySelector(HelmYaml):
 
     def __init__(self, key: str, optional: bool, name: Optional[str] = None):
         self.key = key
-        self.optional = optional
-        self.name = name
-
-
-class SecretEnvSource(HelmYaml):
-    """
-    :param optional: Specify whether the Secret must be defined
-    :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    """
-
-    def __init__(self, optional: bool, name: Optional[str] = None):
         self.optional = optional
         self.name = name
 
@@ -71,20 +71,21 @@ class SecretProjection(HelmYaml):
 
 class Secret(KubernetesBaseObject):
     """
-    :param data: Immutable, if set to true, ensures that data stored in the Secret \
-        cannot be updated (only object metadata can be modified). If not set to true, \
-        the field can be modified at any time. Defaulted to nil. This is an alpha \
-        field enabled by ImmutableEphemeralVolumes feature gate.
-    :param immutable: Kind is a string value representing the REST resource this \
-        object represents. Servers may infer this from the endpoint the client submits \
-        requests to. Cannot be updated. In CamelCase. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-    :param metadata: stringData allows specifying non-binary secret data in string \
+    :param data: Data contains the secret data. Each key must consist of alphanumeric \
+        characters, '-', '_' or '.'. The serialized form of the secret data is a \
+        base64 encoded string, representing the arbitrary (possibly non-string) data \
+        value here. Described in https://tools.ietf.org/html/rfc4648#section-4
+    :param immutable: Immutable, if set to true, ensures that data stored in the \
+        Secret cannot be updated (only object metadata can be modified). If not set to \
+        true, the field can be modified at any time. Defaulted to nil. This is an \
+        alpha field enabled by ImmutableEphemeralVolumes feature gate.
+    :param metadata: Standard object's metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+    :param string_data: stringData allows specifying non-binary secret data in string \
         form. It is provided as a write-only convenience method. All keys and values \
         are merged into the data field on write, overwriting any existing values. It \
         is never output when reading from the API.
-    :param string_data: Used to facilitate programmatic handling of secret data.
-    :param type: None
+    :param type: Used to facilitate programmatic handling of secret data.
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \

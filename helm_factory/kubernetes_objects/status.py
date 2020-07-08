@@ -58,37 +58,34 @@ class StatusDetails(KubernetesBaseObject):
 
 class Status(KubernetesBaseObject):
     """
-    :param details: Kind is a string value representing the REST resource this object \
-        represents. Servers may infer this from the endpoint the client submits \
-        requests to. Cannot be updated. In CamelCase. More info: \
+    :param code: Suggested HTTP return code for this status, 0 if not set.
+    :param message: A human-readable description of the status of this operation.
+    :param metadata: Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-    :param message: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-    :param metadata: Status of the operation. One of: "Success" or "Failure". More \
-        info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
-    :param reason: None
+    :param reason: A machine-readable description of why this operation is in the \
+        "Failure" status. If this value is empty there is no information available. A \
+        Reason clarifies an HTTP status code but does not override it.
     :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    :param code: Extended data associated with the reason.  Each reason may define its \
-        own extended details. This field is optional and the data returned is not \
+    :param details: Extended data associated with the reason.  Each reason may define \
+        its own extended details. This field is optional and the data returned is not \
         guaranteed to conform to any schema except that defined by the reason type.
     """
 
     def __init__(
         self,
-        details: StatusDetails,
+        code: int,
         message: str,
         metadata: ListMeta,
         reason: str,
         api_version: Optional[str] = None,
-        code: Optional[int] = None,
+        details: Optional[StatusDetails] = None,
     ):
         super().__init__(api_version)
-        self.details = details
+        self.code = code
         self.message = message
         self.metadata = metadata
         self.reason = reason
-        self.code = code
+        self.details = details

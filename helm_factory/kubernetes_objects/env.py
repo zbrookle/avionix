@@ -10,6 +10,25 @@ from helm_factory.kubernetes_objects.selector import (
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
+class EnvFromSource(HelmYaml):
+    """
+    :param config_map_ref: The ConfigMap to select from
+    :param prefix: An optional identifier to prepend to each key in the ConfigMap. \
+        Must be a C_IDENTIFIER.
+    :param secret_ref: The Secret to select from
+    """
+
+    def __init__(
+        self,
+        config_map_ref: ConfigMapEnvSource,
+        prefix: str,
+        secret_ref: SecretEnvSource,
+    ):
+        self.configMapRef = config_map_ref
+        self.prefix = prefix
+        self.secretRef = secret_ref
+
+
 class EnvVarSource(HelmYaml):
     """
     :param config_map_key_ref: Selects a key of a ConfigMap.
@@ -58,22 +77,3 @@ class EnvVar(HelmYaml):
         self.valueFrom = value_from
         self.name = name
         self.value = value
-
-
-class EnvFromSource(HelmYaml):
-    """
-    :param config_map_ref: The ConfigMap to select from
-    :param prefix: An optional identifier to prepend to each key in the ConfigMap. \
-        Must be a C_IDENTIFIER.
-    :param secret_ref: The Secret to select from
-    """
-
-    def __init__(
-        self,
-        config_map_ref: ConfigMapEnvSource,
-        prefix: str,
-        secret_ref: SecretEnvSource,
-    ):
-        self.configMapRef = config_map_ref
-        self.prefix = prefix
-        self.secretRef = secret_ref

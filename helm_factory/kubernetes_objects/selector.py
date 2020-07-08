@@ -38,18 +38,20 @@ class LabelSelector(HelmYaml):
         self.matchLabels = match_labels
 
 
-class ConfigMapKeySelector(HelmYaml):
+class ResourceFieldSelector(HelmYaml):
     """
-    :param key: The key to select.
-    :param optional: Specify whether the ConfigMap or its key must be defined
-    :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    :param container_name: Container name: required for volumes, optional for env vars
+    :param resource: Required: resource to select
+    :param divisor: Specifies the output format of the exposed resources, defaults to \
+        "1"
     """
 
-    def __init__(self, key: str, optional: bool, name: Optional[str] = None):
-        self.key = key
-        self.optional = optional
-        self.name = name
+    def __init__(
+        self, container_name: str, resource: str, divisor: Optional[str] = None
+    ):
+        self.containerName = container_name
+        self.resource = resource
+        self.divisor = divisor
 
 
 class ObjectFieldSelector(HelmYaml):
@@ -68,20 +70,18 @@ class ObjectFieldSelector(HelmYaml):
         self.apiVersion = api_version
 
 
-class ResourceFieldSelector(HelmYaml):
+class ConfigMapKeySelector(HelmYaml):
     """
-    :param container_name: Container name: required for volumes, optional for env vars
-    :param resource: Required: resource to select
-    :param divisor: Specifies the output format of the exposed resources, defaults to \
-        "1"
+    :param key: The key to select.
+    :param optional: Specify whether the ConfigMap or its key must be defined
+    :param name: Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
 
-    def __init__(
-        self, container_name: str, resource: str, divisor: Optional[str] = None
-    ):
-        self.containerName = container_name
-        self.resource = resource
-        self.divisor = divisor
+    def __init__(self, key: str, optional: bool, name: Optional[str] = None):
+        self.key = key
+        self.optional = optional
+        self.name = name
 
 
 class ScopedResourceSelectorRequirement(HelmYaml):

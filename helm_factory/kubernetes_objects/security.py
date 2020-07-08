@@ -3,6 +3,21 @@ from typing import List, Optional
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
+class SELinuxOptions(HelmYaml):
+    """
+    :param level: Level is SELinux level label that applies to the container.
+    :param role: Role is a SELinux role label that applies to the container.
+    :param type: Type is a SELinux type label that applies to the container.
+    :param user: User is a SELinux user label that applies to the container.
+    """
+
+    def __init__(self, level: str, role: str, type: str, user: str):
+        self.level = level
+        self.role = role
+        self.type = type
+        self.user = user
+
+
 class WindowsSecurityContextOptions(HelmYaml):
     """
     :param gmsa_credential_spec: GMSACredentialSpec is where the GMSA admission \
@@ -37,21 +52,6 @@ class Capabilities(HelmYaml):
     def __init__(self, add: List[str], drop: List[str]):
         self.add = add
         self.drop = drop
-
-
-class SELinuxOptions(HelmYaml):
-    """
-    :param level: Level is SELinux level label that applies to the container.
-    :param role: Role is a SELinux role label that applies to the container.
-    :param type: Type is a SELinux type label that applies to the container.
-    :param user: User is a SELinux user label that applies to the container.
-    """
-
-    def __init__(self, level: str, role: str, type: str, user: str):
-        self.level = level
-        self.role = role
-        self.type = type
-        self.user = user
 
 
 class SecurityContext(HelmYaml):

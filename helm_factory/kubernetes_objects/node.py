@@ -95,29 +95,22 @@ class NodeAffinity(HelmYaml):
         )
 
 
-class NodeCondition(HelmYaml):
+class DaemonEndpoint(HelmYaml):
     """
-    :param last_heartbeat_time: Last time we got an update on a given condition.
-    :param last_transition_time: Last time the condition transit from one status to \
-        another.
-    :param message: Human readable message indicating details about last transition.
-    :param reason: (brief) reason for the condition's last transition.
-    :param type: Type of node condition.
+    :param port: Port number of the given endpoint.
     """
 
-    def __init__(
-        self,
-        last_heartbeat_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastHeartbeatTime = last_heartbeat_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
+    def __init__(self, port: int):
+        self.Port = port
+
+
+class NodeDaemonEndpoints(HelmYaml):
+    """
+    :param kubelet_endpoint: Endpoint on which Kubelet is listening.
+    """
+
+    def __init__(self, kubelet_endpoint: DaemonEndpoint):
+        self.kubeletEndpoint = kubelet_endpoint
 
 
 class ConfigMapNodeConfigSource(HelmYaml):
@@ -158,6 +151,42 @@ class NodeConfigSource(HelmYaml):
 
     def __init__(self, config_map: ConfigMapNodeConfigSource):
         self.configMap = config_map
+
+
+class NodeAddress(HelmYaml):
+    """
+    :param address: The node address.
+    :param type: Node address type, one of Hostname, ExternalIP or InternalIP.
+    """
+
+    def __init__(self, address: str, type: str):
+        self.address = address
+        self.type = type
+
+
+class NodeCondition(HelmYaml):
+    """
+    :param last_heartbeat_time: Last time we got an update on a given condition.
+    :param last_transition_time: Last time the condition transit from one status to \
+        another.
+    :param message: Human readable message indicating details about last transition.
+    :param reason: (brief) reason for the condition's last transition.
+    :param type: Type of node condition.
+    """
+
+    def __init__(
+        self,
+        last_heartbeat_time: time,
+        last_transition_time: time,
+        message: str,
+        reason: str,
+        type: str,
+    ):
+        self.lastHeartbeatTime = last_heartbeat_time
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
 
 
 class NodeSystemInfo(HelmYaml):
@@ -204,35 +233,6 @@ class NodeSystemInfo(HelmYaml):
         self.operatingSystem = operating_system
         self.osImage = os_image
         self.systemUUID = system_uuid
-
-
-class NodeAddress(HelmYaml):
-    """
-    :param address: The node address.
-    :param type: Node address type, one of Hostname, ExternalIP or InternalIP.
-    """
-
-    def __init__(self, address: str, type: str):
-        self.address = address
-        self.type = type
-
-
-class DaemonEndpoint(HelmYaml):
-    """
-    :param port: Port number of the given endpoint.
-    """
-
-    def __init__(self, port: int):
-        self.Port = port
-
-
-class NodeDaemonEndpoints(HelmYaml):
-    """
-    :param kubelet_endpoint: Endpoint on which Kubelet is listening.
-    """
-
-    def __init__(self, kubelet_endpoint: DaemonEndpoint):
-        self.kubeletEndpoint = kubelet_endpoint
 
 
 class VolumeNodeAffinity(HelmYaml):

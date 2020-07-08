@@ -111,134 +111,45 @@ class VolumeMount(HelmYaml):
         self.subPathExpr = sub_path_expr
 
 
-class SecretVolumeSource(HelmYaml):
+class PersistentVolumeClaimVolumeSource(HelmYaml):
     """
-    :param optional: Specify whether the Secret or its keys must be defined
-    :param secret_name: Name of the secret in the pod's namespace to use. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#secret
-    :param default_mode: Optional: mode bits to use on created files by default. Must \
-        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
-        are not affected by this setting. This might be in conflict with other options \
-        that affect the file mode, like fsGroup, and the result can be other mode bits \
-        set.
-    :param items: If unspecified, each key-value pair in the Data field of the \
-        referenced Secret will be projected into the volume as a file whose name is \
-        the key and content is the value. If specified, the listed keys will be \
-        projected into the specified paths, and unlisted keys will not be present. If \
-        a key is specified which is not present in the Secret, the volume setup will \
-        error unless it is marked optional. Paths must be relative and may not contain \
-        the '..' path or start with '..'.
+    :param claim_name: ClaimName is the name of a PersistentVolumeClaim in the same \
+        namespace as the pod using this volume. More info: \
+        https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    :param read_only: Will force the ReadOnly setting in VolumeMounts. Default false.
     """
 
-    def __init__(
-        self,
-        optional: bool,
-        secret_name: str,
-        default_mode: Optional[int] = None,
-        items: Optional[List[KeyToPath]] = None,
-    ):
-        self.optional = optional
-        self.secretName = secret_name
-        self.defaultMode = default_mode
-        self.items = items
+    def __init__(self, claim_name: str, read_only: bool):
+        self.claimName = claim_name
+        self.readOnly = read_only
 
 
-class StorageOSVolumeSource(HelmYaml):
+class FCVolumeSource(HelmYaml):
     """
     :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
         the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
         be "ext4" if unspecified.
-    :param volume_name: VolumeName is the human-readable name of the StorageOS volume. \
-         Volume names are only unique within a namespace.
-    :param volume_namespace: VolumeNamespace specifies the scope of the volume within \
-        StorageOS.  If no namespace is specified then the Pod's namespace will be \
-        used.  This allows the Kubernetes name scoping to be mirrored within StorageOS \
-        for tighter integration. Set VolumeName to any name to override the default \
-        behaviour. Set to "default" if you are not using namespaces within StorageOS. \
-        Namespaces that do not pre-exist within StorageOS will be created.
-    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :param secret_ref: SecretRef specifies the secret to use for obtaining the \
-        StorageOS API credentials.  If not specified, default values will be \
-        attempted.
+    :param lun: Optional: FC target lun number
+    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts.
+    :param target_wwns: Optional: FC target worldwide names (WWNs)
+    :param wwids: Optional: FC volume world wide identifiers (wwids) Either wwids or \
+        combination of targetWWNs and lun must be set, but not both simultaneously.
     """
 
     def __init__(
         self,
         fs_type: str,
-        volume_name: str,
-        volume_namespace: str,
+        lun: Optional[int] = None,
         read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
+        target_wwns: Optional[List[str]] = None,
+        wwids: Optional[List[str]] = None,
     ):
         self.fsType = fs_type
-        self.volumeName = volume_name
-        self.volumeNamespace = volume_namespace
+        self.lun = lun
         self.readOnly = read_only
-        self.secretRef = secret_ref
-
-
-class QuobyteVolumeSource(HelmYaml):
-    """
-    :param registry: Registry represents a single or multiple Quobyte Registry \
-        services specified as a string as host:port pair (multiple entries are \
-        separated with commas) which acts as the central registry for volumes
-    :param tenant: Tenant owning the given Quobyte volume in the Backend Used with \
-        dynamically provisioned Quobyte volumes, value is set by the plugin
-    :param volume: Volume is a string that references an already created Quobyte \
-        volume by name.
-    :param group: Group to map volume access to Default is no group
-    :param read_only: ReadOnly here will force the Quobyte volume to be mounted with \
-        read-only permissions. Defaults to false.
-    :param user: User to map volume access to Defaults to serivceaccount user
-    """
-
-    def __init__(
-        self,
-        registry: str,
-        tenant: str,
-        volume: str,
-        group: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        user: Optional[str] = None,
-    ):
-        self.registry = registry
-        self.tenant = tenant
-        self.volume = volume
-        self.group = group
-        self.readOnly = read_only
-        self.user = user
-
-
-class AWSElasticBlockStoreVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
-    :param volume_id: Unique ID of the persistent disk resource in AWS (Amazon EBS \
-        volume). More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
-    :param partition: The partition in the volume that you want to mount. If omitted, \
-        the default is to mount by volume name. Examples: For volume /dev/sda1, you \
-        specify the partition as "1". Similarly, the volume partition for /dev/sda is \
-        "0" (or you can leave the property empty).
-    :param read_only: Specify "true" to force and set the ReadOnly property in \
-        VolumeMounts to "true". If omitted, the default is "false". More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        volume_id: str,
-        partition: Optional[int] = None,
-        read_only: Optional[bool] = None,
-    ):
-        self.fsType = fs_type
-        self.volumeID = volume_id
-        self.partition = partition
-        self.readOnly = read_only
+        self.targetWWNs = target_wwns
+        self.wwids = wwids
 
 
 class FlexVolumeSource(HelmYaml):
@@ -271,173 +182,6 @@ class FlexVolumeSource(HelmYaml):
         self.secretRef = secret_ref
 
 
-class FCVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
-        be "ext4" if unspecified.
-    :param lun: Optional: FC target lun number
-    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts.
-    :param target_wwns: Optional: FC target worldwide names (WWNs)
-    :param wwids: Optional: FC volume world wide identifiers (wwids) Either wwids or \
-        combination of targetWWNs and lun must be set, but not both simultaneously.
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        lun: Optional[int] = None,
-        read_only: Optional[bool] = None,
-        target_wwns: Optional[List[str]] = None,
-        wwids: Optional[List[str]] = None,
-    ):
-        self.fsType = fs_type
-        self.lun = lun
-        self.readOnly = read_only
-        self.targetWWNs = target_wwns
-        self.wwids = wwids
-
-
-class FlockerVolumeSource(HelmYaml):
-    """
-    :param dataset_name: Name of the dataset stored as metadata -> name on the dataset \
-        for Flocker should be considered as deprecated
-    :param dataset_uuid: UUID of the dataset. This is unique identifier of a Flocker \
-        dataset
-    """
-
-    def __init__(self, dataset_name: str, dataset_uuid: str):
-        self.datasetName = dataset_name
-        self.datasetUUID = dataset_uuid
-
-
-class CinderVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
-        inferred to be "ext4" if unspecified. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :param volume_id: volume id used to identify the volume in cinder. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :param secret_ref: Optional: points to a secret object containing parameters used \
-        to connect to OpenStack.
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        volume_id: str,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-    ):
-        self.fsType = fs_type
-        self.volumeID = volume_id
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-
-
-class ScaleIOVolumeSource(HelmYaml):
-    """
-    :param gateway: The host address of the ScaleIO API Gateway.
-    :param protection_domain: The name of the ScaleIO Protection Domain for the \
-        configured storage.
-    :param ssl_enabled: Flag to enable/disable SSL communication with Gateway, default \
-        false
-    :param storage_pool: The ScaleIO Storage Pool associated with the protection \
-        domain.
-    :param system: The name of the storage system as configured in ScaleIO.
-    :param volume_name: The name of a volume already created in the ScaleIO system \
-        that is associated with this volume source.
-    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".
-    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :param secret_ref: SecretRef references to the secret for ScaleIO user and other \
-        sensitive information. If this is not provided, Login operation will fail.
-    :param storage_mode: Indicates whether the storage for a volume should be \
-        ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.
-    """
-
-    def __init__(
-        self,
-        gateway: str,
-        protection_domain: str,
-        ssl_enabled: bool,
-        storage_pool: str,
-        system: str,
-        volume_name: str,
-        fs_type: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-        storage_mode: Optional[str] = None,
-    ):
-        self.gateway = gateway
-        self.protectionDomain = protection_domain
-        self.sslEnabled = ssl_enabled
-        self.storagePool = storage_pool
-        self.system = system
-        self.volumeName = volume_name
-        self.fsType = fs_type
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-        self.storageMode = storage_mode
-
-
-class EmptyDirVolumeSource(HelmYaml):
-    """
-    :param medium: What type of storage medium should back this directory. The default \
-        is "" which means to use the node's default medium. Must be an empty string \
-        (default) or Memory. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#emptydir
-    :param size_limit: Total amount of local storage required for this EmptyDir \
-        volume. The size limit is also applicable for memory medium. The maximum usage \
-        on memory medium EmptyDir would be the minimum value between the SizeLimit \
-        specified here and the sum of memory limits of all containers in a pod. The \
-        default is nil which means that the limit is undefined. More info: \
-        http://kubernetes.io/docs/user-guide/volumes#emptydir
-    """
-
-    def __init__(self, medium: Optional[str] = None, size_limit: Optional[str] = None):
-        self.medium = medium
-        self.sizeLimit = size_limit
-
-
-class GCEPersistentDiskVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    :param pd_name: Unique name of the PD resource in GCE. Used to identify the disk \
-        in GCE. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    :param partition: The partition in the volume that you want to mount. If omitted, \
-        the default is to mount by volume name. Examples: For volume /dev/sda1, you \
-        specify the partition as "1". Similarly, the volume partition for /dev/sda is \
-        "0" (or you can leave the property empty). More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
-        Defaults to false. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        pd_name: str,
-        partition: Optional[int] = None,
-        read_only: Optional[bool] = None,
-    ):
-        self.fsType = fs_type
-        self.pdName = pd_name
-        self.partition = partition
-        self.readOnly = read_only
-
-
 class NFSVolumeSource(HelmYaml):
     """
     :param path: Path that is exported by the NFS server. More info: \
@@ -455,158 +199,16 @@ class NFSVolumeSource(HelmYaml):
         self.readOnly = read_only
 
 
-class ConfigMapVolumeSource(HelmYaml):
-    """
-    :param optional: Specify whether the ConfigMap or its keys must be defined
-    :param default_mode: Optional: mode bits to use on created files by default. Must \
-        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
-        are not affected by this setting. This might be in conflict with other options \
-        that affect the file mode, like fsGroup, and the result can be other mode bits \
-        set.
-    :param items: If unspecified, each key-value pair in the Data field of the \
-        referenced ConfigMap will be projected into the volume as a file whose name is \
-        the key and content is the value. If specified, the listed keys will be \
-        projected into the specified paths, and unlisted keys will not be present. If \
-        a key is specified which is not present in the ConfigMap, the volume setup \
-        will error unless it is marked optional. Paths must be relative and may not \
-        contain the '..' path or start with '..'.
-    :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    """
-
-    def __init__(
-        self,
-        optional: bool,
-        default_mode: Optional[int] = None,
-        items: Optional[List[KeyToPath]] = None,
-        name: Optional[str] = None,
-    ):
-        self.optional = optional
-        self.defaultMode = default_mode
-        self.items = items
-        self.name = name
-
-
-class RBDVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
-    :param image: The rados image name. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :param monitors: A collection of Ceph monitors. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :param keyring: Keyring is the path to key ring for RBDUser. Default is \
-        /etc/ceph/keyring. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :param pool: The rados pool name. Default is rbd. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
-        Defaults to false. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :param secret_ref: SecretRef is name of the authentication secret for RBDUser. If \
-        provided overrides keyring. Default is nil. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :param user: The rados user name. Default is admin. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        image: str,
-        monitors: List[str],
-        keyring: Optional[str] = None,
-        pool: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-        user: Optional[str] = None,
-    ):
-        self.fsType = fs_type
-        self.image = image
-        self.monitors = monitors
-        self.keyring = keyring
-        self.pool = pool
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-        self.user = user
-
-
-class ISCSIVolumeSource(HelmYaml):
-    """
-    :param chap_auth_discovery: whether support iSCSI Discovery CHAP authentication
-    :param chap_auth_session: whether support iSCSI Session CHAP authentication
-    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi
-    :param initiator_name: Custom iSCSI Initiator Name. If initiatorName is specified \
-        with iscsiInterface simultaneously, new iSCSI interface <target \
-        portal>:<volume name> will be created for the connection.
-    :param iqn: Target iSCSI Qualified Name.
-    :param lun: iSCSI Target Lun number.
-    :param portals: iSCSI Target Portal List. The portal is either an IP or \
-        ip_addr:port if the port is other than default (typically TCP ports 860 and \
-        3260).
-    :param secret_ref: CHAP Secret for iSCSI target and initiator authentication
-    :param target_portal: iSCSI Target Portal. The Portal is either an IP or \
-        ip_addr:port if the port is other than default (typically TCP ports 860 and \
-        3260).
-    :param iscsi_interface: iSCSI Interface Name that uses an iSCSI transport. \
-        Defaults to 'default' (tcp).
-    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
-        Defaults to false.
-    """
-
-    def __init__(
-        self,
-        chap_auth_discovery: bool,
-        chap_auth_session: bool,
-        fs_type: str,
-        initiator_name: str,
-        iqn: str,
-        lun: int,
-        portals: List[str],
-        secret_ref: LocalObjectReference,
-        target_portal: str,
-        iscsi_interface: Optional[str] = None,
-        read_only: Optional[bool] = None,
-    ):
-        self.chapAuthDiscovery = chap_auth_discovery
-        self.chapAuthSession = chap_auth_session
-        self.fsType = fs_type
-        self.initiatorName = initiator_name
-        self.iqn = iqn
-        self.lun = lun
-        self.portals = portals
-        self.secretRef = secret_ref
-        self.targetPortal = target_portal
-        self.iscsiInterface = iscsi_interface
-        self.readOnly = read_only
-
-
-class PhotonPersistentDiskVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
-        be "ext4" if unspecified.
-    :param pd_id: ID that identifies Photon Controller persistent disk
-    """
-
-    def __init__(self, fs_type: str, pd_id: str):
-        self.fsType = fs_type
-        self.pdID = pd_id
-
-
 class DownwardAPIVolumeFile(HelmYaml):
     """
     :param field_ref: Required: Selects a field of the pod: only annotations, labels, \
         name and namespace are supported.
-    :param path: Selects a resource of the container: only resources limits and \
-        requests (limits.cpu, limits.memory, requests.cpu and requests.memory) are \
-        currently supported.
-    :param resource_field_ref: None
+    :param path: Required: Path is  the relative path name of the file to be created. \
+        Must not be absolute or contain the '..' path. Must be utf-8 encoded. The \
+        first item of the relative path must not start with '..'
+    :param resource_field_ref: Selects a resource of the container: only resources \
+        limits and requests (limits.cpu, limits.memory, requests.cpu and \
+        requests.memory) are currently supported.
     :param mode: Optional: mode bits to use on this file, must be a value between 0 \
         and 0777. If not specified, the volume defaultMode will be used. This might be \
         in conflict with other options that affect the file mode, like fsGroup, and \
@@ -671,6 +273,88 @@ class ProjectedVolumeSource(HelmYaml):
         self.sources = sources
 
 
+class ScaleIOVolumeSource(HelmYaml):
+    """
+    :param gateway: The host address of the ScaleIO API Gateway.
+    :param protection_domain: The name of the ScaleIO Protection Domain for the \
+        configured storage.
+    :param ssl_enabled: Flag to enable/disable SSL communication with Gateway, default \
+        false
+    :param storage_pool: The ScaleIO Storage Pool associated with the protection \
+        domain.
+    :param system: The name of the storage system as configured in ScaleIO.
+    :param volume_name: The name of a volume already created in the ScaleIO system \
+        that is associated with this volume source.
+    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".
+    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    :param secret_ref: SecretRef references to the secret for ScaleIO user and other \
+        sensitive information. If this is not provided, Login operation will fail.
+    :param storage_mode: Indicates whether the storage for a volume should be \
+        ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.
+    """
+
+    def __init__(
+        self,
+        gateway: str,
+        protection_domain: str,
+        ssl_enabled: bool,
+        storage_pool: str,
+        system: str,
+        volume_name: str,
+        fs_type: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+        storage_mode: Optional[str] = None,
+    ):
+        self.gateway = gateway
+        self.protectionDomain = protection_domain
+        self.sslEnabled = ssl_enabled
+        self.storagePool = storage_pool
+        self.system = system
+        self.volumeName = volume_name
+        self.fsType = fs_type
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+        self.storageMode = storage_mode
+
+
+class StorageOSVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
+        be "ext4" if unspecified.
+    :param volume_name: VolumeName is the human-readable name of the StorageOS volume. \
+         Volume names are only unique within a namespace.
+    :param volume_namespace: VolumeNamespace specifies the scope of the volume within \
+        StorageOS.  If no namespace is specified then the Pod's namespace will be \
+        used.  This allows the Kubernetes name scoping to be mirrored within StorageOS \
+        for tighter integration. Set VolumeName to any name to override the default \
+        behaviour. Set to "default" if you are not using namespaces within StorageOS. \
+        Namespaces that do not pre-exist within StorageOS will be created.
+    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    :param secret_ref: SecretRef specifies the secret to use for obtaining the \
+        StorageOS API credentials.  If not specified, default values will be \
+        attempted.
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        volume_name: str,
+        volume_namespace: str,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+    ):
+        self.fsType = fs_type
+        self.volumeName = volume_name
+        self.volumeNamespace = volume_namespace
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
 class CSIVolumeSource(HelmYaml):
     """
     :param driver: Driver is the name of the CSI driver that handles this volume. \
@@ -705,6 +389,38 @@ class CSIVolumeSource(HelmYaml):
         self.readOnly = read_only
 
 
+class ConfigMapVolumeSource(HelmYaml):
+    """
+    :param optional: Specify whether the ConfigMap or its keys must be defined
+    :param default_mode: Optional: mode bits to use on created files by default. Must \
+        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
+        are not affected by this setting. This might be in conflict with other options \
+        that affect the file mode, like fsGroup, and the result can be other mode bits \
+        set.
+    :param items: If unspecified, each key-value pair in the Data field of the \
+        referenced ConfigMap will be projected into the volume as a file whose name is \
+        the key and content is the value. If specified, the listed keys will be \
+        projected into the specified paths, and unlisted keys will not be present. If \
+        a key is specified which is not present in the ConfigMap, the volume setup \
+        will error unless it is marked optional. Paths must be relative and may not \
+        contain the '..' path or start with '..'.
+    :param name: Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+
+    def __init__(
+        self,
+        optional: bool,
+        default_mode: Optional[int] = None,
+        items: Optional[List[KeyToPath]] = None,
+        name: Optional[str] = None,
+    ):
+        self.optional = optional
+        self.defaultMode = default_mode
+        self.items = items
+        self.name = name
+
+
 class HostPathVolumeSource(HelmYaml):
     """
     :param path: Path of the directory on the host. If the path is a symlink, it will \
@@ -719,48 +435,56 @@ class HostPathVolumeSource(HelmYaml):
         self.type = type
 
 
-class GitRepoVolumeSource(HelmYaml):
+class ISCSIVolumeSource(HelmYaml):
     """
-    :param repository: Repository URL
-    :param revision: Commit hash for the specified revision.
-    :param directory: Target directory name. Must not contain or start with '..'.  If \
-        '.' is supplied, the volume directory will be the git repository.  Otherwise, \
-        if specified, the volume will contain the git repository in the subdirectory \
-        with the given name.
+    :param chap_auth_discovery: whether support iSCSI Discovery CHAP authentication
+    :param chap_auth_session: whether support iSCSI Session CHAP authentication
+    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi
+    :param initiator_name: Custom iSCSI Initiator Name. If initiatorName is specified \
+        with iscsiInterface simultaneously, new iSCSI interface <target \
+        portal>:<volume name> will be created for the connection.
+    :param iqn: Target iSCSI Qualified Name.
+    :param lun: iSCSI Target Lun number.
+    :param portals: iSCSI Target Portal List. The portal is either an IP or \
+        ip_addr:port if the port is other than default (typically TCP ports 860 and \
+        3260).
+    :param secret_ref: CHAP Secret for iSCSI target and initiator authentication
+    :param target_portal: iSCSI Target Portal. The Portal is either an IP or \
+        ip_addr:port if the port is other than default (typically TCP ports 860 and \
+        3260).
+    :param iscsi_interface: iSCSI Interface Name that uses an iSCSI transport. \
+        Defaults to 'default' (tcp).
+    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
+        Defaults to false.
     """
 
-    def __init__(self, repository: str, revision: str, directory: Optional[str] = None):
-        self.repository = repository
-        self.revision = revision
-        self.directory = directory
-
-
-class PortworxVolumeSource(HelmYaml):
-    """
-    :param fs_type: FSType represents the filesystem type to mount Must be a \
-        filesystem type supported by the host operating system. Ex. "ext4", "xfs". \
-        Implicitly inferred to be "ext4" if unspecified.
-    :param volume_id: VolumeID uniquely identifies a Portworx volume
-    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    """
-
-    def __init__(self, fs_type: str, volume_id: str, read_only: Optional[bool] = None):
+    def __init__(
+        self,
+        chap_auth_discovery: bool,
+        chap_auth_session: bool,
+        fs_type: str,
+        initiator_name: str,
+        iqn: str,
+        lun: int,
+        portals: List[str],
+        secret_ref: LocalObjectReference,
+        target_portal: str,
+        iscsi_interface: Optional[str] = None,
+        read_only: Optional[bool] = None,
+    ):
+        self.chapAuthDiscovery = chap_auth_discovery
+        self.chapAuthSession = chap_auth_session
         self.fsType = fs_type
-        self.volumeID = volume_id
-        self.readOnly = read_only
-
-
-class PersistentVolumeClaimVolumeSource(HelmYaml):
-    """
-    :param claim_name: ClaimName is the name of a PersistentVolumeClaim in the same \
-        namespace as the pod using this volume. More info: \
-        https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
-    :param read_only: Will force the ReadOnly setting in VolumeMounts. Default false.
-    """
-
-    def __init__(self, claim_name: str, read_only: bool):
-        self.claimName = claim_name
+        self.initiatorName = initiator_name
+        self.iqn = iqn
+        self.lun = lun
+        self.portals = portals
+        self.secretRef = secret_ref
+        self.targetPortal = target_portal
+        self.iscsiInterface = iscsi_interface
         self.readOnly = read_only
 
 
@@ -781,30 +505,53 @@ class DownwardAPIVolumeSource(HelmYaml):
         self.defaultMode = default_mode
 
 
-class AzureDiskVolumeSource(KubernetesBaseObject):
+class EmptyDirVolumeSource(HelmYaml):
     """
-    :param caching_mode: Host Caching mode: None, Read Only, Read Write.
-    :param disk_name: The Name of the data disk in the blob storage
-    :param disk_uri: The URI the data disk in the blob storage
-    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
-        be "ext4" if unspecified.
-    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
+    :param medium: What type of storage medium should back this directory. The default \
+        is "" which means to use the node's default medium. Must be an empty string \
+        (default) or Memory. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    :param size_limit: Total amount of local storage required for this EmptyDir \
+        volume. The size limit is also applicable for memory medium. The maximum usage \
+        on memory medium EmptyDir would be the minimum value between the SizeLimit \
+        specified here and the sum of memory limits of all containers in a pod. The \
+        default is nil which means that the limit is undefined. More info: \
+        http://kubernetes.io/docs/user-guide/volumes#emptydir
+    """
+
+    def __init__(self, medium: Optional[str] = None, size_limit: Optional[str] = None):
+        self.medium = medium
+        self.sizeLimit = size_limit
+
+
+class AWSElasticBlockStoreVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+    :param volume_id: Unique ID of the persistent disk resource in AWS (Amazon EBS \
+        volume). More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+    :param partition: The partition in the volume that you want to mount. If omitted, \
+        the default is to mount by volume name. Examples: For volume /dev/sda1, you \
+        specify the partition as "1". Similarly, the volume partition for /dev/sda is \
+        "0" (or you can leave the property empty).
+    :param read_only: Specify "true" to force and set the ReadOnly property in \
+        VolumeMounts to "true". If omitted, the default is "false". More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
     """
 
     def __init__(
         self,
-        caching_mode: str,
-        disk_name: str,
-        disk_uri: str,
         fs_type: str,
+        volume_id: str,
+        partition: Optional[int] = None,
         read_only: Optional[bool] = None,
     ):
-        self.cachingMode = caching_mode
-        self.diskName = disk_name
-        self.diskURI = disk_uri
         self.fsType = fs_type
+        self.volumeID = volume_id
+        self.partition = partition
         self.readOnly = read_only
 
 
@@ -844,6 +591,234 @@ class CephFSVolumeSource(HelmYaml):
         self.user = user
 
 
+class FlockerVolumeSource(HelmYaml):
+    """
+    :param dataset_name: Name of the dataset stored as metadata -> name on the dataset \
+        for Flocker should be considered as deprecated
+    :param dataset_uuid: UUID of the dataset. This is unique identifier of a Flocker \
+        dataset
+    """
+
+    def __init__(self, dataset_name: str, dataset_uuid: str):
+        self.datasetName = dataset_name
+        self.datasetUUID = dataset_uuid
+
+
+class PhotonPersistentDiskVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
+        be "ext4" if unspecified.
+    :param pd_id: ID that identifies Photon Controller persistent disk
+    """
+
+    def __init__(self, fs_type: str, pd_id: str):
+        self.fsType = fs_type
+        self.pdID = pd_id
+
+
+class CinderVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
+        inferred to be "ext4" if unspecified. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :param volume_id: volume id used to identify the volume in cinder. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :param secret_ref: Optional: points to a secret object containing parameters used \
+        to connect to OpenStack.
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        volume_id: str,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+    ):
+        self.fsType = fs_type
+        self.volumeID = volume_id
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
+class GitRepoVolumeSource(HelmYaml):
+    """
+    :param repository: Repository URL
+    :param revision: Commit hash for the specified revision.
+    :param directory: Target directory name. Must not contain or start with '..'.  If \
+        '.' is supplied, the volume directory will be the git repository.  Otherwise, \
+        if specified, the volume will contain the git repository in the subdirectory \
+        with the given name.
+    """
+
+    def __init__(self, repository: str, revision: str, directory: Optional[str] = None):
+        self.repository = repository
+        self.revision = revision
+        self.directory = directory
+
+
+class GCEPersistentDiskVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    :param pd_name: Unique name of the PD resource in GCE. Used to identify the disk \
+        in GCE. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    :param partition: The partition in the volume that you want to mount. If omitted, \
+        the default is to mount by volume name. Examples: For volume /dev/sda1, you \
+        specify the partition as "1". Similarly, the volume partition for /dev/sda is \
+        "0" (or you can leave the property empty). More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
+        Defaults to false. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        pd_name: str,
+        partition: Optional[int] = None,
+        read_only: Optional[bool] = None,
+    ):
+        self.fsType = fs_type
+        self.pdName = pd_name
+        self.partition = partition
+        self.readOnly = read_only
+
+
+class PortworxVolumeSource(HelmYaml):
+    """
+    :param fs_type: FSType represents the filesystem type to mount Must be a \
+        filesystem type supported by the host operating system. Ex. "ext4", "xfs". \
+        Implicitly inferred to be "ext4" if unspecified.
+    :param volume_id: VolumeID uniquely identifies a Portworx volume
+    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    """
+
+    def __init__(self, fs_type: str, volume_id: str, read_only: Optional[bool] = None):
+        self.fsType = fs_type
+        self.volumeID = volume_id
+        self.readOnly = read_only
+
+
+class RBDVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
+    :param image: The rados image name. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :param monitors: A collection of Ceph monitors. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :param keyring: Keyring is the path to key ring for RBDUser. Default is \
+        /etc/ceph/keyring. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :param pool: The rados pool name. Default is rbd. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
+        Defaults to false. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :param secret_ref: SecretRef is name of the authentication secret for RBDUser. If \
+        provided overrides keyring. Default is nil. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :param user: The rados user name. Default is admin. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        image: str,
+        monitors: List[str],
+        keyring: Optional[str] = None,
+        pool: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+        user: Optional[str] = None,
+    ):
+        self.fsType = fs_type
+        self.image = image
+        self.monitors = monitors
+        self.keyring = keyring
+        self.pool = pool
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+        self.user = user
+
+
+class SecretVolumeSource(HelmYaml):
+    """
+    :param optional: Specify whether the Secret or its keys must be defined
+    :param secret_name: Name of the secret in the pod's namespace to use. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#secret
+    :param default_mode: Optional: mode bits to use on created files by default. Must \
+        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
+        are not affected by this setting. This might be in conflict with other options \
+        that affect the file mode, like fsGroup, and the result can be other mode bits \
+        set.
+    :param items: If unspecified, each key-value pair in the Data field of the \
+        referenced Secret will be projected into the volume as a file whose name is \
+        the key and content is the value. If specified, the listed keys will be \
+        projected into the specified paths, and unlisted keys will not be present. If \
+        a key is specified which is not present in the Secret, the volume setup will \
+        error unless it is marked optional. Paths must be relative and may not contain \
+        the '..' path or start with '..'.
+    """
+
+    def __init__(
+        self,
+        optional: bool,
+        secret_name: str,
+        default_mode: Optional[int] = None,
+        items: Optional[List[KeyToPath]] = None,
+    ):
+        self.optional = optional
+        self.secretName = secret_name
+        self.defaultMode = default_mode
+        self.items = items
+
+
+class QuobyteVolumeSource(HelmYaml):
+    """
+    :param registry: Registry represents a single or multiple Quobyte Registry \
+        services specified as a string as host:port pair (multiple entries are \
+        separated with commas) which acts as the central registry for volumes
+    :param tenant: Tenant owning the given Quobyte volume in the Backend Used with \
+        dynamically provisioned Quobyte volumes, value is set by the plugin
+    :param volume: Volume is a string that references an already created Quobyte \
+        volume by name.
+    :param group: Group to map volume access to Default is no group
+    :param read_only: ReadOnly here will force the Quobyte volume to be mounted with \
+        read-only permissions. Defaults to false.
+    :param user: User to map volume access to Defaults to serivceaccount user
+    """
+
+    def __init__(
+        self,
+        registry: str,
+        tenant: str,
+        volume: str,
+        group: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        user: Optional[str] = None,
+    ):
+        self.registry = registry
+        self.tenant = tenant
+        self.volume = volume
+        self.group = group
+        self.readOnly = read_only
+        self.user = user
+
+
 class AzureFileVolumeSource(HelmYaml):
     """
     :param secret_name: the name of secret that contains Azure Storage Account Name \
@@ -858,6 +833,33 @@ class AzureFileVolumeSource(HelmYaml):
     ):
         self.secretName = secret_name
         self.shareName = share_name
+        self.readOnly = read_only
+
+
+class AzureDiskVolumeSource(KubernetesBaseObject):
+    """
+    :param caching_mode: Host Caching mode: None, Read Only, Read Write.
+    :param disk_name: The Name of the data disk in the blob storage
+    :param disk_uri: The URI the data disk in the blob storage
+    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
+        be "ext4" if unspecified.
+    :param read_only: Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    """
+
+    def __init__(
+        self,
+        caching_mode: str,
+        disk_name: str,
+        disk_uri: str,
+        fs_type: str,
+        read_only: Optional[bool] = None,
+    ):
+        self.cachingMode = caching_mode
+        self.diskName = disk_name
+        self.diskURI = disk_uri
+        self.fsType = fs_type
         self.readOnly = read_only
 
 
@@ -998,6 +1000,33 @@ class Volume(HelmYaml):
         self.name = name
 
 
+class PersistentVolumeClaimCondition(HelmYaml):
+    """
+    :param last_probe_time: Last time we probed the condition.
+    :param last_transition_time: Last time the condition transitioned from one status \
+        to another.
+    :param message: Human-readable message indicating details about last transition.
+    :param reason: Unique, this should be a short, machine understandable string that \
+        gives the reason for condition's last transition. If it reports \
+        "ResizeStarted" that means the underlying persistent volume is being resized.
+    :param type: None
+    """
+
+    def __init__(
+        self,
+        last_probe_time: time,
+        last_transition_time: time,
+        message: str,
+        reason: str,
+        type: str,
+    ):
+        self.lastProbeTime = last_probe_time
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
+
+
 class PersistentVolumeClaimSpec(HelmYaml):
     """
     :param access_modes: AccessModes contains the desired access modes the volume \
@@ -1043,33 +1072,6 @@ class PersistentVolumeClaimSpec(HelmYaml):
         self.volumeName = volume_name
         self.resources = resources
         self.selector = selector
-
-
-class PersistentVolumeClaimCondition(HelmYaml):
-    """
-    :param last_probe_time: Last time we probed the condition.
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: Human-readable message indicating details about last transition.
-    :param reason: Unique, this should be a short, machine understandable string that \
-        gives the reason for condition's last transition. If it reports \
-        "ResizeStarted" that means the underlying persistent volume is being resized.
-    :param type: None
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class PersistentVolumeClaim(KubernetesBaseObject):
@@ -1286,6 +1288,167 @@ class VolumeNodeResources(HelmYaml):
         self.count = count
 
 
+class CephFSPersistentVolumeSource(HelmYaml):
+    """
+    :param monitors: Required: Monitors is a collection of Ceph monitors More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :param path: Optional: Used as the mounted root, rather than the full Ceph tree, \
+        default is /
+    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts. More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :param secret_file: Optional: SecretFile is the path to key ring for User, default \
+        is /etc/ceph/user.secret More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :param secret_ref: Optional: SecretRef is reference to the authentication secret \
+        for User, default is empty. More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :param user: Optional: User is the rados user name, default is admin More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    """
+
+    def __init__(
+        self,
+        monitors: List[str],
+        path: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_file: Optional[str] = None,
+        secret_ref: Optional[SecretReference] = None,
+        user: Optional[str] = None,
+    ):
+        self.monitors = monitors
+        self.path = path
+        self.readOnly = read_only
+        self.secretFile = secret_file
+        self.secretRef = secret_ref
+        self.user = user
+
+
+class CinderPersistentVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
+        inferred to be "ext4" if unspecified. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :param volume_id: volume id used to identify the volume in cinder. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :param secret_ref: Optional: points to a secret object containing parameters used \
+        to connect to OpenStack.
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        volume_id: str,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[SecretReference] = None,
+    ):
+        self.fsType = fs_type
+        self.volumeID = volume_id
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
+class LocalVolumeSource(HelmYaml):
+    """
+    :param fs_type: Filesystem type to mount. It applies only when the Path is a block \
+        device. Must be a filesystem type supported by the host operating system. Ex. \
+        "ext4", "xfs", "ntfs". The default value is to auto-select a fileystem if \
+        unspecified.
+    :param path: The full path to the volume on the node. It can be either a directory \
+        or block device (disk, partition, ...).
+    """
+
+    def __init__(self, fs_type: str, path: str):
+        self.fsType = fs_type
+        self.path = path
+
+
+class GlusterfsPersistentVolumeSource(HelmYaml):
+    """
+    :param endpoints: EndpointsName is the endpoint name that details Glusterfs \
+        topology. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    :param path: Path is the Glusterfs volume path. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    :param endpoints_namespace: EndpointsNamespace is the namespace that contains \
+        Glusterfs endpoint. If this field is empty, the EndpointNamespace defaults to \
+        the same namespace as the bound PVC. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    :param read_only: ReadOnly here will force the Glusterfs volume to be mounted with \
+        read-only permissions. Defaults to false. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    """
+
+    def __init__(
+        self,
+        endpoints: str,
+        path: str,
+        endpoints_namespace: Optional[str] = None,
+        read_only: Optional[bool] = None,
+    ):
+        self.endpoints = endpoints
+        self.path = path
+        self.endpointsNamespace = endpoints_namespace
+        self.readOnly = read_only
+
+
+class ISCSIPersistentVolumeSource(HelmYaml):
+    """
+    :param chap_auth_discovery: whether support iSCSI Discovery CHAP authentication
+    :param chap_auth_session: whether support iSCSI Session CHAP authentication
+    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi
+    :param initiator_name: Custom iSCSI Initiator Name. If initiatorName is specified \
+        with iscsiInterface simultaneously, new iSCSI interface <target \
+        portal>:<volume name> will be created for the connection.
+    :param iqn: Target iSCSI Qualified Name.
+    :param lun: iSCSI Target Lun number.
+    :param portals: iSCSI Target Portal List. The Portal is either an IP or \
+        ip_addr:port if the port is other than default (typically TCP ports 860 and \
+        3260).
+    :param secret_ref: CHAP Secret for iSCSI target and initiator authentication
+    :param target_portal: iSCSI Target Portal. The Portal is either an IP or \
+        ip_addr:port if the port is other than default (typically TCP ports 860 and \
+        3260).
+    :param iscsi_interface: iSCSI Interface Name that uses an iSCSI transport. \
+        Defaults to 'default' (tcp).
+    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
+        Defaults to false.
+    """
+
+    def __init__(
+        self,
+        chap_auth_discovery: bool,
+        chap_auth_session: bool,
+        fs_type: str,
+        initiator_name: str,
+        iqn: str,
+        lun: int,
+        portals: List[str],
+        secret_ref: SecretReference,
+        target_portal: str,
+        iscsi_interface: Optional[str] = None,
+        read_only: Optional[bool] = None,
+    ):
+        self.chapAuthDiscovery = chap_auth_discovery
+        self.chapAuthSession = chap_auth_session
+        self.fsType = fs_type
+        self.initiatorName = initiator_name
+        self.iqn = iqn
+        self.lun = lun
+        self.portals = portals
+        self.secretRef = secret_ref
+        self.targetPortal = target_portal
+        self.iscsiInterface = iscsi_interface
+        self.readOnly = read_only
+
+
 class CSIPersistentVolumeSource(HelmYaml):
     """
     :param driver: Driver is the name of the driver to use for this volume. Required.
@@ -1343,139 +1506,6 @@ class CSIPersistentVolumeSource(HelmYaml):
         self.readOnly = read_only
 
 
-class LocalVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type to mount. It applies only when the Path is a block \
-        device. Must be a filesystem type supported by the host operating system. Ex. \
-        "ext4", "xfs", "ntfs". The default value is to auto-select a fileystem if \
-        unspecified.
-    :param path: The full path to the volume on the node. It can be either a directory \
-        or block device (disk, partition, ...).
-    """
-
-    def __init__(self, fs_type: str, path: str):
-        self.fsType = fs_type
-        self.path = path
-
-
-class CephFSPersistentVolumeSource(HelmYaml):
-    """
-    :param monitors: Required: Monitors is a collection of Ceph monitors More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :param path: Optional: Used as the mounted root, rather than the full Ceph tree, \
-        default is /
-    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts. More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :param secret_file: Optional: SecretFile is the path to key ring for User, default \
-        is /etc/ceph/user.secret More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :param secret_ref: Optional: SecretRef is reference to the authentication secret \
-        for User, default is empty. More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :param user: Optional: User is the rados user name, default is admin More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    """
-
-    def __init__(
-        self,
-        monitors: List[str],
-        path: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        secret_file: Optional[str] = None,
-        secret_ref: Optional[SecretReference] = None,
-        user: Optional[str] = None,
-    ):
-        self.monitors = monitors
-        self.path = path
-        self.readOnly = read_only
-        self.secretFile = secret_file
-        self.secretRef = secret_ref
-        self.user = user
-
-
-class ISCSIPersistentVolumeSource(HelmYaml):
-    """
-    :param chap_auth_discovery: whether support iSCSI Discovery CHAP authentication
-    :param chap_auth_session: whether support iSCSI Session CHAP authentication
-    :param fs_type: Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi
-    :param initiator_name: Custom iSCSI Initiator Name. If initiatorName is specified \
-        with iscsiInterface simultaneously, new iSCSI interface <target \
-        portal>:<volume name> will be created for the connection.
-    :param iqn: Target iSCSI Qualified Name.
-    :param lun: iSCSI Target Lun number.
-    :param portals: iSCSI Target Portal List. The Portal is either an IP or \
-        ip_addr:port if the port is other than default (typically TCP ports 860 and \
-        3260).
-    :param secret_ref: CHAP Secret for iSCSI target and initiator authentication
-    :param target_portal: iSCSI Target Portal. The Portal is either an IP or \
-        ip_addr:port if the port is other than default (typically TCP ports 860 and \
-        3260).
-    :param iscsi_interface: iSCSI Interface Name that uses an iSCSI transport. \
-        Defaults to 'default' (tcp).
-    :param read_only: ReadOnly here will force the ReadOnly setting in VolumeMounts. \
-        Defaults to false.
-    """
-
-    def __init__(
-        self,
-        chap_auth_discovery: bool,
-        chap_auth_session: bool,
-        fs_type: str,
-        initiator_name: str,
-        iqn: str,
-        lun: int,
-        portals: List[str],
-        secret_ref: SecretReference,
-        target_portal: str,
-        iscsi_interface: Optional[str] = None,
-        read_only: Optional[bool] = None,
-    ):
-        self.chapAuthDiscovery = chap_auth_discovery
-        self.chapAuthSession = chap_auth_session
-        self.fsType = fs_type
-        self.initiatorName = initiator_name
-        self.iqn = iqn
-        self.lun = lun
-        self.portals = portals
-        self.secretRef = secret_ref
-        self.targetPortal = target_portal
-        self.iscsiInterface = iscsi_interface
-        self.readOnly = read_only
-
-
-class GlusterfsPersistentVolumeSource(HelmYaml):
-    """
-    :param endpoints: EndpointsName is the endpoint name that details Glusterfs \
-        topology. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
-    :param path: Path is the Glusterfs volume path. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
-    :param endpoints_namespace: EndpointsNamespace is the namespace that contains \
-        Glusterfs endpoint. If this field is empty, the EndpointNamespace defaults to \
-        the same namespace as the bound PVC. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
-    :param read_only: ReadOnly here will force the Glusterfs volume to be mounted with \
-        read-only permissions. Defaults to false. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
-    """
-
-    def __init__(
-        self,
-        endpoints: str,
-        path: str,
-        endpoints_namespace: Optional[str] = None,
-        read_only: Optional[bool] = None,
-    ):
-        self.endpoints = endpoints
-        self.path = path
-        self.endpointsNamespace = endpoints_namespace
-        self.readOnly = read_only
-
-
 class FlexPersistentVolumeSource(HelmYaml):
     """
     :param driver: Driver is the name of the driver to use for this volume.
@@ -1502,34 +1532,6 @@ class FlexPersistentVolumeSource(HelmYaml):
         self.driver = driver
         self.fsType = fs_type
         self.options = options
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-
-
-class CinderPersistentVolumeSource(HelmYaml):
-    """
-    :param fs_type: Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
-        inferred to be "ext4" if unspecified. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :param volume_id: volume id used to identify the volume in cinder. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :param read_only: Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :param secret_ref: Optional: points to a secret object containing parameters used \
-        to connect to OpenStack.
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        volume_id: str,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[SecretReference] = None,
-    ):
-        self.fsType = fs_type
-        self.volumeID = volume_id
         self.readOnly = read_only
         self.secretRef = secret_ref
 

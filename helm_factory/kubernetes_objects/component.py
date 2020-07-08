@@ -3,11 +3,11 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class ComponentCondition(HelmYaml):
     """
-    :param error: Message about the condition for a component. For example, \
+    :param error: Condition error code for a component. For example, a health check \
+        error code.
+    :param message: Message about the condition for a component. For example, \
         information about a health check.
-    :param message: Status of the condition for a component. Valid values for \
-        "Healthy": "True", "False", or "Unknown".
-    :param type: None
+    :param type: Type of condition for a component. Valid value: "Healthy"
     """
 
     def __init__(self, error: str, message: str, type: str):

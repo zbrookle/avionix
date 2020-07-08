@@ -8,7 +8,7 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class ListMeta(HelmYaml):
     """
-    :param continue: continue may be set if the user set a limit on the number of \
+    :param continue_: continue may be set if the user set a limit on the number of \
         items returned, and indicates that the server has more data available. The \
         value is opaque and may be used to issue another request to the endpoint that \
         served this list to retrieve the next set of available objects. Continuing a \

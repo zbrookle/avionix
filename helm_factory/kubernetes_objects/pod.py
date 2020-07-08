@@ -93,14 +93,129 @@ class HorizontalPodAutoscalerList(KubernetesBaseObject):
         self.metadata = metadata
 
 
-class PodReadinessGate(HelmYaml):
+class PodDNSConfigOption(HelmYaml):
     """
-    :param condition_type: ConditionType refers to a condition in the pod's condition \
-        list with matching type.
+    :param value: None
+    :param name: Required.
     """
 
-    def __init__(self, condition_type: str):
-        self.conditionType = condition_type
+    def __init__(self, value: str, name: Optional[str] = None):
+        self.value = value
+        self.name = name
+
+
+class PodDNSConfig(HelmYaml):
+    """
+    :param nameservers: A list of DNS name server IP addresses. This will be appended \
+        to the base nameservers generated from DNSPolicy. Duplicated nameservers will \
+        be removed.
+    :param options: A list of DNS resolver options. This will be merged with the base \
+        options generated from DNSPolicy. Duplicated entries will be removed. \
+        Resolution options given in Options will override those that appear in the \
+        base DNSPolicy.
+    :param searches: A list of DNS search domains for host-name lookup. This will be \
+        appended to the base search paths generated from DNSPolicy. Duplicated search \
+        paths will be removed.
+    """
+
+    def __init__(
+        self,
+        nameservers: List[str],
+        options: List[PodDNSConfigOption],
+        searches: List[str],
+    ):
+        self.nameservers = nameservers
+        self.options = options
+        self.searches = searches
+
+
+class Sysctl(HelmYaml):
+    """
+    :param value: Value of a property to set
+    :param name: Name of a property to set
+    """
+
+    def __init__(self, value: str, name: Optional[str] = None):
+        self.value = value
+        self.name = name
+
+
+class PodSecurityContext(HelmYaml):
+    """
+    :param fs_group: A special supplemental group that applies to all containers in a \
+        pod. Some volume types allow the Kubelet to change the ownership of that \
+        volume to be owned by the pod:  1. The owning GID will be the FSGroup 2. The \
+        setgid bit is set (new files created in the volume will be owned by FSGroup) \
+        3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not \
+        modify the ownership and permissions of any volume.
+    :param run_as_group: The GID to run the entrypoint of the container process. Uses \
+        runtime default if unset. May also be set in SecurityContext.  If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence for that container.
+    :param run_as_non_root: Indicates that the container must run as a non-root user. \
+        If true, the Kubelet will validate the image at runtime to ensure that it does \
+        not run as UID 0 (root) and fail to start the container if it does. If unset \
+        or false, no such validation will be performed. May also be set in \
+        SecurityContext.  If set in both SecurityContext and PodSecurityContext, the \
+        value specified in SecurityContext takes precedence.
+    :param se_linux_options: The SELinux context to be applied to all containers. If \
+        unspecified, the container runtime will allocate a random SELinux context for \
+        each container.  May also be set in SecurityContext.  If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence for that container.
+    :param supplemental_groups: A list of groups applied to the first process run in \
+        each container, in addition to the container's primary GID.  If unspecified, \
+        no groups will be added to any container.
+    :param sysctls: Sysctls hold a list of namespaced sysctls used for the pod. Pods \
+        with unsupported sysctls (by the container runtime) might fail to launch.
+    :param windows_options: The Windows specific settings applied to all containers. \
+        If unspecified, the options within a container's SecurityContext will be used. \
+        If set in both SecurityContext and PodSecurityContext, the value specified in \
+        SecurityContext takes precedence.
+    :param fs_group_change_policy: fsGroupChangePolicy defines behavior of changing \
+        ownership and permission of the volume before being exposed inside Pod. This \
+        field will only apply to volume types which support fsGroup based \
+        ownership(and permissions). It will have no effect on ephemeral volume types \
+        such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" \
+        and "Always". If not specified defaults to "Always".
+    :param run_as_user: The UID to run the entrypoint of the container process. \
+        Defaults to user specified in image metadata if unspecified. May also be set \
+        in SecurityContext.  If set in both SecurityContext and PodSecurityContext, \
+        the value specified in SecurityContext takes precedence for that container.
+    """
+
+    def __init__(
+        self,
+        fs_group: int,
+        run_as_group: int,
+        run_as_non_root: bool,
+        se_linux_options: SELinuxOptions,
+        supplemental_groups: List[int],
+        sysctls: List[Sysctl],
+        windows_options: WindowsSecurityContextOptions,
+        fs_group_change_policy: Optional[str] = None,
+        run_as_user: Optional[int] = None,
+    ):
+        self.fsGroup = fs_group
+        self.runAsGroup = run_as_group
+        self.runAsNonRoot = run_as_non_root
+        self.seLinuxOptions = se_linux_options
+        self.supplementalGroups = supplemental_groups
+        self.sysctls = sysctls
+        self.windowsOptions = windows_options
+        self.fsGroupChangePolicy = fs_group_change_policy
+        self.runAsUser = run_as_user
+
+
+class HostAlias(HelmYaml):
+    """
+    :param hostnames: Hostnames for the above IP address.
+    :param ip: IP address of the host file entry.
+    """
+
+    def __init__(self, hostnames: List[str], ip: str):
+        self.hostnames = hostnames
+        self.ip = ip
 
 
 class Toleration(HelmYaml):
@@ -137,42 +252,6 @@ class Toleration(HelmYaml):
         self.tolerationSeconds = toleration_seconds
         self.value = value
         self.operator = operator
-
-
-class PodDNSConfigOption(HelmYaml):
-    """
-    :param value: None
-    :param name: Required.
-    """
-
-    def __init__(self, value: str, name: Optional[str] = None):
-        self.value = value
-        self.name = name
-
-
-class PodDNSConfig(HelmYaml):
-    """
-    :param nameservers: A list of DNS name server IP addresses. This will be appended \
-        to the base nameservers generated from DNSPolicy. Duplicated nameservers will \
-        be removed.
-    :param options: A list of DNS resolver options. This will be merged with the base \
-        options generated from DNSPolicy. Duplicated entries will be removed. \
-        Resolution options given in Options will override those that appear in the \
-        base DNSPolicy.
-    :param searches: A list of DNS search domains for host-name lookup. This will be \
-        appended to the base search paths generated from DNSPolicy. Duplicated search \
-        paths will be removed.
-    """
-
-    def __init__(
-        self,
-        nameservers: List[str],
-        options: List[PodDNSConfigOption],
-        searches: List[str],
-    ):
-        self.nameservers = nameservers
-        self.options = options
-        self.searches = searches
 
 
 class PodAffinityTerm(HelmYaml):
@@ -302,93 +381,14 @@ class Affinity(HelmYaml):
         self.podAntiAffinity = pod_anti_affinity
 
 
-class Sysctl(HelmYaml):
+class PodReadinessGate(HelmYaml):
     """
-    :param value: Value of a property to set
-    :param name: Name of a property to set
-    """
-
-    def __init__(self, value: str, name: Optional[str] = None):
-        self.value = value
-        self.name = name
-
-
-class PodSecurityContext(HelmYaml):
-    """
-    :param fs_group: A special supplemental group that applies to all containers in a \
-        pod. Some volume types allow the Kubelet to change the ownership of that \
-        volume to be owned by the pod:  1. The owning GID will be the FSGroup 2. The \
-        setgid bit is set (new files created in the volume will be owned by FSGroup) \
-        3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not \
-        modify the ownership and permissions of any volume.
-    :param run_as_group: The GID to run the entrypoint of the container process. Uses \
-        runtime default if unset. May also be set in SecurityContext.  If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence for that container.
-    :param run_as_non_root: Indicates that the container must run as a non-root user. \
-        If true, the Kubelet will validate the image at runtime to ensure that it does \
-        not run as UID 0 (root) and fail to start the container if it does. If unset \
-        or false, no such validation will be performed. May also be set in \
-        SecurityContext.  If set in both SecurityContext and PodSecurityContext, the \
-        value specified in SecurityContext takes precedence.
-    :param se_linux_options: The SELinux context to be applied to all containers. If \
-        unspecified, the container runtime will allocate a random SELinux context for \
-        each container.  May also be set in SecurityContext.  If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence for that container.
-    :param supplemental_groups: A list of groups applied to the first process run in \
-        each container, in addition to the container's primary GID.  If unspecified, \
-        no groups will be added to any container.
-    :param sysctls: Sysctls hold a list of namespaced sysctls used for the pod. Pods \
-        with unsupported sysctls (by the container runtime) might fail to launch.
-    :param windows_options: The Windows specific settings applied to all containers. \
-        If unspecified, the options within a container's SecurityContext will be used. \
-        If set in both SecurityContext and PodSecurityContext, the value specified in \
-        SecurityContext takes precedence.
-    :param fs_group_change_policy: fsGroupChangePolicy defines behavior of changing \
-        ownership and permission of the volume before being exposed inside Pod. This \
-        field will only apply to volume types which support fsGroup based \
-        ownership(and permissions). It will have no effect on ephemeral volume types \
-        such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" \
-        and "Always". If not specified defaults to "Always".
-    :param run_as_user: The UID to run the entrypoint of the container process. \
-        Defaults to user specified in image metadata if unspecified. May also be set \
-        in SecurityContext.  If set in both SecurityContext and PodSecurityContext, \
-        the value specified in SecurityContext takes precedence for that container.
+    :param condition_type: ConditionType refers to a condition in the pod's condition \
+        list with matching type.
     """
 
-    def __init__(
-        self,
-        fs_group: int,
-        run_as_group: int,
-        run_as_non_root: bool,
-        se_linux_options: SELinuxOptions,
-        supplemental_groups: List[int],
-        sysctls: List[Sysctl],
-        windows_options: WindowsSecurityContextOptions,
-        fs_group_change_policy: Optional[str] = None,
-        run_as_user: Optional[int] = None,
-    ):
-        self.fsGroup = fs_group
-        self.runAsGroup = run_as_group
-        self.runAsNonRoot = run_as_non_root
-        self.seLinuxOptions = se_linux_options
-        self.supplementalGroups = supplemental_groups
-        self.sysctls = sysctls
-        self.windowsOptions = windows_options
-        self.fsGroupChangePolicy = fs_group_change_policy
-        self.runAsUser = run_as_user
-
-
-class HostAlias(HelmYaml):
-    """
-    :param hostnames: Hostnames for the above IP address.
-    :param ip: IP address of the host file entry.
-    """
-
-    def __init__(self, hostnames: List[str], ip: str):
-        self.hostnames = hostnames
-        self.ip = ip
+    def __init__(self, condition_type: str):
+        self.conditionType = condition_type
 
 
 class PodSpec(HelmYaml):
@@ -637,6 +637,15 @@ class SessionAffinityConfig(HelmYaml):
         self.clientIP = client_ip
 
 
+class PodIP(HelmYaml):
+    """
+    :param ip: ip is an IP address (IPv4 or IPv6) assigned to the pod
+    """
+
+    def __init__(self, ip: str):
+        self.ip = ip
+
+
 class PodCondition(HelmYaml):
     """
     :param last_probe_time: Last time we probed the condition.
@@ -662,15 +671,6 @@ class PodCondition(HelmYaml):
         self.message = message
         self.reason = reason
         self.type = type
-
-
-class PodIP(HelmYaml):
-    """
-    :param ip: ip is an IP address (IPv4 or IPv6) assigned to the pod
-    """
-
-    def __init__(self, ip: str):
-        self.ip = ip
 
 
 class Pod(KubernetesBaseObject):

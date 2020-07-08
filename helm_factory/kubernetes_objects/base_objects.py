@@ -1,7 +1,8 @@
 from typing import Optional
 
-from helm_factory.yaml.yaml_handling import HelmYaml
 from helm_factory.options import DEFAULTS
+from helm_factory.yaml.yaml_handling import HelmYaml
+
 
 class KubernetesBaseObject(HelmYaml):
     """
@@ -10,8 +11,12 @@ class KubernetesBaseObject(HelmYaml):
     https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
     """
 
-    def __init__(self, api_version: Optional[str] = None, kind: Optional[str] = None,
-                 metadata=None):
+    def __init__(
+        self,
+        api_version: Optional[str] = None,
+        kind: Optional[str] = None,
+        metadata=None,
+    ):
         if kind is None:
             self.kind = type(self).__name__
         else:

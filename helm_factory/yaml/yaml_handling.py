@@ -57,3 +57,6 @@ class HelmYaml:
     def to_dict(self):
         dictionary = deepcopy(self.__dict__)
         return self.__clean_nested(dictionary)
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value

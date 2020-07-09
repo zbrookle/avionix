@@ -11,7 +11,10 @@ from ballast_framework.kubernetes_objects.reference import (
     ObjectReference,
     TypedLocalObjectReference,
 )
-from ballast_framework.kubernetes_objects.secret import SecretProjection, SecretReference
+from ballast_framework.kubernetes_objects.secret import (
+    SecretProjection,
+    SecretReference,
+)
 from ballast_framework.kubernetes_objects.selector import (
     LabelSelector,
     ObjectFieldSelector,

@@ -1,6 +1,6 @@
 from typing import List
 
-from helm_factory.kubernetes_objects import KubernetesBaseObject
+from helm_factory.kubernetes_objects.base_objects import KubernetesBaseObject
 
 
 class ChartBuilder:

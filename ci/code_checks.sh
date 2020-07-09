@@ -56,7 +56,7 @@ if [[ -z "$CHECK" || "$CHECK" == "lint" ]]; then
 
     # Imports - Check formatting using isort see setup.cfg for settings
     MSG='Check import format using isort' ; echo $MSG
-    ISORT_CMD="isort --recursive --check-only helm_factory"
+    ISORT_CMD="isort --check-only ballast_framework"
     if [[ "$GITHUB_ACTIONS" == "true" ]]; then
         eval $ISORT_CMD | awk '{print "##[error]" $0}'; RET=$(($RET + ${PIPESTATUS[0]}))
     else
@@ -80,9 +80,9 @@ if [[ -z "$CHECK" || "$CHECK" == "typing" ]]; then
     mypy --version
 
     MSG='Performing static analysis using mypy' ; echo $MSG
-    mypy helm_factory
+    mypy ballast_framework
     RET=$(($RET + $?)) ; echo $MSG "DONE"
 fi
 
 
-exit $RET
+#exit $RET

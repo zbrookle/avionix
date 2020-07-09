@@ -10,13 +10,14 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class JobSpec(HelmYaml):
     """
-    :param completions: Specifies the desired number of successfully finished pods the \
+    :param completions:Specifies the desired number of successfully finished pods the \
         job should be run with.  Setting to nil means that the success of any pod \
         signals the success of all pods, and allows parallelism to have any positive \
         value.  Setting to 1 means that parallelism is limited to 1 and the success of \
         that pod signals the success of the job. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
-    :param manual_selector: manualSelector controls generation of pod labels and pod \
+    :type completions: int
+    :param manual_selector:manualSelector controls generation of pod labels and pod \
         selectors. Leave `manualSelector` unset unless you are certain what you are \
         doing. When false or unset, the system pick labels unique to this job and \
         appends those labels to the pod template.  When true, the user is responsible \
@@ -25,31 +26,38 @@ class JobSpec(HelmYaml):
         However, You may see `manualSelector=true` in jobs that were created with the \
         old `extensions/v1beta1` API. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/#specifying-your-own-pod-selector  # noqa
-    :param parallelism: Specifies the maximum desired number of pods the job should \
-        run at any given time. The actual number of pods running in steady state will \
-        be less than this number when ((.spec.completions - .status.successful) < \
+    :type manual_selector: bool
+    :param parallelism:Specifies the maximum desired number of pods the job should run \
+        at any given time. The actual number of pods running in steady state will be \
+        less than this number when ((.spec.completions - .status.successful) < \
         .spec.parallelism), i.e. when the work left to do is less than max \
         parallelism. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
-    :param template: Describes the pod that will be created when executing a job. More \
+    :type parallelism: int
+    :param template:Describes the pod that will be created when executing a job. More \
         info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
-    :param ttl_seconds_after_finished: ttlSecondsAfterFinished limits the lifetime of \
-        a Job that has finished execution (either Complete or Failed). If this field \
-        is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be \
+    :type template: PodTemplateSpec
+    :param ttl_seconds_after_finished:ttlSecondsAfterFinished limits the lifetime of a \
+        Job that has finished execution (either Complete or Failed). If this field is \
+        set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be \
         automatically deleted. When the Job is being deleted, its lifecycle guarantees \
         (e.g. finalizers) will be honored. If this field is unset, the Job won't be \
         automatically deleted. If this field is set to zero, the Job becomes eligible \
         to be deleted immediately after it finishes. This field is alpha-level and is \
         only honored by servers that enable the TTLAfterFinished feature.
-    :param active_deadline_seconds: Specifies the duration in seconds relative to the \
+    :type ttl_seconds_after_finished: int
+    :param active_deadline_seconds:Specifies the duration in seconds relative to the \
         startTime that the job may be active before the system tries to terminate it; \
         value must be positive integer
-    :param backoff_limit: Specifies the number of retries before marking this job \
+    :type active_deadline_seconds: Optional[int]
+    :param backoff_limit:Specifies the number of retries before marking this job \
         failed. Defaults to 6
-    :param selector: A label query over pods that should match the pod count. \
-        Normally, the system sets this field for you. More info: \
+    :type backoff_limit: Optional[int]
+    :param selector:A label query over pods that should match the pod count. Normally, \
+        the system sets this field for you. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :type selector: Optional[LabelSelector]
     """
 
     def __init__(
@@ -75,12 +83,17 @@ class JobSpec(HelmYaml):
 
 class JobCondition(HelmYaml):
     """
-    :param last_probe_time: Last time the condition was checked.
-    :param last_transition_time: Last time the condition transit from one status to \
+    :param last_probe_time:Last time the condition was checked.
+    :type last_probe_time: time
+    :param last_transition_time:Last time the condition transit from one status to \
         another.
-    :param message: Human readable message indicating details about last transition.
-    :param reason: (brief) reason for the condition's last transition.
-    :param type: Type of job condition, Complete or Failed.
+    :type last_transition_time: time
+    :param message:Human readable message indicating details about last transition.
+    :type message: str
+    :param reason:(brief) reason for the condition's last transition.
+    :type reason: str
+    :param type:Type of job condition, Complete or Failed.
+    :type type: str
     """
 
     def __init__(
@@ -100,14 +113,17 @@ class JobCondition(HelmYaml):
 
 class Job(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata. More info: \
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param spec: Specification of the desired behavior of a job. More info: \
+    :type metadata: ObjectMeta
+    :param spec:Specification of the desired behavior of a job. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type spec: JobSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -120,13 +136,16 @@ class Job(KubernetesBaseObject):
 
 class JobList(KubernetesBaseObject):
     """
-    :param items: items is the list of Jobs.
-    :param metadata: Standard list metadata. More info: \
+    :param items:items is the list of Jobs.
+    :type items: List[Job]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

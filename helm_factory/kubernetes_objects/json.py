@@ -12,8 +12,10 @@ class JSONSchemaPropsOrArray(HelmYaml):
 
 class ExternalDocumentation(HelmYaml):
     """
-    :param description: None
-    :param url: None
+    :param description:None
+    :type description: str
+    :param url:None
+    :type url: str
     """
 
     def __init__(self, description: str, url: str):
@@ -37,21 +39,35 @@ class JSON(HelmYaml):
 
 class JSONSchemaProps(HelmYaml):
     """
-    :param ref: None
-    :param schema: None
-    :param additional_items: None
-    :param additional_properties: None
-    :param all_of: None
-    :param any_of: None
-    :param definitions: None
-    :param dependencies: None
-    :param description: None
-    :param enum: None
-    :param example: None
-    :param exclusive_maximum: None
-    :param exclusive_minimum: None
-    :param external_docs: None
-    :param format: format is an OpenAPI v3 format string. Unknown formats are ignored. \
+    :param ref:None
+    :type ref: str
+    :param schema:None
+    :type schema: str
+    :param additional_items:None
+    :type additional_items: JSONSchemaPropsOrBool
+    :param additional_properties:None
+    :type additional_properties: JSONSchemaPropsOrBool
+    :param all_of:None
+    :type all_of: List["JSONSchemaProps"]
+    :param any_of:None
+    :type any_of: List["JSONSchemaProps"]
+    :param definitions:None
+    :type definitions: dict
+    :param dependencies:None
+    :type dependencies: dict
+    :param description:None
+    :type description: str
+    :param enum:None
+    :type enum: List[JSON]
+    :param example:None
+    :type example: JSON
+    :param exclusive_maximum:None
+    :type exclusive_maximum: bool
+    :param exclusive_minimum:None
+    :type exclusive_minimum: bool
+    :param external_docs:None
+    :type external_docs: ExternalDocumentation
+    :param format:format is an OpenAPI v3 format string. Unknown formats are ignored. \
         The following formats are validated:  - bsonobjectid: a bson object ID, i.e. a \
         24 characters hex string - uri: an URI as parsed by Golang \
         net/url.ParseRequestURI - email: an email address as parsed by Golang \
@@ -83,39 +99,63 @@ class JSONSchemaProps(HelmYaml):
         time.ParseDuration or compatible with Scala duration format - datetime: a date \
         time string like "2014-12-15T19:30:20.000Z" as defined by date-time in \
         RFC3339.
-    :param id: None
-    :param items: None
-    :param max_items: None
-    :param max_length: None
-    :param max_properties: None
-    :param maximum: None
-    :param min_items: None
-    :param min_length: None
-    :param min_properties: None
-    :param minimum: None
-    :param multiple_of: None
-    :param not_: None
-    :param nullable: None
-    :param one_of: None
-    :param pattern: None
-    :param pattern_properties: None
-    :param properties: None
-    :param required: None
-    :param title: None
-    :param type: None
-    :param unique_items: None
-    :param x_kubernetes_embedded_resource: x-kubernetes-embedded-resource defines that \
+    :type format: str
+    :param id:None
+    :type id: str
+    :param items:None
+    :type items: JSONSchemaPropsOrArray
+    :param max_items:None
+    :type max_items: int
+    :param max_length:None
+    :type max_length: int
+    :param max_properties:None
+    :type max_properties: int
+    :param maximum:None
+    :type maximum: Union[int, float]
+    :param min_items:None
+    :type min_items: int
+    :param min_length:None
+    :type min_length: int
+    :param min_properties:None
+    :type min_properties: int
+    :param minimum:None
+    :type minimum: Union[int, float]
+    :param multiple_of:None
+    :type multiple_of: Union[int, float]
+    :param not_:None
+    :type not_: "JSONSchemaProps"
+    :param nullable:None
+    :type nullable: bool
+    :param one_of:None
+    :type one_of: List["JSONSchemaProps"]
+    :param pattern:None
+    :type pattern: str
+    :param pattern_properties:None
+    :type pattern_properties: dict
+    :param properties:None
+    :type properties: dict
+    :param required:None
+    :type required: List[str]
+    :param title:None
+    :type title: str
+    :param type:None
+    :type type: str
+    :param unique_items:None
+    :type unique_items: bool
+    :param x_kubernetes_embedded_resource:x-kubernetes-embedded-resource defines that \
         the value is an embedded Kubernetes runtime.Object, with TypeMeta and \
         ObjectMeta. The type must be object. It is allowed to further restrict the \
         embedded object. kind, apiVersion and metadata are validated automatically. \
         x-kubernetes-preserve-unknown-fields is allowed to be true, but does not have \
         to be if the object is fully specified (up to kind, apiVersion, metadata).
-    :param x_kubernetes_int_or_string: x-kubernetes-int-or-string specifies that this \
+    :type x_kubernetes_embedded_resource: bool
+    :param x_kubernetes_int_or_string:x-kubernetes-int-or-string specifies that this \
         value is either an integer or a string. If this is true, an empty type is \
         allowed and type as child of anyOf is permitted if following one of the \
         following patterns:  1) anyOf:    - type: integer    - type: string 2) allOf:  \
           - anyOf:      - type: integer      - type: string    - ... zero or more
-    :param x_kubernetes_list_map_keys: x-kubernetes-list-map-keys annotates an array \
+    :type x_kubernetes_int_or_string: bool
+    :param x_kubernetes_list_map_keys:x-kubernetes-list-map-keys annotates an array \
         with the x-kubernetes-list-type `map` by specifying the keys used as the index \
         of the map.  This tag MUST only be used on lists that have the \
         "x-kubernetes-list-type" extension set to "map". Also, the values specified \
@@ -123,34 +163,39 @@ class JSONSchemaProps(HelmYaml):
         nesting is supported).  The properties specified must either be required or \
         have a default value, to ensure those properties are present for all list \
         items.
-    :param x_kubernetes_map_type: x-kubernetes-map-type annotates an object to further \
+    :type x_kubernetes_list_map_keys: List[str]
+    :param x_kubernetes_map_type:x-kubernetes-map-type annotates an object to further \
         describe its topology. This extension must only be used when type is object \
         and may have 2 possible values:  1) `granular`:      These maps are actual \
         maps (key-value pairs) and each fields are independent      from each other \
         (they can each be manipulated by separate actors). This is      the default \
         behaviour for all maps. 2) `atomic`: the list is treated as a single entity, \
         like a scalar.      Atomic maps will be entirely replaced when updated.
-    :param x_kubernetes_preserve_unknown_fields: x-kubernetes-preserve-unknown-fields \
+    :type x_kubernetes_map_type: str
+    :param x_kubernetes_preserve_unknown_fields:x-kubernetes-preserve-unknown-fields \
         stops the API server decoding step from pruning fields which are not specified \
         in the validation schema. This affects fields recursively, but switches back \
         to normal pruning behaviour if nested properties or additionalProperties are \
         specified in the schema. This can either be true or undefined. False is \
         forbidden.
-    :param default: default is a default value for undefined object fields. Defaulting \
+    :type x_kubernetes_preserve_unknown_fields: bool
+    :param default:default is a default value for undefined object fields. Defaulting \
         is a beta feature under the CustomResourceDefaulting feature gate. Defaulting \
         requires spec.preserveUnknownFields to be false.
-    :param x_kubernetes_list_type: x-kubernetes-list-type annotates an array to \
-        further describe its topology. This extension must only be used on lists and \
-        may have 3 possible values:  1) `atomic`: the list is treated as a single \
-        entity, like a scalar.      Atomic lists will be entirely replaced when \
-        updated. This extension      may be used on any type of list (struct, scalar, \
-        ...). 2) `set`:      Sets are lists that must not have multiple items with the \
-        same value. Each      value must be a scalar, an object with \
-        x-kubernetes-map-type `atomic` or an      array with x-kubernetes-list-type \
-        `atomic`. 3) `map`:      These lists are like maps in that their elements have \
-        a non-index key      used to identify them. Order is preserved upon merge. The \
-        map tag      must only be used on a list with elements of type object. \
-        Defaults to atomic for arrays.
+    :type default: Optional[JSON]
+    :param x_kubernetes_list_type:x-kubernetes-list-type annotates an array to further \
+        describe its topology. This extension must only be used on lists and may have \
+        3 possible values:  1) `atomic`: the list is treated as a single entity, like \
+        a scalar.      Atomic lists will be entirely replaced when updated. This \
+        extension      may be used on any type of list (struct, scalar, ...). 2) \
+        `set`:      Sets are lists that must not have multiple items with the same \
+        value. Each      value must be a scalar, an object with x-kubernetes-map-type \
+        `atomic` or an      array with x-kubernetes-list-type `atomic`. 3) `map`:      \
+        These lists are like maps in that their elements have a non-index key      \
+        used to identify them. Order is preserved upon merge. The map tag      must \
+        only be used on a list with elements of type object. Defaults to atomic for \
+        arrays.
+    :type x_kubernetes_list_type: Optional[str]
     """
 
     def __init__(

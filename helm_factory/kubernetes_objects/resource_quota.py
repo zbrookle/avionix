@@ -8,14 +8,17 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class ResourceQuotaSpec(HelmYaml):
     """
-    :param hard: hard is the set of desired hard limits for each named resource. More \
+    :param hard:hard is the set of desired hard limits for each named resource. More \
         info: https://kubernetes.io/docs/concepts/policy/resource-quotas/
-    :param scope_selector: scopeSelector is also a collection of filters like scopes \
+    :type hard: dict
+    :param scope_selector:scopeSelector is also a collection of filters like scopes \
         that must match each object tracked by a quota but expressed using \
         ScopeSelectorOperator in combination with possible values. For a resource to \
         match, both scopes AND scopeSelector (if specified in spec), must be matched.
-    :param scopes: A collection of filters that must match each object tracked by a \
+    :type scope_selector: Optional[ScopeSelector]
+    :param scopes:A collection of filters that must match each object tracked by a \
         quota. If not specified, the quota matches all objects.
+    :type scopes: Optional[List[str]]
     """
 
     def __init__(
@@ -31,14 +34,17 @@ class ResourceQuotaSpec(HelmYaml):
 
 class ResourceQuota(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata. More info: \
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param spec: Spec defines the desired quota. \
+    :type metadata: ObjectMeta
+    :param spec:Spec defines the desired quota. \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type spec: ResourceQuotaSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -54,14 +60,17 @@ class ResourceQuota(KubernetesBaseObject):
 
 class ResourceQuotaList(KubernetesBaseObject):
     """
-    :param items: Items is a list of ResourceQuota objects. More info: \
+    :param items:Items is a list of ResourceQuota objects. More info: \
         https://kubernetes.io/docs/concepts/policy/resource-quotas/
-    :param metadata: Standard list metadata. More info: \
+    :type items: List[ResourceQuota]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

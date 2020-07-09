@@ -10,7 +10,7 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class RollingUpdateDeployment(HelmYaml):
     """
-    :param max_surge: The maximum number of pods that can be scheduled above the \
+    :param max_surge:The maximum number of pods that can be scheduled above the \
         desired number of pods. Value can be an absolute number (ex: 5) or a \
         percentage of desired pods (ex: 10%). This can not be 0 if MaxUnavailable is \
         0. Absolute number is calculated from percentage by rounding up. Defaults to \
@@ -19,7 +19,8 @@ class RollingUpdateDeployment(HelmYaml):
         and new pods do not exceed 130% of desired pods. Once old pods have been \
         killed, new ReplicaSet can be scaled up further, ensuring that total number of \
         pods running at any time during the update is at most 130% of desired pods.
-    :param max_unavailable: The maximum number of pods that can be unavailable during \
+    :type max_surge: Optional[str]
+    :param max_unavailable:The maximum number of pods that can be unavailable during \
         the update. Value can be an absolute number (ex: 5) or a percentage of desired \
         pods (ex: 10%). Absolute number is calculated from percentage by rounding \
         down. This can not be 0 if MaxSurge is 0. Defaults to 25%. Example: when this \
@@ -28,6 +29,7 @@ class RollingUpdateDeployment(HelmYaml):
         ReplicaSet can be scaled down further, followed by scaling up the new \
         ReplicaSet, ensuring that the total number of pods available at all times \
         during the update is at least 70% of desired pods.
+    :type max_unavailable: Optional[str]
     """
 
     def __init__(
@@ -39,10 +41,12 @@ class RollingUpdateDeployment(HelmYaml):
 
 class DeploymentStrategy(HelmYaml):
     """
-    :param rolling_update: Rolling update config params. Present only if \
+    :param rolling_update:Rolling update config params. Present only if \
         DeploymentStrategyType = RollingUpdate.
-    :param type: Type of deployment. Can be "Recreate" or "RollingUpdate". Default is \
+    :type rolling_update: Optional[RollingUpdateDeployment]
+    :param type:Type of deployment. Can be "Recreate" or "RollingUpdate". Default is \
         RollingUpdate.
+    :type type: Optional[str]
     """
 
     def __init__(
@@ -56,28 +60,36 @@ class DeploymentStrategy(HelmYaml):
 
 class DeploymentSpec(HelmYaml):
     """
-    :param template: Template describes the pods that will be created.
-    :param min_ready_seconds: Minimum number of seconds for which a newly created pod \
+    :param template:Template describes the pods that will be created.
+    :type template: PodTemplateSpec
+    :param min_ready_seconds:Minimum number of seconds for which a newly created pod \
         should be ready without any of its container crashing, for it to be considered \
         available. Defaults to 0 (pod will be considered available as soon as it is \
         ready)
-    :param paused: Indicates that the deployment is paused.
-    :param progress_deadline_seconds: The maximum time in seconds for a deployment to \
+    :type min_ready_seconds: Optional[int]
+    :param paused:Indicates that the deployment is paused.
+    :type paused: Optional[bool]
+    :param progress_deadline_seconds:The maximum time in seconds for a deployment to \
         make progress before it is considered to be failed. The deployment controller \
         will continue to process failed deployments and a condition with a \
         ProgressDeadlineExceeded reason will be surfaced in the deployment status. \
         Note that progress will not be estimated during the time a deployment is \
         paused. Defaults to 600s.
-    :param replicas: Number of desired pods. This is a pointer to distinguish between \
+    :type progress_deadline_seconds: Optional[int]
+    :param replicas:Number of desired pods. This is a pointer to distinguish between \
         explicit zero and not specified. Defaults to 1.
-    :param revision_history_limit: The number of old ReplicaSets to retain to allow \
+    :type replicas: Optional[int]
+    :param revision_history_limit:The number of old ReplicaSets to retain to allow \
         rollback. This is a pointer to distinguish between explicit zero and not \
         specified. Defaults to 10.
-    :param selector: Label selector for pods. Existing ReplicaSets whose pods are \
+    :type revision_history_limit: Optional[int]
+    :param selector:Label selector for pods. Existing ReplicaSets whose pods are \
         selected by this will be the ones affected by this deployment. It must match \
         the pod template's labels.
-    :param strategy: The deployment strategy to use to replace existing pods with new \
+    :type selector: Optional[LabelSelector]
+    :param strategy:The deployment strategy to use to replace existing pods with new \
         ones.
+    :type strategy: Optional[DeploymentStrategy]
     """
 
     def __init__(
@@ -103,12 +115,17 @@ class DeploymentSpec(HelmYaml):
 
 class DeploymentCondition(HelmYaml):
     """
-    :param last_transition_time: Last time the condition transitioned from one status \
+    :param last_transition_time:Last time the condition transitioned from one status \
         to another.
-    :param last_update_time: The last time this condition was updated.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of deployment condition.
+    :type last_transition_time: time
+    :param last_update_time:The last time this condition was updated.
+    :type last_update_time: time
+    :param message:A human readable message indicating details about the transition.
+    :type message: str
+    :param reason:The reason for the condition's last transition.
+    :type reason: str
+    :param type:Type of deployment condition.
+    :type type: str
     """
 
     def __init__(
@@ -128,12 +145,15 @@ class DeploymentCondition(HelmYaml):
 
 class Deployment(KubernetesBaseObject):
     """
-    :param metadata: Standard object metadata.
-    :param spec: Specification of the desired behavior of the Deployment.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param metadata:Standard object metadata.
+    :type metadata: ObjectMeta
+    :param spec:Specification of the desired behavior of the Deployment.
+    :type spec: DeploymentSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -149,12 +169,15 @@ class Deployment(KubernetesBaseObject):
 
 class DeploymentList(KubernetesBaseObject):
     """
-    :param items: Items is the list of Deployments.
-    :param metadata: Standard list metadata.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param items:Items is the list of Deployments.
+    :type items: List[Deployment]
+    :param metadata:Standard list metadata.
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

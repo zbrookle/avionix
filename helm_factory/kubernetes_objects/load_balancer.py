@@ -3,10 +3,12 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class LoadBalancerIngress(HelmYaml):
     """
-    :param hostname: Hostname is set for load-balancer ingress points that are DNS \
+    :param hostname:Hostname is set for load-balancer ingress points that are DNS \
         based (typically AWS load-balancers)
-    :param ip: IP is set for load-balancer ingress points that are IP based (typically \
+    :type hostname: str
+    :param ip:IP is set for load-balancer ingress points that are IP based (typically \
         GCE or OpenStack load-balancers)
+    :type ip: str
     """
 
     def __init__(self, hostname: str, ip: str):

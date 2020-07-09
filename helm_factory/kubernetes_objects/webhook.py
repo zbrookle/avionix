@@ -7,51 +7,21 @@ from helm_factory.kubernetes_objects.service import ServiceReference
 from helm_factory.yaml.yaml_handling import HelmYaml
 
 
-class WebhookClientConfig(HelmYaml):
-    """
-    :param ca_bundle: caBundle is a PEM encoded CA bundle which will be used to \
-        validate the webhook's server certificate. If unspecified, system trust roots \
-        on the apiserver are used.
-    :param service: service is a reference to the service for this webhook. Either \
-        service or url must be specified.  If the webhook is running within the \
-        cluster, then you should use `service`.
-    :param url: url gives the location of the webhook, in standard URL form \
-        (`scheme://host:port/path`). Exactly one of `url` or `service` must be \
-        specified.  The `host` should not refer to a service running in the cluster; \
-        use the `service` field instead. The host might be resolved via external DNS \
-        in some apiservers (e.g., `kube-apiserver` cannot resolve in-cluster DNS as \
-        that would be a layering violation). `host` may also be an IP address.  Please \
-        note that using `localhost` or `127.0.0.1` as a `host` is risky unless you \
-        take great care to run this webhook on all hosts which run an apiserver which \
-        might need to make calls to this webhook. Such installs are likely to be \
-        non-portable, i.e., not easy to turn up in a new cluster.  The scheme must be \
-        "https"; the URL must begin with "https://".  A path is optional, and if \
-        present may be any string permissible in a URL. You may use the path to pass \
-        an arbitrary string to the webhook, for example, a cluster identifier.  \
-        Attempting to use a user or basic auth e.g. "user:password@" is not allowed. \
-        Fragments ("#...") and query parameters ("?...") are not allowed, either.
-    """
-
-    def __init__(
-        self, ca_bundle: str, service: ServiceReference, url: Optional[str] = None
-    ):
-        self.caBundle = ca_bundle
-        self.service = service
-        self.url = url
-
-
 class RuleWithOperations(HelmYaml):
     """
-    :param api_groups: APIGroups is the API groups the resources belong to. '\\*' is \
+    :param api_groups:APIGroups is the API groups the resources belong to. '\\*' is \
         all groups. If '\\*' is present, the length of the slice must be one. \
         Required.
-    :param api_versions: APIVersions is the API versions the resources belong to. \
-        '\\*' is all versions. If '\\*' is present, the length of the slice must be \
-        one. Required.
-    :param operations: Operations is the operations the admission hook cares about - \
+    :type api_groups: List[str]
+    :param api_versions:APIVersions is the API versions the resources belong to. '\\*' \
+        is all versions. If '\\*' is present, the length of the slice must be one. \
+        Required.
+    :type api_versions: List[str]
+    :param operations:Operations is the operations the admission hook cares about - \
         CREATE, UPDATE, or * for all operations. If '\\*' is present, the length of \
         the slice must be one. Required.
-    :param resources: Resources is a list of resources this rule applies to.  For \
+    :type operations: List[str]
+    :param resources:Resources is a list of resources this rule applies to.  For \
         example: 'pods' means pods. 'pods/log' means the log subresource of pods. \
         '\\*' means all resources, but not subresources. 'pods/\\*' means all \
         subresources of pods. '\\*/scale' means all scale subresources. '\\*/\\*' \
@@ -59,12 +29,14 @@ class RuleWithOperations(HelmYaml):
         validation rule will ensure resources do not overlap with each other.  \
         Depending on the enclosing object, subresources might not be allowed. \
         Required.
-    :param scope: scope specifies the scope of this rule. Valid values are "Cluster", \
+    :type resources: Optional[List[str]]
+    :param scope:scope specifies the scope of this rule. Valid values are "Cluster", \
         "Namespaced", and "*" "Cluster" means that only cluster-scoped resources will \
         match this rule. Namespace API objects are cluster-scoped. "Namespaced" means \
         that only namespaced resources will match this rule. "*" means that there are \
         no scope restrictions. Subresources match the scope of their parent resource. \
         Default is "*".
+    :type scope: Optional[str]
     """
 
     def __init__(
@@ -82,18 +54,56 @@ class RuleWithOperations(HelmYaml):
         self.scope = scope
 
 
+class WebhookClientConfig(HelmYaml):
+    """
+    :param ca_bundle:caBundle is a PEM encoded CA bundle which will be used to \
+        validate the webhook's server certificate. If unspecified, system trust roots \
+        on the apiserver are used.
+    :type ca_bundle: str
+    :param service:service is a reference to the service for this webhook. Either \
+        service or url must be specified.  If the webhook is running within the \
+        cluster, then you should use `service`.
+    :type service: ServiceReference
+    :param url:url gives the location of the webhook, in standard URL form \
+        (`scheme://host:port/path`). Exactly one of `url` or `service` must be \
+        specified.  The `host` should not refer to a service running in the cluster; \
+        use the `service` field instead. The host might be resolved via external DNS \
+        in some apiservers (e.g., `kube-apiserver` cannot resolve in-cluster DNS as \
+        that would be a layering violation). `host` may also be an IP address.  Please \
+        note that using `localhost` or `127.0.0.1` as a `host` is risky unless you \
+        take great care to run this webhook on all hosts which run an apiserver which \
+        might need to make calls to this webhook. Such installs are likely to be \
+        non-portable, i.e., not easy to turn up in a new cluster.  The scheme must be \
+        "https"; the URL must begin with "https://".  A path is optional, and if \
+        present may be any string permissible in a URL. You may use the path to pass \
+        an arbitrary string to the webhook, for example, a cluster identifier.  \
+        Attempting to use a user or basic auth e.g. "user:password@" is not allowed. \
+        Fragments ("#...") and query parameters ("?...") are not allowed, either.
+    :type url: Optional[str]
+    """
+
+    def __init__(
+        self, ca_bundle: str, service: ServiceReference, url: Optional[str] = None
+    ):
+        self.caBundle = ca_bundle
+        self.service = service
+        self.url = url
+
+
 class ValidatingWebhook(HelmYaml):
     """
-    :param admission_review_versions: AdmissionReviewVersions is an ordered list of \
+    :param admission_review_versions:AdmissionReviewVersions is an ordered list of \
         preferred `AdmissionReview` versions the Webhook expects. API server will try \
         to use first version in the list which it supports. If none of the versions \
         specified in this list supported by API server, validation will fail for this \
         object. If a persisted webhook configuration specifies allowed versions and \
         does not include any versions known to the API Server, calls to the webhook \
         will fail and be subject to the failure policy.
-    :param client_config: ClientConfig defines how to communicate with the hook. \
+    :type admission_review_versions: List[str]
+    :param client_config:ClientConfig defines how to communicate with the hook. \
         Required
-    :param namespace_selector: NamespaceSelector decides whether to run the webhook on \
+    :type client_config: WebhookClientConfig
+    :param namespace_selector:NamespaceSelector decides whether to run the webhook on \
         an object based on whether the namespace for that object matches the selector. \
         If the object itself is a namespace, the matching is performed on \
         object.metadata.labels. If the object is another cluster scoped resource, it \
@@ -109,7 +119,8 @@ class ValidatingWebhook(HelmYaml):
         See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels \
         for more examples of label selectors.  Default to the empty LabelSelector, \
         which matches everything.
-    :param object_selector: ObjectSelector decides whether to run the webhook based on \
+    :type namespace_selector: LabelSelector
+    :param object_selector:ObjectSelector decides whether to run the webhook based on \
         if the object has matching labels. objectSelector is evaluated against both \
         the oldObject and newObject that would be sent to the webhook, and is \
         considered to match if either object matches the selector. A null object \
@@ -118,7 +129,8 @@ class ValidatingWebhook(HelmYaml):
         object) is not considered to match. Use the object selector only if the \
         webhook is opt-in, because end users may skip the admission webhook by setting \
         the labels. Default to the empty LabelSelector, which matches everything.
-    :param rules: Rules describes what operations on what resources/subresources the \
+    :type object_selector: LabelSelector
+    :param rules:Rules describes what operations on what resources/subresources the \
         webhook cares about. The webhook cares about an operation if it matches _any_ \
         Rule. However, in order to prevent ValidatingAdmissionWebhooks and \
         MutatingAdmissionWebhooks from putting the cluster in a state which cannot be \
@@ -126,21 +138,25 @@ class ValidatingWebhook(HelmYaml):
         ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks are never called on \
         admission requests for ValidatingWebhookConfiguration and \
         MutatingWebhookConfiguration objects.
-    :param side_effects: SideEffects states whether this webhook has side effects. \
+    :type rules: List[RuleWithOperations]
+    :param side_effects:SideEffects states whether this webhook has side effects. \
         Acceptable values are: None, NoneOnDryRun (webhooks created via v1beta1 may \
         also specify Some or Unknown). Webhooks with side effects MUST implement a \
         reconciliation system, since a request may be rejected by a future step in the \
         admission change and the side effects therefore need to be undone. Requests \
         with the dryRun attribute will be auto-rejected if they match a webhook with \
         sideEffects == Unknown or Some.
-    :param timeout_seconds: TimeoutSeconds specifies the timeout for this webhook. \
+    :type side_effects: str
+    :param timeout_seconds:TimeoutSeconds specifies the timeout for this webhook. \
         After the timeout passes, the webhook call will be ignored or the API call \
         will fail based on the failure policy. The timeout value must be between 1 and \
         30 seconds. Default to 10 seconds.
-    :param failure_policy: FailurePolicy defines how unrecognized errors from the \
+    :type timeout_seconds: int
+    :param failure_policy:FailurePolicy defines how unrecognized errors from the \
         admission endpoint are handled - allowed values are Ignore or Fail. Defaults \
         to Fail.
-    :param match_policy: matchPolicy defines how the "rules" list is used to match \
+    :type failure_policy: Optional[str]
+    :param match_policy:matchPolicy defines how the "rules" list is used to match \
         incoming requests. Allowed values are "Exact" or "Equivalent".  - Exact: match \
         a request only if it exactly matches a specified rule. For example, if \
         deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, \
@@ -152,9 +168,11 @@ class ValidatingWebhook(HelmYaml):
         and "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: \
         ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be \
         converted to apps/v1 and sent to the webhook.  Defaults to "Equivalent"
-    :param name: The name of the admission webhook. Name should be fully qualified, \
+    :type match_policy: Optional[str]
+    :param name:The name of the admission webhook. Name should be fully qualified, \
         e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the \
         webhook, and kubernetes.io is the name of the organization. Required.
+    :type name: Optional[str]
     """
 
     def __init__(
@@ -184,14 +202,17 @@ class ValidatingWebhook(HelmYaml):
 
 class ValidatingWebhookConfiguration(KubernetesBaseObject):
     """
-    :param metadata: Standard object metadata; More info: \
+    :param metadata:Standard object metadata; More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.  # noqa
-    :param webhooks: Webhooks is a list of webhooks and the affected resources and \
+    :type metadata: ObjectMeta
+    :param webhooks:Webhooks is a list of webhooks and the affected resources and \
         operations.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type webhooks: List[ValidatingWebhook]
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -207,13 +228,16 @@ class ValidatingWebhookConfiguration(KubernetesBaseObject):
 
 class ValidatingWebhookConfigurationList(KubernetesBaseObject):
     """
-    :param items: List of ValidatingWebhookConfiguration.
-    :param metadata: Standard list metadata. More info: \
+    :param items:List of ValidatingWebhookConfiguration.
+    :type items: List[ValidatingWebhookConfiguration]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -229,15 +253,17 @@ class ValidatingWebhookConfigurationList(KubernetesBaseObject):
 
 class WebhookConversion(HelmYaml):
     """
-    :param client_config: clientConfig is the instructions for how to call the webhook \
+    :param client_config:clientConfig is the instructions for how to call the webhook \
         if strategy is `Webhook`.
-    :param conversion_review_versions: conversionReviewVersions is an ordered list of \
+    :type client_config: WebhookClientConfig
+    :param conversion_review_versions:conversionReviewVersions is an ordered list of \
         preferred `ConversionReview` versions the Webhook expects. The API server will \
         use the first version in the list which it supports. If none of the versions \
         specified in this list are supported by API server, conversion will fail for \
         the custom resource. If a persisted Webhook configuration specifies allowed \
         versions and does not include any versions known to the API Server, calls to \
         the webhook will fail.
+    :type conversion_review_versions: List[str]
     """
 
     def __init__(
@@ -249,16 +275,18 @@ class WebhookConversion(HelmYaml):
 
 class MutatingWebhook(HelmYaml):
     """
-    :param admission_review_versions: AdmissionReviewVersions is an ordered list of \
+    :param admission_review_versions:AdmissionReviewVersions is an ordered list of \
         preferred `AdmissionReview` versions the Webhook expects. API server will try \
         to use first version in the list which it supports. If none of the versions \
         specified in this list supported by API server, validation will fail for this \
         object. If a persisted webhook configuration specifies allowed versions and \
         does not include any versions known to the API Server, calls to the webhook \
         will fail and be subject to the failure policy.
-    :param client_config: ClientConfig defines how to communicate with the hook. \
+    :type admission_review_versions: List[str]
+    :param client_config:ClientConfig defines how to communicate with the hook. \
         Required
-    :param namespace_selector: NamespaceSelector decides whether to run the webhook on \
+    :type client_config: WebhookClientConfig
+    :param namespace_selector:NamespaceSelector decides whether to run the webhook on \
         an object based on whether the namespace for that object matches the selector. \
         If the object itself is a namespace, the matching is performed on \
         object.metadata.labels. If the object is another cluster scoped resource, it \
@@ -274,7 +302,8 @@ class MutatingWebhook(HelmYaml):
         See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ \
         for more examples of label selectors.  Default to the empty LabelSelector, \
         which matches everything.
-    :param object_selector: ObjectSelector decides whether to run the webhook based on \
+    :type namespace_selector: LabelSelector
+    :param object_selector:ObjectSelector decides whether to run the webhook based on \
         if the object has matching labels. objectSelector is evaluated against both \
         the oldObject and newObject that would be sent to the webhook, and is \
         considered to match if either object matches the selector. A null object \
@@ -283,7 +312,8 @@ class MutatingWebhook(HelmYaml):
         object) is not considered to match. Use the object selector only if the \
         webhook is opt-in, because end users may skip the admission webhook by setting \
         the labels. Default to the empty LabelSelector, which matches everything.
-    :param rules: Rules describes what operations on what resources/subresources the \
+    :type object_selector: LabelSelector
+    :param rules:Rules describes what operations on what resources/subresources the \
         webhook cares about. The webhook cares about an operation if it matches _any_ \
         Rule. However, in order to prevent ValidatingAdmissionWebhooks and \
         MutatingAdmissionWebhooks from putting the cluster in a state which cannot be \
@@ -291,21 +321,25 @@ class MutatingWebhook(HelmYaml):
         ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks are never called on \
         admission requests for ValidatingWebhookConfiguration and \
         MutatingWebhookConfiguration objects.
-    :param side_effects: SideEffects states whether this webhook has side effects. \
+    :type rules: List[RuleWithOperations]
+    :param side_effects:SideEffects states whether this webhook has side effects. \
         Acceptable values are: None, NoneOnDryRun (webhooks created via v1beta1 may \
         also specify Some or Unknown). Webhooks with side effects MUST implement a \
         reconciliation system, since a request may be rejected by a future step in the \
         admission change and the side effects therefore need to be undone. Requests \
         with the dryRun attribute will be auto-rejected if they match a webhook with \
         sideEffects == Unknown or Some.
-    :param timeout_seconds: TimeoutSeconds specifies the timeout for this webhook. \
+    :type side_effects: str
+    :param timeout_seconds:TimeoutSeconds specifies the timeout for this webhook. \
         After the timeout passes, the webhook call will be ignored or the API call \
         will fail based on the failure policy. The timeout value must be between 1 and \
         30 seconds. Default to 10 seconds.
-    :param failure_policy: FailurePolicy defines how unrecognized errors from the \
+    :type timeout_seconds: int
+    :param failure_policy:FailurePolicy defines how unrecognized errors from the \
         admission endpoint are handled - allowed values are Ignore or Fail. Defaults \
         to Fail.
-    :param match_policy: matchPolicy defines how the "rules" list is used to match \
+    :type failure_policy: Optional[str]
+    :param match_policy:matchPolicy defines how the "rules" list is used to match \
         incoming requests. Allowed values are "Exact" or "Equivalent".  - Exact: match \
         a request only if it exactly matches a specified rule. For example, if \
         deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, \
@@ -317,10 +351,12 @@ class MutatingWebhook(HelmYaml):
         and "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: \
         ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be \
         converted to apps/v1 and sent to the webhook.  Defaults to "Equivalent"
-    :param name: The name of the admission webhook. Name should be fully qualified, \
+    :type match_policy: Optional[str]
+    :param name:The name of the admission webhook. Name should be fully qualified, \
         e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the \
         webhook, and kubernetes.io is the name of the organization. Required.
-    :param reinvocation_policy: reinvocationPolicy indicates whether this webhook \
+    :type name: Optional[str]
+    :param reinvocation_policy:reinvocationPolicy indicates whether this webhook \
         should be called multiple times as part of a single admission evaluation. \
         Allowed values are "Never" and "IfNeeded".  Never: the webhook will not be \
         called more than once in a single admission evaluation.  IfNeeded: the webhook \
@@ -334,6 +370,7 @@ class MutatingWebhook(HelmYaml):
         reordered to minimize the number of additional invocations. * to validate an \
         object after all mutations are guaranteed complete, use a validating admission \
         webhook instead.  Defaults to "Never".
+    :type reinvocation_policy: Optional[str]
     """
 
     def __init__(
@@ -365,14 +402,17 @@ class MutatingWebhook(HelmYaml):
 
 class MutatingWebhookConfiguration(KubernetesBaseObject):
     """
-    :param metadata: Standard object metadata; More info: \
+    :param metadata:Standard object metadata; More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.  # noqa
-    :param webhooks: Webhooks is a list of webhooks and the affected resources and \
+    :type metadata: ObjectMeta
+    :param webhooks:Webhooks is a list of webhooks and the affected resources and \
         operations.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type webhooks: List[MutatingWebhook]
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -388,13 +428,16 @@ class MutatingWebhookConfiguration(KubernetesBaseObject):
 
 class MutatingWebhookConfigurationList(KubernetesBaseObject):
     """
-    :param items: List of MutatingWebhookConfiguration.
-    :param metadata: Standard list metadata. More info: \
+    :param items:List of MutatingWebhookConfiguration.
+    :type items: List[MutatingWebhookConfiguration]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

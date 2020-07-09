@@ -6,14 +6,18 @@ from helm_factory.kubernetes_objects.metadata import ListMeta, ObjectMeta
 
 class ControllerRevision(KubernetesBaseObject):
     """
-    :param data: Data is the serialized representation of the state.
-    :param metadata: Standard object's metadata. More info: \
+    :param data:Data is the serialized representation of the state.
+    :type data: str
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param revision: Revision indicates the revision of the state represented by Data.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ObjectMeta
+    :param revision:Revision indicates the revision of the state represented by Data.
+    :type revision: int
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -31,13 +35,16 @@ class ControllerRevision(KubernetesBaseObject):
 
 class ControllerRevisionList(KubernetesBaseObject):
     """
-    :param items: Items is the list of ControllerRevisions
-    :param metadata: More info: \
+    :param items:Items is the list of ControllerRevisions
+    :type items: List[ControllerRevision]
+    :param metadata:More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

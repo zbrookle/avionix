@@ -6,17 +6,22 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class OwnerReference(KubernetesBaseObject):
     """
-    :param controller: If true, this reference points to the managing controller.
-    :param uid: UID of the referent. More info: \
+    :param controller:If true, this reference points to the managing controller.
+    :type controller: bool
+    :param uid:UID of the referent. More info: \
         http://kubernetes.io/docs/user-guide/identifiers#uids
-    :param api_version: API version of the referent.
-    :param block_owner_deletion: If true, AND if the owner has the \
-        "foregroundDeletion" finalizer, then the owner cannot be deleted from the \
-        key-value store until this reference is removed. Defaults to false. To set \
-        this field, a user needs "delete" permission of the owner, otherwise 422 \
-        (Unprocessable Entity) will be returned.
-    :param name: Name of the referent. More info: \
+    :type uid: str
+    :param api_version:API version of the referent.
+    :type api_version: Optional[str]
+    :param block_owner_deletion:If true, AND if the owner has the "foregroundDeletion" \
+        finalizer, then the owner cannot be deleted from the key-value store until \
+        this reference is removed. Defaults to false. To set this field, a user needs \
+        "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be \
+        returned.
+    :type block_owner_deletion: Optional[bool]
+    :param name:Name of the referent. More info: \
         http://kubernetes.io/docs/user-guide/identifiers#names
+    :type name: Optional[str]
     """
 
     def __init__(
@@ -36,9 +41,12 @@ class OwnerReference(KubernetesBaseObject):
 
 class BoundObjectReference(KubernetesBaseObject):
     """
-    :param uid: UID of the referent.
-    :param api_version: API version of the referent.
-    :param name: Name of the referent.
+    :param uid:UID of the referent.
+    :type uid: str
+    :param api_version:API version of the referent.
+    :type api_version: Optional[str]
+    :param name:Name of the referent.
+    :type name: Optional[str]
     """
 
     def __init__(
@@ -51,9 +59,11 @@ class BoundObjectReference(KubernetesBaseObject):
 
 class CrossVersionObjectReference(KubernetesBaseObject):
     """
-    :param api_version: API version of the referent
-    :param name: Name of the referent; More info: \
+    :param api_version:API version of the referent
+    :type api_version: Optional[str]
+    :param name:Name of the referent; More info: \
         http://kubernetes.io/docs/user-guide/identifiers#names
+    :type name: Optional[str]
     """
 
     def __init__(self, api_version: Optional[str] = None, name: Optional[str] = None):
@@ -61,12 +71,25 @@ class CrossVersionObjectReference(KubernetesBaseObject):
         self.name = name
 
 
+class LocalObjectReference(HelmYaml):
+    """
+    :param name:Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+    :type name: Optional[str]
+    """
+
+    def __init__(self, name: Optional[str] = None):
+        self.name = name
+
+
 class TypedLocalObjectReference(KubernetesBaseObject):
     """
-    :param api_group: APIGroup is the group for the resource being referenced. If \
+    :param api_group:APIGroup is the group for the resource being referenced. If \
         APIGroup is not specified, the specified Kind must be in the core API group. \
         For any other third-party types, APIGroup is required.
-    :param name: Name is the name of resource being referenced
+    :type api_group: Optional[str]
+    :param name:Name is the name of resource being referenced
+    :type name: Optional[str]
     """
 
     def __init__(self, api_group: Optional[str] = None, name: Optional[str] = None):
@@ -74,19 +97,9 @@ class TypedLocalObjectReference(KubernetesBaseObject):
         self.name = name
 
 
-class LocalObjectReference(HelmYaml):
-    """
-    :param name: Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
-    """
-
-    def __init__(self, name: Optional[str] = None):
-        self.name = name
-
-
 class ObjectReference(KubernetesBaseObject):
     """
-    :param field_path: If referring to a piece of an object instead of an entire \
+    :param field_path:If referring to a piece of an object instead of an entire \
         object, this string should contain a valid JSON/Go field access statement, \
         such as desiredState.manifest.containers[2]. For example, if the object \
         reference is to a container within a pod, this would take on a value like: \
@@ -94,16 +107,22 @@ class ObjectReference(KubernetesBaseObject):
         triggered the event) or if no container name is specified "spec.containers[2]" \
         (container with index 2 in this pod). This syntax is chosen only to have some \
         well-defined way of referencing a part of an object.
-    :param resource_version: Specific resourceVersion to which this reference is made, \
+    :type field_path: str
+    :param resource_version:Specific resourceVersion to which this reference is made, \
         if any. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency  # noqa
-    :param uid: UID of the referent. More info: \
+    :type resource_version: str
+    :param uid:UID of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
-    :param api_version: API version of the referent.
-    :param name: Name of the referent. More info: \
+    :type uid: str
+    :param api_version:API version of the referent.
+    :type api_version: Optional[str]
+    :param name:Name of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
-    :param namespace: Namespace of the referent. More info: \
+    :type name: Optional[str]
+    :param namespace:Namespace of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+    :type namespace: Optional[str]
     """
 
     def __init__(

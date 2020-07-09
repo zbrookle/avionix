@@ -10,11 +10,15 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class DaemonSetCondition(HelmYaml):
     """
-    :param last_transition_time: Last time the condition transitioned from one status \
+    :param last_transition_time:Last time the condition transitioned from one status \
         to another.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of DaemonSet condition.
+    :type last_transition_time: time
+    :param message:A human readable message indicating details about the transition.
+    :type message: str
+    :param reason:The reason for the condition's last transition.
+    :type reason: str
+    :param type:Type of DaemonSet condition.
+    :type type: str
     """
 
     def __init__(
@@ -28,7 +32,7 @@ class DaemonSetCondition(HelmYaml):
 
 class RollingUpdateDaemonSet(HelmYaml):
     """
-    :param max_unavailable: The maximum number of DaemonSet pods that can be \
+    :param max_unavailable:The maximum number of DaemonSet pods that can be \
         unavailable during the update. Value can be an absolute number (ex: 5) or a \
         percentage of total number of DaemonSet pods at the start of the update (ex: \
         10%). Absolute number is calculated from percentage by rounding up. This \
@@ -40,6 +44,7 @@ class RollingUpdateDaemonSet(HelmYaml):
         are available, it then proceeds onto other DaemonSet pods, thus ensuring that \
         at least 70% of original number of DaemonSet pods are available at all times \
         during the update.
+    :type max_unavailable: str
     """
 
     def __init__(self, max_unavailable: str):
@@ -48,10 +53,12 @@ class RollingUpdateDaemonSet(HelmYaml):
 
 class DaemonSetUpdateStrategy(HelmYaml):
     """
-    :param rolling_update: Rolling update config params. Present only if type = \
+    :param rolling_update:Rolling update config params. Present only if type = \
         "RollingUpdate".
-    :param type: Type of daemon set update. Can be "RollingUpdate" or "OnDelete". \
+    :type rolling_update: Optional[RollingUpdateDaemonSet]
+    :param type:Type of daemon set update. Can be "RollingUpdate" or "OnDelete". \
         Default is RollingUpdate.
+    :type type: Optional[str]
     """
 
     def __init__(
@@ -65,24 +72,29 @@ class DaemonSetUpdateStrategy(HelmYaml):
 
 class DaemonSetSpec(HelmYaml):
     """
-    :param template: An object that describes the pod that will be created. The \
+    :param template:An object that describes the pod that will be created. The \
         DaemonSet will create exactly one copy of this pod on every node that matches \
         the template's node selector (or on every node if no node selector is \
         specified). More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template  # noqa
-    :param update_strategy: An update strategy to replace existing DaemonSet pods with \
+    :type template: PodTemplateSpec
+    :param update_strategy:An update strategy to replace existing DaemonSet pods with \
         new pods.
-    :param min_ready_seconds: The minimum number of seconds for which a newly created \
+    :type update_strategy: DaemonSetUpdateStrategy
+    :param min_ready_seconds:The minimum number of seconds for which a newly created \
         DaemonSet pod should be ready without any of its container crashing, for it to \
         be considered available. Defaults to 0 (pod will be considered available as \
         soon as it is ready).
-    :param revision_history_limit: The number of old history to retain to allow \
+    :type min_ready_seconds: Optional[int]
+    :param revision_history_limit:The number of old history to retain to allow \
         rollback. This is a pointer to distinguish between explicit zero and not \
         specified. Defaults to 10.
-    :param selector: A label query over pods that are managed by the daemon set. Must \
+    :type revision_history_limit: Optional[int]
+    :param selector:A label query over pods that are managed by the daemon set. Must \
         match in order to be controlled. It must match the pod template's labels. More \
         info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :type selector: Optional[LabelSelector]
     """
 
     def __init__(
@@ -102,14 +114,17 @@ class DaemonSetSpec(HelmYaml):
 
 class DaemonSet(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata. More info: \
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param spec: The desired behavior of this daemon set. More info: \
+    :type metadata: ObjectMeta
+    :param spec:The desired behavior of this daemon set. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type spec: DaemonSetSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -125,13 +140,16 @@ class DaemonSet(KubernetesBaseObject):
 
 class DaemonSetList(KubernetesBaseObject):
     """
-    :param items: A list of daemon sets.
-    :param metadata: Standard list metadata. More info: \
+    :param items:A list of daemon sets.
+    :type items: List[DaemonSet]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

@@ -12,26 +12,31 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class ServicePort(HelmYaml):
     """
-    :param app_protocol: The application protocol for this port. This field follows \
+    :param app_protocol:The application protocol for this port. This field follows \
         standard Kubernetes label syntax. Un-prefixed names are reserved for IANA \
         standard service names (as per RFC-6335 and \
         http://www.iana.org/assignments/service-names). Non-standard protocols should \
         use prefixed names such as mycompany.com/my-custom-protocol. Field can be \
         enabled with ServiceAppProtocol feature gate.
-    :param port: The port that will be exposed by this service.
-    :param name: The name of this port within the service. This must be a DNS_LABEL. \
+    :type app_protocol: str
+    :param port:The port that will be exposed by this service.
+    :type port: str
+    :param name:The name of this port within the service. This must be a DNS_LABEL. \
         All ports within a ServiceSpec must have unique names. When considering the \
         endpoints for a Service, this must match the 'name' field in the EndpointPort. \
         Optional if only one ServicePort is defined on this service.
-    :param node_port: The port on each node on which this service is exposed when \
+    :type name: Optional[str]
+    :param node_port:The port on each node on which this service is exposed when \
         type=NodePort or LoadBalancer. Usually assigned by the system. If specified, \
         it will be allocated to the service if unused or else creation of the service \
         will fail. Default is to auto-allocate a port if the ServiceType of this \
         Service requires one. More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport  # noqa
-    :param protocol: The IP protocol for this port. Supports "TCP", "UDP", and "SCTP". \
+    :type node_port: Optional[int]
+    :param protocol:The IP protocol for this port. Supports "TCP", "UDP", and "SCTP". \
         Default is TCP.
-    :param target_port: Number or name of the port to access on the pods targeted by \
+    :type protocol: Optional[int]
+    :param target_port:Number or name of the port to access on the pods targeted by \
         the service. Number must be in the range 1 to 65535. Name must be an \
         IANA_SVC_NAME. If this is a string, it will be looked up as a named port in \
         the target Pod's container ports. If this is not specified, the value of the \
@@ -39,6 +44,7 @@ class ServicePort(HelmYaml):
         with clusterIP=None, and should be omitted or set equal to the 'port' field. \
         More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service  # noqa
+    :type target_port: Optional[str]
     """
 
     def __init__(
@@ -60,7 +66,7 @@ class ServicePort(HelmYaml):
 
 class ServiceSpec(HelmYaml):
     """
-    :param cluster_ip: clusterIP is the IP address of the service and is usually \
+    :param cluster_ip:clusterIP is the IP address of the service and is usually \
         assigned randomly by the master. If an address is specified manually and is \
         not in use by others, it will be allocated to the service; otherwise, creation \
         of the service will fail. This field can not be changed through updates. Valid \
@@ -69,22 +75,26 @@ class ServiceSpec(HelmYaml):
         types ClusterIP, NodePort, and LoadBalancer. Ignored if type is ExternalName. \
         More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
-    :param external_ips: externalIPs is a list of IP addresses for which nodes in the \
+    :type cluster_ip: str
+    :param external_ips:externalIPs is a list of IP addresses for which nodes in the \
         cluster will also accept traffic for this service.  These IPs are not managed \
         by Kubernetes.  The user is responsible for ensuring that traffic arrives at a \
         node with this IP.  A common example is external load-balancers that are not \
         part of the Kubernetes system.
-    :param external_name: externalName is the external reference that kubedns or \
+    :type external_ips: List[str]
+    :param external_name:externalName is the external reference that kubedns or \
         equivalent will return as a CNAME record for this service. No proxying will be \
         involved. Must be a valid RFC-1123 hostname \
         (https://tools.ietf.org/html/rfc1123) and requires Type to be ExternalName.
-    :param external_traffic_policy: externalTrafficPolicy denotes if this Service \
+    :type external_name: str
+    :param external_traffic_policy:externalTrafficPolicy denotes if this Service \
         desires to route external traffic to node-local or cluster-wide endpoints. \
         "Local" preserves the client source IP and avoids a second hop for \
         LoadBalancer and Nodeport type services, but risks potentially imbalanced \
         traffic spreading. "Cluster" obscures the client source IP and may cause a \
         second hop to another node, but should have good overall load-spreading.
-    :param ip_family: ipFamily specifies whether this Service has a preference for a \
+    :type external_traffic_policy: str
+    :param ip_family:ipFamily specifies whether this Service has a preference for a \
         particular IP family (e.g. IPv4 vs. IPv6).  If a specific IP family is \
         requested, the clusterIP field will be allocated from that family, if it is \
         available in the cluster.  If no IP family is requested, the cluster's primary \
@@ -94,42 +104,51 @@ class ServiceSpec(HelmYaml):
         be of this family.  This field is immutable after creation. Assigning a \
         ServiceIPFamily not available in the cluster (e.g. IPv6 in IPv4 only cluster) \
         is an error condition and will fail during clusterIP assignment.
-    :param load_balancer_ip: Only applies to Service Type: LoadBalancer LoadBalancer \
+    :type ip_family: str
+    :param load_balancer_ip:Only applies to Service Type: LoadBalancer LoadBalancer \
         will get created with the IP specified in this field. This feature depends on \
         whether the underlying cloud-provider supports specifying the loadBalancerIP \
         when a load balancer is created. This field will be ignored if the \
         cloud-provider does not support the feature.
-    :param publish_not_ready_addresses: publishNotReadyAddresses, when set to true, \
+    :type load_balancer_ip: str
+    :param publish_not_ready_addresses:publishNotReadyAddresses, when set to true, \
         indicates that DNS implementations must publish the notReadyAddresses of \
         subsets for the Endpoints associated with the Service. The default value is \
         false. The primary use case for setting this field is to use a StatefulSet's \
         Headless Service to propagate SRV records for its Pods without respect to \
         their readiness for purpose of peer discovery.
-    :param session_affinity_config: sessionAffinityConfig contains the configurations \
+    :type publish_not_ready_addresses: bool
+    :param session_affinity_config:sessionAffinityConfig contains the configurations \
         of session affinity.
-    :param health_check_node_port: healthCheckNodePort specifies the healthcheck \
+    :type session_affinity_config: SessionAffinityConfig
+    :param health_check_node_port:healthCheckNodePort specifies the healthcheck \
         nodePort for the service. If not specified, HealthCheckNodePort is created by \
         the service api backend with the allocated nodePort. Will use user-specified \
         nodePort value if specified by the client. Only effects when Type is set to \
         LoadBalancer and ExternalTrafficPolicy is set to Local.
-    :param load_balancer_source_ranges: If specified and supported by the platform, \
+    :type health_check_node_port: Optional[int]
+    :param load_balancer_source_ranges:If specified and supported by the platform, \
         this will restrict traffic through the cloud-provider load-balancer will be \
         restricted to the specified client IPs. This field will be ignored if the \
         cloud-provider does not support the feature." More info: \
         https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/  # noqa
-    :param ports: The list of ports that are exposed by this service. More info: \
+    :type load_balancer_source_ranges: Optional[List[str]]
+    :param ports:The list of ports that are exposed by this service. More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
-    :param selector: Route service traffic to pods with label keys and values matching \
+    :type ports: Optional[List[ServicePort]]
+    :param selector:Route service traffic to pods with label keys and values matching \
         this selector. If empty or not present, the service is assumed to have an \
         external process managing its endpoints, which Kubernetes will not modify. \
         Only applies to types ClusterIP, NodePort, and LoadBalancer. Ignored if type \
         is ExternalName. More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/
-    :param session_affinity: Supports "ClientIP" and "None". Used to maintain session \
+    :type selector: Optional[dict]
+    :param session_affinity:Supports "ClientIP" and "None". Used to maintain session \
         affinity. Enable client IP based session affinity. Must be ClientIP or None. \
         Defaults to None. More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
-    :param topology_keys: topologyKeys is a preference-order list of topology keys \
+    :type session_affinity: Optional[str]
+    :param topology_keys:topologyKeys is a preference-order list of topology keys \
         which implementations of services should use to preferentially sort endpoints \
         when accessing this Service, it can not be used at the same time as \
         externalTrafficPolicy=Local. Topology keys must be valid label keys and at \
@@ -140,7 +159,8 @@ class ServiceSpec(HelmYaml):
         "*" may be used to mean "any topology". This catch-all value, if used, only \
         makes sense as the last value in the list. If this is not specified or empty, \
         no topology constraints will be applied.
-    :param type: type determines how the Service is exposed. Defaults to ClusterIP. \
+    :type topology_keys: Optional[List[str]]
+    :param type:type determines how the Service is exposed. Defaults to ClusterIP. \
         Valid options are ExternalName, ClusterIP, NodePort, and LoadBalancer. \
         "ExternalName" maps to the specified externalName. "ClusterIP" allocates a \
         cluster-internal IP address for load-balancing to endpoints. Endpoints are \
@@ -152,6 +172,7 @@ class ServiceSpec(HelmYaml):
         load-balancer (if supported in the current cloud) which routes to the \
         clusterIP. More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types  # noqa
+    :type type: Optional[str]
     """
 
     def __init__(
@@ -191,14 +212,17 @@ class ServiceSpec(HelmYaml):
 
 class Service(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata. More info: \
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param spec: Spec defines the behavior of a service. \
+    :type metadata: ObjectMeta
+    :param spec:Spec defines the behavior of a service. \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type spec: ServiceSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -211,11 +235,14 @@ class Service(KubernetesBaseObject):
 
 class ServiceReference(HelmYaml):
     """
-    :param name: Name is the name of the service
-    :param namespace: Namespace is the namespace of the service
-    :param port: If specified, the port on the service that hosting webhook. Default \
-        to 443 for backward compatibility. `port` should be a valid port number \
-        (1-65535, inclusive).
+    :param name:Name is the name of the service
+    :type name: Optional[str]
+    :param namespace:Namespace is the namespace of the service
+    :type namespace: Optional[str]
+    :param port:If specified, the port on the service that hosting webhook. Default to \
+        443 for backward compatibility. `port` should be a valid port number (1-65535, \
+        inclusive).
+    :type port: Optional[int]
     """
 
     def __init__(
@@ -231,24 +258,29 @@ class ServiceReference(HelmYaml):
 
 class ServiceAccount(KubernetesBaseObject):
     """
-    :param image_pull_secrets: ImagePullSecrets is a list of references to secrets in \
+    :param image_pull_secrets:ImagePullSecrets is a list of references to secrets in \
         the same namespace to use for pulling any images in pods that reference this \
         ServiceAccount. ImagePullSecrets are distinct from Secrets because Secrets can \
         be mounted in the pod, but ImagePullSecrets are only accessed by the kubelet. \
         More info: \
         https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod  # noqa
-    :param metadata: Standard object's metadata. More info: \
+    :type image_pull_secrets: List[LocalObjectReference]
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param secrets: Secrets is the list of secrets allowed to be used by pods running \
+    :type metadata: ObjectMeta
+    :param secrets:Secrets is the list of secrets allowed to be used by pods running \
         using this ServiceAccount. More info: \
         https://kubernetes.io/docs/concepts/configuration/secret
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type secrets: List[ObjectReference]
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :param automount_service_account_token: AutomountServiceAccountToken indicates \
+    :type api_version: Optional[str]
+    :param automount_service_account_token:AutomountServiceAccountToken indicates \
         whether pods running as this service account should have an API token \
         automatically mounted. Can be overridden at the pod level.
+    :type automount_service_account_token: Optional[bool]
     """
 
     def __init__(
@@ -268,14 +300,17 @@ class ServiceAccount(KubernetesBaseObject):
 
 class ServiceAccountList(KubernetesBaseObject):
     """
-    :param items: List of ServiceAccounts. More info: \
+    :param items:List of ServiceAccounts. More info: \
         https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/  # noqa
-    :param metadata: Standard list metadata. More info: \
+    :type items: List[ServiceAccount]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -291,13 +326,16 @@ class ServiceAccountList(KubernetesBaseObject):
 
 class ServiceList(KubernetesBaseObject):
     """
-    :param items: List of services
-    :param metadata: Standard list metadata. More info: \
+    :param items:List of services
+    :type items: List[Service]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

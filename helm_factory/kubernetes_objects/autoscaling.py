@@ -6,14 +6,17 @@ from helm_factory.kubernetes_objects.metadata import ObjectMeta
 
 class Scale(KubernetesBaseObject):
     """
-    :param metadata: Standard object metadata; More info: \
+    :param metadata:Standard object metadata; More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.  # noqa
-    :param spec: defines the behavior of the scale. More info: \
+    :type metadata: ObjectMeta
+    :param spec:defines the behavior of the scale. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status.  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type spec: dict
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

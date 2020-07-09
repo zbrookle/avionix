@@ -9,10 +9,13 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class EventSeries(HelmYaml):
     """
-    :param count: Number of occurrences in this series up to the last heartbeat time
-    :param last_observed_time: Time of the last occurrence observed
-    :param state: State of this Series: Ongoing or Finished Deprecated. Planned \
-        removal for 1.18
+    :param count:Number of occurrences in this series up to the last heartbeat time
+    :type count: int
+    :param last_observed_time:Time of the last occurrence observed
+    :type last_observed_time: time
+    :param state:State of this Series: Ongoing or Finished Deprecated. Planned removal \
+        for 1.18
+    :type state: str
     """
 
     def __init__(self, count: int, last_observed_time: time, state: str):
@@ -23,8 +26,10 @@ class EventSeries(HelmYaml):
 
 class EventSource(HelmYaml):
     """
-    :param component: Component from which the event is generated.
-    :param host: Node name on which the event is generated.
+    :param component:Component from which the event is generated.
+    :type component: str
+    :param host:Node name on which the event is generated.
+    :type host: str
     """
 
     def __init__(self, component: str, host: str):
@@ -34,33 +39,49 @@ class EventSource(HelmYaml):
 
 class Event(KubernetesBaseObject):
     """
-    :param action: What action was taken/failed regarding to the Regarding object.
-    :param count: The number of times this event has occurred.
-    :param event_time: Time when this Event was first observed.
-    :param first_timestamp: The time at which the event was first recorded. (Time of \
+    :param action:What action was taken/failed regarding to the Regarding object.
+    :type action: str
+    :param count:The number of times this event has occurred.
+    :type count: int
+    :param event_time:Time when this Event was first observed.
+    :type event_time: time
+    :param first_timestamp:The time at which the event was first recorded. (Time of \
         server receipt is in TypeMeta.)
-    :param involved_object: The object that this event is about.
-    :param last_timestamp: The time at which the most recent occurrence of this event \
+    :type first_timestamp: time
+    :param involved_object:The object that this event is about.
+    :type involved_object: ObjectReference
+    :param last_timestamp:The time at which the most recent occurrence of this event \
         was recorded.
-    :param message: A human-readable description of the status of this operation.
-    :param metadata: Standard object's metadata. More info: \
+    :type last_timestamp: time
+    :param message:A human-readable description of the status of this operation.
+    :type message: str
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param reason: This should be a short, machine understandable string that gives \
-        the reason for the transition into the object's current status.
-    :param related: Optional secondary object for more complex actions.
-    :param reporting_component: Name of the controller that emitted this Event, e.g. \
+    :type metadata: ObjectMeta
+    :param reason:This should be a short, machine understandable string that gives the \
+        reason for the transition into the object's current status.
+    :type reason: str
+    :param related:Optional secondary object for more complex actions.
+    :type related: ObjectReference
+    :param reporting_component:Name of the controller that emitted this Event, e.g. \
         `kubernetes.io/kubelet`.
-    :param reporting_instance: ID of the controller instance, e.g. `kubelet-xyzf`.
-    :param series: Data about the Event series this event represents or nil if it's a \
+    :type reporting_component: str
+    :param reporting_instance:ID of the controller instance, e.g. `kubelet-xyzf`.
+    :type reporting_instance: str
+    :param series:Data about the Event series this event represents or nil if it's a \
         singleton Event.
-    :param source: The component reporting this event. Should be a short machine \
+    :type series: EventSeries
+    :param source:The component reporting this event. Should be a short machine \
         understandable string.
-    :param type: Type of this event (Normal, Warning), new types could be added in the \
+    :type source: EventSource
+    :param type:Type of this event (Normal, Warning), new types could be added in the \
         future
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type type: str
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -102,11 +123,13 @@ class Event(KubernetesBaseObject):
 
 class WatchEvent(HelmYaml):
     """
-    :param object: Object is:  * If Type is Added or Modified: the new state of the \
+    :param object:Object is:  * If Type is Added or Modified: the new state of the \
         object.  * If Type is Deleted: the state of the object immediately before \
         deletion.  * If Type is Error: *Status is recommended; other types may make \
         sense    depending on context.
-    :param type: None
+    :type object: str
+    :param type:None
+    :type type: str
     """
 
     def __init__(self, object: str, type: str):
@@ -116,13 +139,16 @@ class WatchEvent(HelmYaml):
 
 class EventList(KubernetesBaseObject):
     """
-    :param items: List of events
-    :param metadata: Standard list metadata. More info: \
+    :param items:List of events
+    :type items: List[Event]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

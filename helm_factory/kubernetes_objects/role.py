@@ -9,9 +9,10 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class AggregationRule(HelmYaml):
     """
-    :param cluster_role_selectors: ClusterRoleSelectors holds a list of selectors \
-        which will be used to find ClusterRoles and create the rules. If any of the \
+    :param cluster_role_selectors:ClusterRoleSelectors holds a list of selectors which \
+        will be used to find ClusterRoles and create the rules. If any of the \
         selectors match, then the ClusterRole's permissions will be added
+    :type cluster_role_selectors: List[LabelSelector]
     """
 
     def __init__(self, cluster_role_selectors: List[LabelSelector]):
@@ -20,21 +21,26 @@ class AggregationRule(HelmYaml):
 
 class PolicyRule(HelmYaml):
     """
-    :param api_groups: APIGroups is the name of the APIGroup that contains the \
+    :param api_groups:APIGroups is the name of the APIGroup that contains the \
         resources.  If multiple API groups are specified, any action requested against \
         one of the enumerated resources in any API group will be allowed.
-    :param non_resource_urls: NonResourceURLs is a set of partial urls that a user \
+    :type api_groups: List[str]
+    :param non_resource_urls:NonResourceURLs is a set of partial urls that a user \
         should have access to.  *s are allowed, but only as the full, final step in \
         the path Since non-resource URLs are not namespaced, this field is only \
         applicable for ClusterRoles referenced from a ClusterRoleBinding. Rules can \
         either apply to API resources (such as "pods" or "secrets") or non-resource \
         URL paths (such as "/api"),  but not both.
-    :param resource_names: ResourceNames is an optional white list of names that the \
+    :type non_resource_urls: List[str]
+    :param resource_names:ResourceNames is an optional white list of names that the \
         rule applies to.  An empty set means that everything is allowed.
-    :param verbs: Verbs is a list of Verbs that apply to ALL the ResourceKinds and \
+    :type resource_names: List[str]
+    :param verbs:Verbs is a list of Verbs that apply to ALL the ResourceKinds and \
         AttributeRestrictions contained in this rule.  VerbAll represents all kinds.
-    :param resources: Resources is a list of resources this rule applies to.  \
+    :type verbs: List[str]
+    :param resources:Resources is a list of resources this rule applies to.  \
         ResourceAll represents all resources.
+    :type resources: Optional[List[str]]
     """
 
     def __init__(
@@ -54,12 +60,15 @@ class PolicyRule(HelmYaml):
 
 class Role(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata.
-    :param rules: Rules holds all the PolicyRules for this Role
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param metadata:Standard object's metadata.
+    :type metadata: ObjectMeta
+    :param rules:Rules holds all the PolicyRules for this Role
+    :type rules: List[PolicyRule]
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -75,8 +84,10 @@ class Role(KubernetesBaseObject):
 
 class RoleRef(KubernetesBaseObject):
     """
-    :param api_group: APIGroup is the group for the resource being referenced
-    :param name: Name is the name of resource being referenced
+    :param api_group:APIGroup is the group for the resource being referenced
+    :type api_group: str
+    :param name:Name is the name of resource being referenced
+    :type name: Optional[str]
     """
 
     def __init__(self, api_group: str, name: Optional[str] = None):
@@ -86,15 +97,19 @@ class RoleRef(KubernetesBaseObject):
 
 class RoleBinding(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata.
-    :param role_ref: RoleRef can reference a Role in the current namespace or a \
+    :param metadata:Standard object's metadata.
+    :type metadata: ObjectMeta
+    :param role_ref:RoleRef can reference a Role in the current namespace or a \
         ClusterRole in the global namespace. If the RoleRef cannot be resolved, the \
         Authorizer must return an error.
-    :param subjects: Subjects holds references to the objects the role applies to.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type role_ref: RoleRef
+    :param subjects:Subjects holds references to the objects the role applies to.
+    :type subjects: List[Subject]
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -112,12 +127,15 @@ class RoleBinding(KubernetesBaseObject):
 
 class RoleBindingList(KubernetesBaseObject):
     """
-    :param items: Items is a list of RoleBindings
-    :param metadata: Standard object's metadata.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param items:Items is a list of RoleBindings
+    :type items: List[RoleBinding]
+    :param metadata:Standard object's metadata.
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -133,12 +151,15 @@ class RoleBindingList(KubernetesBaseObject):
 
 class RoleList(KubernetesBaseObject):
     """
-    :param items: Items is a list of Roles
-    :param metadata: Standard object's metadata.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param items:Items is a list of Roles
+    :type items: List[Role]
+    :param metadata:Standard object's metadata.
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -151,16 +172,20 @@ class RoleList(KubernetesBaseObject):
 
 class ClusterRole(KubernetesBaseObject):
     """
-    :param aggregation_rule: AggregationRule is an optional field that describes how \
-        to build the Rules for this ClusterRole. If AggregationRule is set, then the \
+    :param aggregation_rule:AggregationRule is an optional field that describes how to \
+        build the Rules for this ClusterRole. If AggregationRule is set, then the \
         Rules are controller managed and direct changes to Rules will be stomped by \
         the controller.
-    :param metadata: Standard object's metadata.
-    :param rules: Rules holds all the PolicyRules for this ClusterRole
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type aggregation_rule: AggregationRule
+    :param metadata:Standard object's metadata.
+    :type metadata: ObjectMeta
+    :param rules:Rules holds all the PolicyRules for this ClusterRole
+    :type rules: List[PolicyRule]
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -178,14 +203,18 @@ class ClusterRole(KubernetesBaseObject):
 
 class ClusterRoleBinding(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata.
-    :param role_ref: RoleRef can only reference a ClusterRole in the global namespace. \
+    :param metadata:Standard object's metadata.
+    :type metadata: ObjectMeta
+    :param role_ref:RoleRef can only reference a ClusterRole in the global namespace. \
         If the RoleRef cannot be resolved, the Authorizer must return an error.
-    :param subjects: Subjects holds references to the objects the role applies to.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type role_ref: RoleRef
+    :param subjects:Subjects holds references to the objects the role applies to.
+    :type subjects: List[Subject]
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -203,12 +232,15 @@ class ClusterRoleBinding(KubernetesBaseObject):
 
 class ClusterRoleBindingList(KubernetesBaseObject):
     """
-    :param items: Items is a list of ClusterRoleBindings
-    :param metadata: Standard object's metadata.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param items:Items is a list of ClusterRoleBindings
+    :type items: List[ClusterRoleBinding]
+    :param metadata:Standard object's metadata.
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -224,12 +256,15 @@ class ClusterRoleBindingList(KubernetesBaseObject):
 
 class ClusterRoleList(KubernetesBaseObject):
     """
-    :param items: Items is a list of ClusterRoles
-    :param metadata: Standard object's metadata.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param items:Items is a list of ClusterRoles
+    :type items: List[ClusterRole]
+    :param metadata:Standard object's metadata.
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

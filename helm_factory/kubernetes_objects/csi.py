@@ -8,9 +8,10 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class CSINodeDriver(HelmYaml):
     """
-    :param allocatable: allocatable represents the volume resources of a node that are \
+    :param allocatable:allocatable represents the volume resources of a node that are \
         available for scheduling. This field is beta.
-    :param node_id: nodeID of the node from the driver point of view. This field \
+    :type allocatable: VolumeNodeResources
+    :param node_id:nodeID of the node from the driver point of view. This field \
         enables Kubernetes to communicate with storage systems that do not share the \
         same nomenclature for nodes. For example, Kubernetes may refer to a given node \
         as "node1", but the storage system may refer to the same node as "nodeA". When \
@@ -18,7 +19,8 @@ class CSINodeDriver(HelmYaml):
         specific node, it can use this field to refer to the node name using the ID \
         that the storage system will understand, e.g. "nodeA" instead of "node1". This \
         field is required.
-    :param topology_keys: topologyKeys is the list of keys supported by the driver. \
+    :type node_id: str
+    :param topology_keys:topologyKeys is the list of keys supported by the driver. \
         When a driver is initialized on a cluster, it provides a set of topology keys \
         that it understands (e.g. "company.com/zone", "company.com/region"). When a \
         driver is initialized on a node, it provides the same topology keys along with \
@@ -27,9 +29,11 @@ class CSINodeDriver(HelmYaml):
         to determine which labels it should retrieve from the node object and pass \
         back to the driver. It is possible for different nodes to use different \
         topology keys. This can be empty if driver does not support topology.
-    :param name: This is the name of the CSI driver that this object refers to. This \
+    :type topology_keys: List[str]
+    :param name:This is the name of the CSI driver that this object refers to. This \
         MUST be the same name returned by the CSI GetPluginName() call for that \
         driver.
+    :type name: Optional[str]
     """
 
     def __init__(
@@ -47,8 +51,8 @@ class CSINodeDriver(HelmYaml):
 
 class CSIDriverSpec(HelmYaml):
     """
-    :param attach_required: attachRequired indicates this CSI volume driver requires \
-        an attach operation (because it implements the CSI ControllerPublishVolume() \
+    :param attach_required:attachRequired indicates this CSI volume driver requires an \
+        attach operation (because it implements the CSI ControllerPublishVolume() \
         method), and that the Kubernetes attach detach controller should call the \
         attach volume interface which checks the volumeattachment status and waits \
         until the volume is attached before proceeding to mounting. The CSI \
@@ -57,7 +61,8 @@ class CSIDriverSpec(HelmYaml):
         CSIDriverRegistry feature gate is enabled and the value is specified to false, \
         the attach operation will be skipped. Otherwise the attach operation will be \
         called.
-    :param volume_lifecycle_modes: volumeLifecycleModes defines what kind of volumes \
+    :type attach_required: bool
+    :param volume_lifecycle_modes:volumeLifecycleModes defines what kind of volumes \
         this CSI volume driver supports. The default if the list is empty is \
         "Persistent", which is the usage defined by the CSI specification and \
         implemented in Kubernetes via the usual PV/PVC mechanism. The other mode is \
@@ -69,7 +74,8 @@ class CSIDriverSpec(HelmYaml):
         https://kubernetes-csi.github.io/docs/ephemeral-local-volumes.html A driver \
         can support one or more of these modes and more modes may be added in the \
         future. This field is beta.
-    :param pod_info_on_mount: If set to true, podInfoOnMount indicates this CSI volume \
+    :type volume_lifecycle_modes: List[str]
+    :param pod_info_on_mount:If set to true, podInfoOnMount indicates this CSI volume \
         driver requires additional pod information (like podName, podUID, etc.) during \
         mount operations. If set to false, pod information will not be passed on \
         mount. Default is false. The CSI driver specifies podInfoOnMount as part of \
@@ -88,6 +94,7 @@ class CSIDriverSpec(HelmYaml):
         this field. As Kubernetes 1.15 doesn't support this field, drivers can only \
         support one mode when deployed on such a cluster and the deployment determines \
         which mode that is, for example via a command line parameter of the driver.
+    :type pod_info_on_mount: Optional[bool]
     """
 
     def __init__(
@@ -103,17 +110,20 @@ class CSIDriverSpec(HelmYaml):
 
 class CSIDriver(KubernetesBaseObject):
     """
-    :param metadata: Standard object metadata. metadata.Name indicates the name of the \
+    :param metadata:Standard object metadata. metadata.Name indicates the name of the \
         CSI driver that this object refers to; it MUST be the same name returned by \
         the CSI GetPluginName() call for that driver. The driver name must be 63 \
         characters or less, beginning and ending with an alphanumeric character \
         ([a-z0-9A-Z]) with dashes (-), dots (.), and alphanumerics between. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param spec: Specification of the CSI Driver.
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ObjectMeta
+    :param spec:Specification of the CSI Driver.
+    :type spec: CSIDriverSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -129,8 +139,9 @@ class CSIDriver(KubernetesBaseObject):
 
 class CSINodeSpec(HelmYaml):
     """
-    :param drivers: drivers is a list of information of all CSI Drivers existing on a \
+    :param drivers:drivers is a list of information of all CSI Drivers existing on a \
         node. If all drivers in the list are uninstalled, this can become empty.
+    :type drivers: List[CSINodeDriver]
     """
 
     def __init__(self, drivers: List[CSINodeDriver]):
@@ -139,12 +150,15 @@ class CSINodeSpec(HelmYaml):
 
 class CSINode(KubernetesBaseObject):
     """
-    :param metadata: metadata.name must be the Kubernetes node name.
-    :param spec: spec is the specification of CSINode
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :param metadata:metadata.name must be the Kubernetes node name.
+    :type metadata: ObjectMeta
+    :param spec:spec is the specification of CSINode
+    :type spec: CSINodeSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -157,13 +171,16 @@ class CSINode(KubernetesBaseObject):
 
 class CSINodeList(KubernetesBaseObject):
     """
-    :param items: items is the list of CSINode
-    :param metadata: Standard list metadata More info: \
+    :param items:items is the list of CSINode
+    :type items: List[CSINode]
+    :param metadata:Standard list metadata More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -179,13 +196,16 @@ class CSINodeList(KubernetesBaseObject):
 
 class CSIDriverList(KubernetesBaseObject):
     """
-    :param items: items is the list of CSIDriver
-    :param metadata: Standard list metadata More info: \
+    :param items:items is the list of CSIDriver
+    :type items: List[CSIDriver]
+    :param metadata:Standard list metadata More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

@@ -7,17 +7,23 @@ from helm_factory.yaml.yaml_handling import HelmYaml
 
 class LimitRangeItem(HelmYaml):
     """
-    :param default: Default resource requirement limit value by resource name if \
+    :param default:Default resource requirement limit value by resource name if \
         resource limit is omitted.
-    :param default_request: DefaultRequest is the default resource requirement request \
+    :type default: dict
+    :param default_request:DefaultRequest is the default resource requirement request \
         value by resource name if resource request is omitted.
-    :param max: Max usage constraints on this kind by resource name.
-    :param min: Min usage constraints on this kind by resource name.
-    :param type: Type of resource that this limit applies to.
-    :param max_limit_request_ratio: MaxLimitRequestRatio if specified, the named \
+    :type default_request: dict
+    :param max:Max usage constraints on this kind by resource name.
+    :type max: dict
+    :param min:Min usage constraints on this kind by resource name.
+    :type min: dict
+    :param type:Type of resource that this limit applies to.
+    :type type: str
+    :param max_limit_request_ratio:MaxLimitRequestRatio if specified, the named \
         resource must have a request and limit that are both non-zero where limit \
         divided by request is less than or equal to the enumerated value; this \
         represents the max burst for the named resource.
+    :type max_limit_request_ratio: Optional[dict]
     """
 
     def __init__(
@@ -39,7 +45,8 @@ class LimitRangeItem(HelmYaml):
 
 class LimitRangeSpec(HelmYaml):
     """
-    :param limits: Limits is the list of LimitRangeItem objects that are enforced.
+    :param limits:Limits is the list of LimitRangeItem objects that are enforced.
+    :type limits: List[LimitRangeItem]
     """
 
     def __init__(self, limits: List[LimitRangeItem]):
@@ -48,14 +55,17 @@ class LimitRangeSpec(HelmYaml):
 
 class LimitRange(KubernetesBaseObject):
     """
-    :param metadata: Standard object's metadata. More info: \
+    :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param spec: Spec defines the limits enforced. More info: \
+    :type metadata: ObjectMeta
+    :param spec:Spec defines the limits enforced. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type spec: LimitRangeSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -71,14 +81,17 @@ class LimitRange(KubernetesBaseObject):
 
 class LimitRangeList(KubernetesBaseObject):
     """
-    :param items: Items is a list of LimitRange objects. More info: \
+    :param items:Items is a list of LimitRange objects. More info: \
         https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/  # noqa
-    :param metadata: Standard list metadata. More info: \
+    :type items: List[LimitRange]
+    :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(

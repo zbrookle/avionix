@@ -26,7 +26,7 @@ setup(
     maintainer="Varun Rao and Zach Brookler",
     maintainer_email="zachb1996@yahoo.com",
     description="A package for soldifying kubernetes structure and development by "
-                "using objects and code rather than yaml",
+    "using objects and code rather than yaml",
     python_requires=">=3.6.1",
     install_requires=["pyyaml==5.3.1"],
     project_urls={

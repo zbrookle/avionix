@@ -1,10 +1,7 @@
 from typing import Optional
 
 from avionix.kubernetes_objects.config_map import ConfigMapEnvSource
-from avionix.kubernetes_objects.secret import (
-    SecretEnvSource,
-    SecretKeySelector,
-)
+from avionix.kubernetes_objects.secret import SecretEnvSource, SecretKeySelector
 from avionix.kubernetes_objects.selector import (
     ConfigMapKeySelector,
     ObjectFieldSelector,

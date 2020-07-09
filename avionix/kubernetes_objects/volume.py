@@ -11,10 +11,7 @@ from avionix.kubernetes_objects.reference import (
     ObjectReference,
     TypedLocalObjectReference,
 )
-from avionix.kubernetes_objects.secret import (
-    SecretProjection,
-    SecretReference,
-)
+from avionix.kubernetes_objects.secret import SecretProjection, SecretReference
 from avionix.kubernetes_objects.selector import (
     LabelSelector,
     ObjectFieldSelector,

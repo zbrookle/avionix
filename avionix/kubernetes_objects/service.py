@@ -3,10 +3,7 @@ from typing import List, Optional
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 from avionix.kubernetes_objects.pod import SessionAffinityConfig
-from avionix.kubernetes_objects.reference import (
-    LocalObjectReference,
-    ObjectReference,
-)
+from avionix.kubernetes_objects.reference import LocalObjectReference, ObjectReference
 from avionix.yaml.yaml_handling import HelmYaml
 
 

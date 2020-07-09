@@ -32,43 +32,43 @@ jobs:
 
     - name: Linting
       run: |
-        source activate ballast_framework
+        source activate avionix
         ci/code_checks.sh lint
       if: always()
 
     - name: Dependencies consistency
       run: |
-        source activate ballast_framework
+        source activate avionix
         ci/code_checks.sh dependencies
       if: always()
 
     - name: Checks on imported code
       run: |
-        source activate ballast_framework
+        source activate avionix
         ci/code_checks.sh code
       if: always()
 
     - name: Running doctests
       run: |
-        source activate ballast_framework
+        source activate avionix
         ci/code_checks.sh doctests
       if: always()
 
     - name: Docstring validation
       run: |
-        source activate ballast_framework
+        source activate avionix
         ci/code_checks.sh docstrings
       if: always()
 
     - name: Typing validation
       run: |
-        source activate ballast_framework
+        source activate avionix
         ci/code_checks.sh typing
       if: always()
 
     - name: Unit tests
       run: |
-        source activate ballast_framework
+        source activate avionix
         chmod +x ci/run_tests.sh
         ci/run_tests.sh
       if: always()

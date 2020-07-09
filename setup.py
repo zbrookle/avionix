@@ -30,12 +30,12 @@ setup(
     python_requires=">=3.6.1",
     install_requires=["pyyaml==5.3.1"],
     project_urls={
-        "Source Code": "https://github.com/zbrookle/ballast_framework",
-        "Documentation": "https://github.com/zbrookle/ballast_framework",
-        "Bug Tracker": "https://github.com/zbrookle/ballast_framework/issues",
+        "Source Code": "https://github.com/zbrookle/avionix",
+        "Documentation": "https://github.com/zbrookle/avionix",
+        "Bug Tracker": "https://github.com/zbrookle/avionix/issues",
     },
-    url="https://github.com/zbrookle/ballast_framework",
-    download_url="https://github.com/zbrookle/ballast_framework/archive/master.zip",
+    url="https://github.com/zbrookle/avionix",
+    download_url="https://github.com/zbrookle/avionix/archive/master.zip",
     keywords=["kuberenetes", "helm", "yaml", "docker", "infrastructure"],
     classifiers=[
         "Development Status :: 3 - Alpha",

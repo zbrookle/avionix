@@ -1,2 +1,2 @@
 include versioneer.py
-include ballast_framework/_version.py
+include avionix/_version.py

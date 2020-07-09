@@ -76,19 +76,19 @@ conda list
 # Clean up any left-over from a previous build
 # (note workaround for https://github.com/conda/conda/issues/2679:
 #  `conda env remove` issue)
-conda remove --all -q -y -n ballast_framework
+conda remove --all -q -y -n avionix
 
 echo
-echo "conda create -n ballast_framework python=3.7 -y"
-time conda create -n ballast_framework python=3.7 -y
+echo "conda create -n avionix python=3.7 -y"
+time conda create -n avionix python=3.7 -y
 
 if [[ "$BITS32" == "yes" ]]; then
     # activate 32-bit compiler
     export CONDA_BUILD=1
 fi
 
-echo "activate ballast_framework"
-conda activate ballast_framework
+echo "activate avionix"
+conda activate avionix
 pip install -r ci/test-requirements.txt
 pip install -r requirements.txt
 

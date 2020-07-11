@@ -18,7 +18,7 @@ def read_file(filename):
 
 
 setup(
-    name="sql_to_ibis",
+    name="avionix",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),

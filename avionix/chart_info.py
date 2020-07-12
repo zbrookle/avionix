@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import HelmYaml
+from avionix.chart_dependency import ChartDependency
 
 
 class ChartInfo(HelmYaml):
@@ -21,6 +22,7 @@ class ChartInfo(HelmYaml):
         key_words: Optional[List[str]] = None,
         home: Optional[str] = None,
         sources: Optional[List[str]] = None,
+        dependencies: Optional[List[ChartDependency]] = None
     ):
 
         self.apiVersion = api_version
@@ -32,3 +34,4 @@ class ChartInfo(HelmYaml):
         self.keywords = key_words
         self.home = home
         self.sources = sources
+        self.dependencies = dependencies

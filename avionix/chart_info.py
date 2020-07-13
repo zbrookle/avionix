@@ -5,12 +5,6 @@ from avionix.chart_dependency import ChartDependency
 
 
 class ChartInfo(HelmYaml):
-    """
-    Abstraction over chart.yaml
-    Main builder object. Accepts kubernetes objects and generates the helm chart
-    structure. Can also perform the installation onto the server
-    """
-
     def __init__(
         self,
         api_version: str,

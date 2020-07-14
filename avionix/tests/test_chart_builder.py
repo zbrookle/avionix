@@ -32,5 +32,4 @@ def test_chart_folder_building(test_deployment: Deployment, test_folder: Path):
             with open(templates_folder / Path(file)) as kube_file:
                 assert kube_file.read() == str(test_deployment)
 
-            print(file)
             assert re.match(rf"{test_deployment.kind}-[0-9]+\.yaml", file)

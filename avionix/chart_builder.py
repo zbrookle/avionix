@@ -1,9 +1,10 @@
 import os
 import shutil
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from avionix.chart_info import ChartInfo
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from pathlib import Path
 
 
 class ChartBuilder:
@@ -13,12 +14,23 @@ class ChartBuilder:
     """
 
     def __init__(
-        self, chart_info: ChartInfo, kubernetes_objects: List[KubernetesBaseObject]
+        self,
+        chart_info: ChartInfo,
+        kubernetes_objects: List[KubernetesBaseObject],
+        output_directory: Optional[str] = None,
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
-        self.__templates_directory = f"{self.chart_info.name}/templates"
-        self.__chart_yaml = f"{self.chart_info.name}/chart.yaml"
+        chart_folder_path = Path(self.chart_info.name)
+        self.__templates_directory = chart_folder_path / "templates"
+        self.__chart_yaml = chart_folder_path / "chart.yaml"
+        if output_directory:
+            self.__templates_directory = Path(output_directory) / str(
+                self.__templates_directory
+            )
+            self.__chart_yaml = Path(output_directory) / str(
+                self.__chart_yaml
+            )
 
     def __delete_chart_directory(self):
         if os.path.exists(self.chart_info.name) and os.path.isdir:
@@ -37,7 +49,7 @@ class ChartBuilder:
             else:
                 kind_count[kubernetes_object.kind] += 1
             with open(
-                f"{self.__templates_directory}/{kubernetes_object.kind}-"
+                self.__templates_directory / f"{kubernetes_object.kind}-"
                 f"{kind_count[kubernetes_object.kind]}.yaml",
                 "w",
             ) as template:

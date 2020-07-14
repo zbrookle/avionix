@@ -1,11 +1,15 @@
 import pytest
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.container import Container
-from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
+from avionix.kubernetes_objects.deployment import Deployment
 from avionix.kubernetes_objects.metadata import ObjectMeta
-from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.options import DEFAULTS
+from avionix.tests.utils import get_test_deployment
+
+
+@pytest.fixture
+def test_deployment():
+    return get_test_deployment()
 
 
 @pytest.fixture
@@ -80,20 +84,9 @@ def test_kube_base_object(args: dict, yaml: str):
     assert str(base_object) == yaml
 
 
-def test_create_deployment():
-    deployment = Deployment(
-        api_version="v1",
-        metadata=ObjectMeta(name="test_deployment", labels={"type": "master"}),
-        spec=DeploymentSpec(
-            replicas=1,
-            template=PodTemplateSpec(
-                ObjectMeta(labels={"container_type": "master"}),
-                spec=PodSpec(containers=[Container(image="test-image")]),
-            ),
-        ),
-    )
+def test_create_deployment(test_deployment: Deployment):
     assert (
-        str(deployment)
+        str(test_deployment)
         == """apiVersion: v1
 kind: Deployment
 metadata:
@@ -110,19 +103,6 @@ spec:
       containers:
       - image: test-image
 """
-    )
-
-
-def get_test_deployment():
-    return Deployment(
-        metadata=ObjectMeta(name="test_deployment", labels={"type": "master"}),
-        spec=DeploymentSpec(
-            replicas=1,
-            template=PodTemplateSpec(
-                ObjectMeta(labels={"container_type": "master"}),
-                spec=PodSpec(containers=[Container(image="test-image")]),
-            ),
-        ),
     )
 
 

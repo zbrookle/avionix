@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.chart_info import ChartInfo
@@ -12,7 +12,7 @@ class ChartBuilder:
     """
 
     def __init__(self, chart_info: ChartInfo,
-                 kubernetes_objects: List[KubernetesBaseObject] = None):
+                 kubernetes_objects: List[KubernetesBaseObject]):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
         self.__templates_directory = f'{self.chart_info.name}/templates'
@@ -22,3 +22,15 @@ class ChartBuilder:
         os.makedirs(self.__templates_directory, exist_ok=True)
         with open(self.__chart_yaml, 'w+') as chart_yaml_file:
             chart_yaml_file.write(str(self.chart_info))
+
+        kind_count: Dict[str, int] = {}
+        for kubernetes_object in self.kubernetes_objects:
+            print(kubernetes_object.kind)
+            if kubernetes_object.kind not in kind_count:
+                kind_count[kubernetes_object.kind] = 0
+            else:
+                kind_count[kubernetes_object.kind] += 1
+            with open(f'{self.__templates_directory}/{kubernetes_object.kind}-'
+                      f'{kind_count[kubernetes_object.kind]}.yaml', 'w') as template:
+                print(str(kubernetes_object))
+                template.write(str(kubernetes_object))

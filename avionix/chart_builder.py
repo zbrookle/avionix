@@ -3,7 +3,7 @@ from typing import List, Dict
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.chart_info import ChartInfo
 import os
-
+import shutil
 
 class ChartBuilder:
     """
@@ -18,7 +18,12 @@ class ChartBuilder:
         self.__templates_directory = f'{self.chart_info.name}/templates'
         self.__chart_yaml = f'{self.chart_info.name}/chart.yaml'
 
+    def __delete_chart_directory(self):
+        if os.path.exists(self.chart_info.name) and os.path.isdir:
+            shutil.rmtree(self.chart_info.name)
+
     def generate_chart(self):
+        self.__delete_chart_directory()
         os.makedirs(self.__templates_directory, exist_ok=True)
         with open(self.__chart_yaml, 'w+') as chart_yaml_file:
             chart_yaml_file.write(str(self.chart_info))

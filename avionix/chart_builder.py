@@ -32,7 +32,6 @@ class ChartBuilder:
 
         kind_count: Dict[str, int] = {}
         for kubernetes_object in self.kubernetes_objects:
-            print(kubernetes_object.kind)
             if kubernetes_object.kind not in kind_count:
                 kind_count[kubernetes_object.kind] = 0
             else:
@@ -42,5 +41,4 @@ class ChartBuilder:
                 f"{kind_count[kubernetes_object.kind]}.yaml",
                 "w",
             ) as template:
-                print(str(kubernetes_object))
                 template.write(str(kubernetes_object))

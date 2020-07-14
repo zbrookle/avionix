@@ -1,11 +1,11 @@
 import os
+from pathlib import Path
 import shutil
 from typing import Dict, List, Optional
 
 from avionix.chart_info import ChartInfo
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from pathlib import Path
-
+import subprocess
 
 class ChartBuilder:
     """
@@ -23,7 +23,7 @@ class ChartBuilder:
         self.kubernetes_objects = kubernetes_objects
         chart_folder_path = Path(self.chart_info.name)
         self.__templates_directory = chart_folder_path / "templates"
-        self.__chart_yaml = chart_folder_path / "chart.yaml"
+        self.__chart_yaml = chart_folder_path / "Chart.yaml"
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
                 self.__templates_directory
@@ -54,3 +54,10 @@ class ChartBuilder:
                 "w",
             ) as template:
                 template.write(str(kubernetes_object))
+
+    def __run_helm_install(self):
+        subprocess.check_call("helm install ")
+
+    def install_chart(self):
+        self.generate_chart()
+

@@ -36,3 +36,14 @@ def test_chart_folder_building(test_deployment: Deployment, test_folder: Path):
                 assert kube_file.read() == str(test_deployment)
 
             assert re.match(rf"{test_deployment.kind}-[0-9]+\.yaml", file)
+
+def test_chart_installation(test_deployment: Deployment, test_folder: Path):
+    with TemporaryDirectory(dir=test_folder) as temp_folder:
+        builder = ChartBuilder(
+            ChartInfo(api_version="3.2.4", name="test", version="0.1.0"),
+            [test_deployment, test_deployment],
+            output_directory=temp_folder,
+        )
+        builder.install_chart()
+
+        builder.uninstall_chart()

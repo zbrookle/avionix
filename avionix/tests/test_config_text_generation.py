@@ -87,14 +87,17 @@ def test_kube_base_object(args: dict, yaml: str):
 def test_create_deployment(test_deployment: Deployment):
     assert (
         str(test_deployment)
-        == """apiVersion: v1
+        == """apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     type: master
-  name: test_deployment
+  name: test-deployment
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      container_type: master
   template:
     metadata:
       labels:
@@ -102,13 +105,14 @@ spec:
     spec:
       containers:
       - image: test-image
+        name: test-container
 """
     )
 
 
 def test_default_version_option():
     preset_default_version = get_test_deployment()
-    assert preset_default_version.apiVersion == "v1"
+    assert preset_default_version.apiVersion == "apps/v1"
 
     DEFAULTS["default_api_version"] = "v2"
     changed_default_version = get_test_deployment()

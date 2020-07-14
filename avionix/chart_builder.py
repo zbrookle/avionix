@@ -7,6 +7,7 @@ from avionix.chart_info import ChartInfo
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 import subprocess
 
+
 class ChartBuilder:
     """
     Main builder object. Accepts kubernetes objects and generates the helm chart
@@ -21,16 +22,14 @@ class ChartBuilder:
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
-        chart_folder_path = Path(self.chart_info.name)
-        self.__templates_directory = chart_folder_path / "templates"
-        self.__chart_yaml = chart_folder_path / "Chart.yaml"
+        self.chart_folder_path = Path(self.chart_info.name)
+        self.__templates_directory = self.chart_folder_path / "templates"
+        self.__chart_yaml = self.chart_folder_path / "Chart.yaml"
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
                 self.__templates_directory
             )
-            self.__chart_yaml = Path(output_directory) / str(
-                self.__chart_yaml
-            )
+            self.__chart_yaml = Path(output_directory) / str(self.__chart_yaml)
 
     def __delete_chart_directory(self):
         if os.path.exists(self.chart_info.name) and os.path.isdir:
@@ -56,8 +55,15 @@ class ChartBuilder:
                 template.write(str(kubernetes_object))
 
     def __run_helm_install(self):
-        subprocess.check_call("helm install ")
+        try:
+            subprocess.check_call(
+                f"helm install {self.chart_info.name} "
+                f"./{self.chart_folder_path}".split(" ")
+            )
+        except subprocess.CalledProcessError as err:
+            subprocess.check_call(f"helm uninstall {self.chart_info.name}".split(" "))
+            raise err
 
     def install_chart(self):
         self.generate_chart()
-
+        self.__run_helm_install()

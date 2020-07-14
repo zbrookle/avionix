@@ -201,6 +201,9 @@ class EphemeralContainer(HelmYaml):
 
 class Container(HelmYaml):
     """
+    :param name:Name of the container specified as a DNS_LABEL. Each container in a \
+        pod must have a unique name (DNS_LABEL). Cannot be updated.
+    :type name: str
     :param args:Arguments to the entrypoint. The docker image's CMD is used if this is \
         not provided. Variable references $(VAR_NAME) are expanded using the \
         container's environment. If a variable cannot be resolved, the reference in \
@@ -246,9 +249,6 @@ class Container(HelmYaml):
         restarted if the probe fails. Cannot be updated. More info: \
         https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
     :type liveness_probe: Optional[Probe]
-    :param name:Name of the container specified as a DNS_LABEL. Each container in a \
-        pod must have a unique name (DNS_LABEL). Cannot be updated.
-    :type name: Optional[str]
     :param ports:List of ports to expose from the container. Exposing a port here \
         gives the system additional information about the network connections a \
         container uses, but is primarily informational. Not specifying a port here \
@@ -324,6 +324,7 @@ class Container(HelmYaml):
 
     def __init__(
         self,
+        name: str,
         args: Optional[List[str]] = None,
         command: Optional[List[str]] = None,
         env: Optional[List[EnvVar]] = None,
@@ -332,7 +333,6 @@ class Container(HelmYaml):
         image_pull_policy: Optional[str] = None,
         lifecycle: Optional[Lifecycle] = None,
         liveness_probe: Optional[Probe] = None,
-        name: Optional[str] = None,
         ports: Optional[List[ContainerPort]] = None,
         readiness_probe: Optional[Probe] = None,
         resources: Optional[ResourceRequirements] = None,
@@ -347,6 +347,7 @@ class Container(HelmYaml):
         volume_mounts: Optional[List[VolumeMount]] = None,
         working_dir: Optional[str] = None,
     ):
+        self.name = name
         self.args = args
         self.command = command
         self.env = env
@@ -355,7 +356,6 @@ class Container(HelmYaml):
         self.imagePullPolicy = image_pull_policy
         self.lifecycle = lifecycle
         self.livenessProbe = liveness_probe
-        self.name = name
         self.ports = ports
         self.readinessProbe = readiness_probe
         self.resources = resources

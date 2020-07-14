@@ -1,11 +1,14 @@
-import pytest
-from pathlib import Path
-from avionix import ChartBuilder, ChartInfo
-from avionix.tests.utils import get_test_deployment
-from avionix.kubernetes_objects.deployment import Deployment
-from tempfile import TemporaryDirectory
 import os
+from pathlib import Path
 import re
+from tempfile import TemporaryDirectory
+
+import pytest
+
+from avionix import ChartBuilder, ChartInfo
+from avionix.kubernetes_objects.deployment import Deployment
+from avionix.tests.utils import get_test_deployment
+
 
 @pytest.fixture(scope="module")
 def test_folder():
@@ -22,7 +25,7 @@ def test_chart_folder_building(test_deployment: Deployment, test_folder: Path):
         builder = ChartBuilder(
             ChartInfo(api_version="3.2.4", name="test", version="0.1.0"),
             [test_deployment, test_deployment],
-            output_directory=temp_folder
+            output_directory=temp_folder,
         )
         builder.generate_chart()
         temp_path = Path(temp_folder)

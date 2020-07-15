@@ -1,13 +1,13 @@
+from logging import info
 import os
 from pathlib import Path
 import shutil
+import subprocess
 from typing import Dict, List, Optional
 
-from avionix.chart_info import ChartInfo
+from avionix.chart.chart_info import ChartInfo
+from avionix.errors import post_uninstall_handle_error, pre_uninstall_handle_error
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-import subprocess
-from logging import info
-from avionix.errors import pre_uninstall_handle_error, post_uninstall_handle_error
 
 
 class ChartBuilder:

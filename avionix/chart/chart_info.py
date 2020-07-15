@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from avionix.chart_dependency import ChartDependency
+from avionix.chart.chart_dependency import ChartDependency
 from avionix.kubernetes_objects.base_objects import HelmYaml
 
 
@@ -17,6 +17,7 @@ class ChartInfo(HelmYaml):
         home: Optional[str] = None,
         sources: Optional[List[str]] = None,
         dependencies: Optional[List[ChartDependency]] = None,
+        # maintainers: Optional[List[Maintainer]] = None,
     ):
 
         self.apiVersion = api_version

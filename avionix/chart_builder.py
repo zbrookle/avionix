@@ -6,6 +6,8 @@ from typing import Dict, List, Optional
 from avionix.chart_info import ChartInfo
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 import subprocess
+from logging import info
+from avionix.errors import pre_uninstall_handle_error, post_uninstall_handle_error
 
 
 class ChartBuilder:
@@ -30,6 +32,9 @@ class ChartBuilder:
                 self.__templates_directory
             )
             self.__chart_yaml = Path(output_directory) / str(self.__chart_yaml)
+            self.chart_folder_path = Path(output_directory) / str(
+                self.chart_folder_path
+            )
 
     def __delete_chart_directory(self):
         if os.path.exists(self.chart_info.name) and os.path.isdir:
@@ -56,14 +61,25 @@ class ChartBuilder:
 
     def __run_helm_install(self):
         try:
-            subprocess.check_call(
+            info(f"Installing helm chart {self.chart_info.name}...")
+            subprocess.check_output(
                 f"helm install {self.chart_info.name} "
-                f"./{self.chart_folder_path}".split(" ")
+                f"{self.chart_folder_path.resolve()}".split(" "),
+                stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError as err:
-            subprocess.check_call(f"helm uninstall {self.chart_info.name}".split(" "))
-            raise err
+            decoded = err.output.decode("utf-8")
+            pre_uninstall_handle_error(decoded)
+            self.uninstall_chart()
+            post_uninstall_handle_error(decoded)
 
     def install_chart(self):
         self.generate_chart()
         self.__run_helm_install()
+
+    def uninstall_chart(self):
+        info(f"Uninstalling helm chart {self.chart_info.name}")
+        subprocess.check_call(
+            f"helm uninstall {self.chart_info.name}".split(" "),
+            stderr=subprocess.STDOUT,
+        )

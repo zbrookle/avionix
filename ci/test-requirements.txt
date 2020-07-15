@@ -4,3 +4,4 @@ mypy
 isort
 pytest
 kubernetes
+pandas

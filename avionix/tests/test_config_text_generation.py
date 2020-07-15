@@ -8,11 +8,6 @@ from avionix.tests.utils import get_test_deployment
 
 
 @pytest.fixture
-def test_deployment():
-    return get_test_deployment()
-
-
-@pytest.fixture
 def metadata():
     return ObjectMeta(annotations={"role": "user"},)
 
@@ -84,15 +79,15 @@ def test_kube_base_object(args: dict, yaml: str):
     assert str(base_object) == yaml
 
 
-def test_create_deployment(test_deployment: Deployment):
+def test_create_deployment(test_deployment1: Deployment):
     assert (
-        str(test_deployment)
+        str(test_deployment1)
         == """apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     type: master
-  name: test-deployment
+  name: test-deployment-1
 spec:
   replicas: 1
   selector:
@@ -111,9 +106,9 @@ spec:
 
 
 def test_default_version_option():
-    preset_default_version = get_test_deployment()
+    preset_default_version = get_test_deployment(1)
     assert preset_default_version.apiVersion == "apps/v1"
 
     DEFAULTS["default_api_version"] = "v2"
-    changed_default_version = get_test_deployment()
+    changed_default_version = get_test_deployment(1)
     assert changed_default_version.apiVersion == "v2"

@@ -1,4 +1,5 @@
 import logging
+
 import pytest
 
 from avionix.tests.utils import get_test_deployment

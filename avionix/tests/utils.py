@@ -1,16 +1,15 @@
 import re
 from subprocess import check_output
+import time
 
 from pandas import DataFrame
 
-import time
-
+from avionix.chart import ChartBuilder
 from avionix.kubernetes_objects.container import Container
 from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.metadata import ObjectMeta
 from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
-from avionix.chart import ChartBuilder
 
 
 def get_test_deployment(number: int):
@@ -51,12 +50,7 @@ def parse_binary_output_to_dict(output: bin):
         values = space_split(line)
         if values:
             value_rows.append(values)
-    try:
-        return DataFrame(data=value_rows, columns=names)
-    except Exception as err:
-        print(names)
-        print(value_rows)
-        raise err
+    return DataFrame(data=value_rows, columns=names)
 
 
 def get_helm_installations():

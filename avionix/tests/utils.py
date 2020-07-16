@@ -97,7 +97,7 @@ class ChartInstallationContext:
             )
             if successes == expected_success_count:
                 break
-            time.sleep(1)
+            time.sleep(5)
             tries += 1
             if tries == self.timeout:
                 raise Exception("Waited too too long for installation to succeed")

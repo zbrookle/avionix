@@ -61,5 +61,30 @@ def test_chart_installation(test_deployment1: Deployment, test_folder: Path):
             assert pods["READY"][0] == "1/1"
             assert pods["STATUS"][0] == "Running"
 
-def test_intalling_two_components():
-    pass
+
+def test_intalling_two_components(
+    test_folder: Path, test_deployment1: Deployment, test_deployment2: Deployment
+):
+    with TemporaryDirectory(dir=test_folder) as temp_folder:
+        builder = ChartBuilder(
+            ChartInfo(
+                api_version="3.2.4", name="test", version="0.1.0", app_version="v1"
+            ),
+            [test_deployment1, test_deployment2],
+            output_directory=temp_folder,
+        )
+        with ChartInstallationContext(builder):
+            # Check helm release
+            helm_installation = get_helm_installations()
+            assert helm_installation["NAME"][0] == "test"
+            assert helm_installation["REVISION"][0] == "1"
+            assert helm_installation["STATUS"][0] == "deployed"
+
+            # Check kubernetes components
+            deployments = kubectl_get("deployments")
+            pods = kubectl_get("pods")
+            for i in range(2):
+                assert pods["READY"][i] == "1/1"
+                assert pods["STATUS"][i] == "Running"
+                assert deployments["NAME"][i] == f"test-deployment-{i + 1}"
+                assert deployments["READY"][i] == "1/1"

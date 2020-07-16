@@ -73,7 +73,7 @@ class ChartInstallationContext:
     Class to help with installing and uninstalling charts for testing
     """
 
-    def __init__(self, chart_builder: ChartBuilder, installation_time: int = 3):
+    def __init__(self, chart_builder: ChartBuilder, installation_time: float = 2.5):
         self.chart_builder = chart_builder
         self.installation_time = installation_time
 
@@ -84,3 +84,4 @@ class ChartInstallationContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.chart_builder.uninstall_chart()
+        time.sleep(self.installation_time)

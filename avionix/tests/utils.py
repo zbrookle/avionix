@@ -67,7 +67,7 @@ class ChartInstallationContext:
     Class to help with installing and uninstalling charts for testing
     """
 
-    def __init__(self, chart_builder: ChartBuilder, installation_time: float = 2.5):
+    def __init__(self, chart_builder: ChartBuilder, installation_time: float = 3):
         self.chart_builder = chart_builder
         self.installation_time = installation_time
 

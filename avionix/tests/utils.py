@@ -1,3 +1,4 @@
+from logging import info
 import re
 from subprocess import check_output
 import time
@@ -50,7 +51,9 @@ def parse_binary_output_to_dict(output: bin):
         values = space_split(line)
         if values:
             value_rows.append(values)
-    return DataFrame(data=value_rows, columns=names)
+    df = DataFrame(data=value_rows, columns=names)
+    info(df)
+    return df
 
 
 def get_helm_installations():

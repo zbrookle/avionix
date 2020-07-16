@@ -83,8 +83,6 @@ def test_intalling_two_components(
             # Check kubernetes components
             deployments = kubectl_get("deployments")
             pods = kubectl_get("pods")
-            print(deployments)
-            print(pods)
             for i in range(2):
                 assert pods["READY"][i] == "1/1"
                 assert pods["STATUS"][i] == "Running"

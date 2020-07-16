@@ -74,7 +74,7 @@ class ChartInstallationContext:
         self,
         chart_builder: ChartBuilder,
         status_resource: str = "pods",
-        timeout: int = 10,
+        timeout: int = 20,
     ):
         self.chart_builder = chart_builder
         self.status_resource = status_resource

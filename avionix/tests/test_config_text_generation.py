@@ -99,7 +99,7 @@ spec:
         container_type: master
     spec:
       containers:
-      - image: test-image
+      - image: k8s.gcr.io/echoserver:1.4
         name: test-container
 """
     )

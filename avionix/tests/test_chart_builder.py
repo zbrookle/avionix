@@ -53,13 +53,13 @@ def test_chart_installation(test_deployment1: Deployment, test_folder: Path):
             assert helm_installation["REVISION"][0] == "1"
             assert helm_installation["STATUS"][0] == "deployed"
 
-            deployments = kubectl_get("deployments")
-            assert deployments["NAME"][0] == "test-deployment-1"
-            assert deployments["READY"][0] == "1/1"
-
             pods = kubectl_get("pods")
             assert pods["READY"][0] == "1/1"
             assert pods["STATUS"][0] == "Running"
+
+            deployments = kubectl_get("deployments")
+            assert deployments["NAME"][0] == "test-deployment-1"
+            assert deployments["READY"][0] == "1/1"
 
 
 def test_intalling_two_components(

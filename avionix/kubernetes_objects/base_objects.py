@@ -37,6 +37,7 @@ class Apps(KubernetesBaseObject):
     """
     Base class for apps group
     """
+
     @staticmethod
     def _get_api_version(api_version: str):
         if api_version is None:

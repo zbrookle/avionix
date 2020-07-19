@@ -6,15 +6,17 @@ import time
 from pandas import DataFrame, Series
 
 from avionix.chart import ChartBuilder
+from avionix.errors import ChartAlreadyInstalledError
 from avionix.kubernetes_objects.container import Container
 from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.metadata import ObjectMeta
 from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
-from avionix.errors import ChartAlreadyInstalledError
+
 
 def get_test_container(number: int):
     return Container(name=f"test-container-{number}", image="k8s.gcr.io/echoserver:1.4")
+
 
 def get_test_deployment(number: int):
     return Deployment(
@@ -25,11 +27,7 @@ def get_test_deployment(number: int):
             replicas=1,
             template=PodTemplateSpec(
                 ObjectMeta(labels={"container_type": "master"}),
-                spec=PodSpec(
-                    containers=[
-                        get_test_container(number)
-                    ]
-                ),
+                spec=PodSpec(containers=[get_test_container(number)]),
             ),
             selector=LabelSelector(match_labels={"container_type": "master"}),
         ),

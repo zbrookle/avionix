@@ -13,6 +13,9 @@ from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
 
 
+def get_test_container(number: int):
+    return Container(name=f"test-container-{number}", image="k8s.gcr.io/echoserver:1.4")
+
 def get_test_deployment(number: int):
     return Deployment(
         metadata=ObjectMeta(
@@ -24,9 +27,7 @@ def get_test_deployment(number: int):
                 ObjectMeta(labels={"container_type": "master"}),
                 spec=PodSpec(
                     containers=[
-                        Container(
-                            name="test-container", image="k8s.gcr.io/echoserver:1.4"
-                        )
+                        get_test_container(number)
                     ]
                 ),
             ),

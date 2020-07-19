@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, Apps
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 from avionix.kubernetes_objects.pod import PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
@@ -143,7 +143,7 @@ class DeploymentCondition(HelmYaml):
         self.type = type
 
 
-class Deployment(KubernetesBaseObject):
+class Deployment(Apps):
     """
     :param metadata:Standard object metadata.
     :type metadata: ObjectMeta

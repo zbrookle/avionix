@@ -6,7 +6,7 @@ def pre_uninstall_handle_error(message):
         raise ClusterUnavailableError(message)
     if re.match(r"Error: cannot re-use a name that is still in use", message):
         raise ChartAlreadyInstalledError(message)
-    raise NewHelmError(message)
+    raise HelmError(message)
 
 
 def post_uninstall_handle_error(message):

@@ -3,8 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from avionix import ChartInfo
-from avionix.tests.utils import get_test_deployment
+from avionix import ChartInfo, ObjectMeta
+from avionix.tests.utils import get_test_deployment, get_test_container
+from avionix.kubernetes_objects.pod import Pod, PodSpec
 
 logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=logging.INFO)
 
@@ -29,3 +30,7 @@ def chart_info():
 @pytest.fixture(scope="module")
 def test_folder():
     return Path(__file__).parent
+
+@pytest.fixture
+def pod():
+    return Pod(ObjectMeta(name="test-pod"), spec=PodSpec([get_test_container(0)]))

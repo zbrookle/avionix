@@ -1,1 +1,1 @@
-DEFAULTS = {"default_api_version": "v1"}
+DEFAULTS = {"default_api_version": "apps/v1"}

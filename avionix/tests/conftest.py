@@ -1,12 +1,17 @@
-from kubernetes import client, config
+import logging
+
 import pytest
 
+from avionix.tests.utils import get_test_deployment
 
-@pytest.fixture(scope="module")
-def load_kubeconfig():
-    config.load_kube_config()
+logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=logging.INFO)
 
 
-@pytest.fixture(scope="module")
-def kube_client():
-    return client.CoreV1Api()
+@pytest.fixture
+def test_deployment1():
+    return get_test_deployment(1)
+
+
+@pytest.fixture
+def test_deployment2():
+    return get_test_deployment(2)

@@ -3,4 +3,4 @@ flake8
 mypy
 isort
 pytest
-kubernetes
+pandas

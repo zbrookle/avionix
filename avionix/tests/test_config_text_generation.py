@@ -1,11 +1,10 @@
 import pytest
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.container import Container
-from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
+from avionix.kubernetes_objects.deployment import Deployment
 from avionix.kubernetes_objects.metadata import ObjectMeta
-from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.options import DEFAULTS
+from avionix.tests.utils import get_test_deployment
 
 
 @pytest.fixture
@@ -80,56 +79,36 @@ def test_kube_base_object(args: dict, yaml: str):
     assert str(base_object) == yaml
 
 
-def test_create_deployment():
-    deployment = Deployment(
-        api_version="v1",
-        metadata=ObjectMeta(name="test_deployment", labels={"type": "master"}),
-        spec=DeploymentSpec(
-            replicas=1,
-            template=PodTemplateSpec(
-                ObjectMeta(labels={"container_type": "master"}),
-                spec=PodSpec(containers=[Container(image="test-image")]),
-            ),
-        ),
-    )
+def test_create_deployment(test_deployment1: Deployment):
     assert (
-        str(deployment)
-        == """apiVersion: v1
+        str(test_deployment1)
+        == """apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     type: master
-  name: test_deployment
+  name: test-deployment-1
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      container_type: master
   template:
     metadata:
       labels:
         container_type: master
     spec:
       containers:
-      - image: test-image
+      - image: k8s.gcr.io/echoserver:1.4
+        name: test-container
 """
     )
 
 
-def get_test_deployment():
-    return Deployment(
-        metadata=ObjectMeta(name="test_deployment", labels={"type": "master"}),
-        spec=DeploymentSpec(
-            replicas=1,
-            template=PodTemplateSpec(
-                ObjectMeta(labels={"container_type": "master"}),
-                spec=PodSpec(containers=[Container(image="test-image")]),
-            ),
-        ),
-    )
-
-
 def test_default_version_option():
-    preset_default_version = get_test_deployment()
-    assert preset_default_version.apiVersion == "v1"
+    preset_default_version = get_test_deployment(1)
+    assert preset_default_version.apiVersion == "apps/v1"
 
     DEFAULTS["default_api_version"] = "v2"
-    changed_default_version = get_test_deployment()
+    changed_default_version = get_test_deployment(1)
     assert changed_default_version.apiVersion == "v2"

@@ -62,6 +62,10 @@ class DeploymentSpec(HelmYaml):
     """
     :param template:Template describes the pods that will be created.
     :type template: PodTemplateSpec
+    :param selector:Label selector for pods. Existing ReplicaSets whose pods are \
+        selected by this will be the ones affected by this deployment. It must match \
+        the pod template's labels.
+    :type selector: LabelSelector
     :param min_ready_seconds:Minimum number of seconds for which a newly created pod \
         should be ready without any of its container crashing, for it to be considered \
         available. Defaults to 0 (pod will be considered available as soon as it is \
@@ -83,10 +87,6 @@ class DeploymentSpec(HelmYaml):
         rollback. This is a pointer to distinguish between explicit zero and not \
         specified. Defaults to 10.
     :type revision_history_limit: Optional[int]
-    :param selector:Label selector for pods. Existing ReplicaSets whose pods are \
-        selected by this will be the ones affected by this deployment. It must match \
-        the pod template's labels.
-    :type selector: Optional[LabelSelector]
     :param strategy:The deployment strategy to use to replace existing pods with new \
         ones.
     :type strategy: Optional[DeploymentStrategy]
@@ -95,12 +95,12 @@ class DeploymentSpec(HelmYaml):
     def __init__(
         self,
         template: PodTemplateSpec,
+        selector: LabelSelector,
         min_ready_seconds: Optional[int] = None,
         paused: Optional[bool] = None,
         progress_deadline_seconds: Optional[int] = None,
         replicas: Optional[int] = None,
         revision_history_limit: Optional[int] = None,
-        selector: Optional[LabelSelector] = None,
         strategy: Optional[DeploymentStrategy] = None,
     ):
         self.template = template

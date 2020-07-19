@@ -26,18 +26,20 @@ class LabelSelectorRequirement(HelmYaml):
 
 class LabelSelector(HelmYaml):
     """
-    :param match_expressions:matchExpressions is a list of label selector \
-        requirements. The requirements are ANDed.
-    :type match_expressions: List[LabelSelectorRequirement]
     :param match_labels:matchLabels is a map of {key,value} pairs. A single \
         {key,value} in the matchLabels map is equivalent to an element of \
         matchExpressions, whose key field is "key", the operator is "In", and the \
         values array contains only "value". The requirements are ANDed.
     :type match_labels: dict
+    :param match_expressions:matchExpressions is a list of label selector \
+        requirements. The requirements are ANDed.
+    :type match_expressions: List[LabelSelectorRequirement]
     """
 
     def __init__(
-        self, match_expressions: List[LabelSelectorRequirement], match_labels: dict
+        self,
+        match_labels: dict,
+        match_expressions: Optional[List[LabelSelectorRequirement]] = None,
     ):
         self.matchExpressions = match_expressions
         self.matchLabels = match_labels

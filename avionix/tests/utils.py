@@ -11,7 +11,7 @@ from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.metadata import ObjectMeta
 from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
-
+from avionix.errors import ChartAlreadyInstalledError
 
 def get_test_container(number: int):
     return Container(name=f"test-container-{number}", image="k8s.gcr.io/echoserver:1.4")
@@ -111,7 +111,12 @@ class ChartInstallationContext:
             time.sleep(1)
 
     def __enter__(self):
-        self.chart_builder.install_chart()
+        try:
+            self.chart_builder.install_chart()
+        except ChartAlreadyInstalledError:
+            info("Chart already installed, uninstalling...")
+            self.chart_builder.uninstall_chart()
+            self.chart_builder.install_chart()
         self.wait_for_ready()
         return self
 

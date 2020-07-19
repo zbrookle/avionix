@@ -50,6 +50,9 @@ class ConfigMapEnvSource(HelmYaml):
 
 class ConfigMap(KubernetesBaseObject):
     """
+    :param metadata:Standard object's metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ObjectMeta
     :param binary_data:BinaryData contains the binary data. Each key must consist of \
         alphanumeric characters, '-', '_' or '.'. BinaryData can contain byte \
         sequences that are not in the UTF-8 range. The keys stored in BinaryData must \
@@ -66,9 +69,6 @@ class ConfigMap(KubernetesBaseObject):
         to true, the field can be modified at any time. Defaulted to nil. This is an \
         alpha field enabled by ImmutableEphemeralVolumes feature gate.
     :type immutable: bool
-    :param metadata:Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ObjectMeta
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -78,17 +78,17 @@ class ConfigMap(KubernetesBaseObject):
 
     def __init__(
         self,
-        binary_data: dict,
-        data: dict,
-        immutable: bool,
         metadata: ObjectMeta,
+        binary_data: Optional[dict] = None,
+        data: Optional[dict] = None,
+        immutable: Optional[bool] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
+        self.metadata = metadata
         self.binaryData = binary_data
         self.data = data
         self.immutable = immutable
-        self.metadata = metadata
 
 
 class ConfigMapList(KubernetesBaseObject):

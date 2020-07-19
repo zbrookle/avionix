@@ -22,12 +22,26 @@ class KubernetesBaseObject(HelmYaml):
         else:
             self.kind = kind
 
-        if api_version is None:
-            self.apiVersion = DEFAULTS["default_api_version"]
-        else:
-            self.apiVersion = api_version
+        self.apiVersion = self._get_api_version(api_version)
 
         self.metadata = metadata
+
+    @staticmethod
+    def _get_api_version(api_version: str):
+        if api_version is None:
+            return DEFAULTS["default_api_version"]
+        return api_version
+
+
+class Apps(KubernetesBaseObject):
+    """
+    Base class for apps group
+    """
+    @staticmethod
+    def _get_api_version(api_version: str):
+        if api_version is None:
+            return "apps/" + DEFAULTS["default_api_version"]
+        return api_version
 
 
 class BaseSpec(HelmYaml):

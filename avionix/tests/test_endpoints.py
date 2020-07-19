@@ -4,11 +4,12 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.endpoint import Endpoints, EndpointSubset, EndpointAddress
-from avionix.tests.utils import (
-    ChartInstallationContext,
-    kubectl_get,
+from avionix.kubernetes_objects.endpoint import (
+    EndpointAddress,
+    Endpoints,
+    EndpointSubset,
 )
+from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 
 @pytest.fixture
@@ -29,7 +30,7 @@ def endpoints_with_subset(endpoints_metadata):
             EndpointSubset(
                 addresses=[EndpointAddress("local", "10.9.8.7", None)],
                 not_ready_addresses=None,
-                ports=None
+                ports=None,
             )
         ],
     )

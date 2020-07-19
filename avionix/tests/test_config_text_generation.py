@@ -100,7 +100,7 @@ spec:
     spec:
       containers:
       - image: k8s.gcr.io/echoserver:1.4
-        name: test-container
+        name: test-container-1
 """
     )
 

@@ -108,18 +108,15 @@ class ObjectReference(KubernetesBaseObject):
         (container with index 2 in this pod). This syntax is chosen only to have some \
         well-defined way of referencing a part of an object.
     :type field_path: str
+    :param name:Name of the referent. More info: \
+    https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+    :type name: Optional[str]
     :param resource_version:Specific resourceVersion to which this reference is made, \
         if any. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency  # noqa
     :type resource_version: str
-    :param uid:UID of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
-    :type uid: str
     :param api_version:API version of the referent.
     :type api_version: Optional[str]
-    :param name:Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
-    :type name: Optional[str]
     :param namespace:Namespace of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     :type namespace: Optional[str]
@@ -128,15 +125,14 @@ class ObjectReference(KubernetesBaseObject):
     def __init__(
         self,
         field_path: str,
-        resource_version: str,
-        uid: str,
-        api_version: Optional[str] = None,
-        name: Optional[str] = None,
+        name: Optional[str],
+        resource_version: Optional[str] = None,
+        api_version: Optional[str] = "v1",
         namespace: Optional[str] = None,
     ):
         super().__init__(api_version)
         self.fieldPath = field_path
-        self.resourceVersion = resource_version
-        self.uid = uid
         self.name = name
+        self.resourceVersion = resource_version
         self.namespace = namespace
+        self.kind = ""

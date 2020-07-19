@@ -3,7 +3,6 @@
 <summary>0% implemented</summary>
 
 - [ ] Binding
-- [ ] ComponentStatus
 - [ ] ConfigMap
 - [ ] Endpoints
 - [ ] Event

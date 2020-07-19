@@ -59,7 +59,7 @@ class EndpointAddress(HelmYaml):
         self,
         hostname: str,
         ip: str,
-        target_ref: ObjectReference,
+        target_ref: Optional[ObjectReference] = None,
         node_name: Optional[str] = None,
     ):
         self.hostname = hostname
@@ -85,7 +85,7 @@ class EndpointSubset(HelmYaml):
     def __init__(
         self,
         addresses: List[EndpointAddress],
-        not_ready_addresses: List[EndpointAddress],
+        not_ready_addresses: Optional[List[EndpointAddress]] = None,
         ports: Optional[List[EndpointPort]] = None,
     ):
         self.addresses = addresses
@@ -116,7 +116,7 @@ class Endpoints(KubernetesBaseObject):
     def __init__(
         self,
         metadata: ObjectMeta,
-        subsets: List[EndpointSubset],
+        subsets: Optional[List[EndpointSubset]] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)

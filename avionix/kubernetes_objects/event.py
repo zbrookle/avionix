@@ -39,6 +39,11 @@ class EventSource(HelmYaml):
 
 class Event(KubernetesBaseObject):
     """
+    :param metadata:Standard object's metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ObjectMeta
+    :param involved_object:The object that this event is about.
+    :type involved_object: ObjectReference
     :param action:What action was taken/failed regarding to the Regarding object.
     :type action: str
     :param count:The number of times this event has occurred.
@@ -48,16 +53,11 @@ class Event(KubernetesBaseObject):
     :param first_timestamp:The time at which the event was first recorded. (Time of \
         server receipt is in TypeMeta.)
     :type first_timestamp: time
-    :param involved_object:The object that this event is about.
-    :type involved_object: ObjectReference
     :param last_timestamp:The time at which the most recent occurrence of this event \
         was recorded.
     :type last_timestamp: time
     :param message:A human-readable description of the status of this operation.
     :type message: str
-    :param metadata:Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ObjectMeta
     :param reason:This should be a short, machine understandable string that gives the \
         reason for the transition into the object's current status.
     :type reason: str
@@ -86,21 +86,21 @@ class Event(KubernetesBaseObject):
 
     def __init__(
         self,
-        action: str,
-        count: int,
-        event_time: time,
-        first_timestamp: time,
-        involved_object: ObjectReference,
-        last_timestamp: time,
-        message: str,
         metadata: ObjectMeta,
-        reason: str,
-        related: ObjectReference,
-        reporting_component: str,
-        reporting_instance: str,
-        series: EventSeries,
-        source: EventSource,
-        type: str,
+        involved_object: ObjectReference,
+        action: Optional[str] = None,
+        count: Optional[int] = None,
+        event_time: Optional[time] = None,
+        first_timestamp: Optional[time] = None,
+        last_timestamp: Optional[time] = None,
+        message: Optional[str] = None,
+        reason: Optional[str] = None,
+        related: Optional[ObjectReference] = None,
+        reporting_component: Optional[str] = None,
+        reporting_instance: Optional[str] = None,
+        series: Optional[EventSeries] = None,
+        source: Optional[EventSource] = None,
+        type: Optional[str] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)

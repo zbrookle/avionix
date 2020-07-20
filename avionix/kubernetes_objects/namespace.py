@@ -57,7 +57,7 @@ class Namespace(KubernetesBaseObject):
     def __init__(
         self,
         metadata: ObjectMeta,
-        spec: NamespaceSpec,
+        spec: Optional[NamespaceSpec] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)

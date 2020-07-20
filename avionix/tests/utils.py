@@ -56,8 +56,15 @@ def get_name_locations(names: List[str], name_string: str):
     return locs
 
 def split_using_locations(locations: List[Tuple[int, int]], values_string: str):
-    return [values_string[loc[0]:loc[1]].strip() for loc in locations]
-
+    vals = []
+    for i, loc in enumerate(locations):
+        start = loc[0]
+        end = loc[1]
+        if i == len(locations) - 1:
+            vals.append(values_string[start:].strip())
+            continue
+        vals.append(values_string[start:end].strip())
+    return vals
 
 def parse_binary_output_to_dataframe(output: bin):
     output_lines = output.decode("utf-8").split("\n")

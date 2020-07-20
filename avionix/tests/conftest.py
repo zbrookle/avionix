@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from avionix import ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.pod import Pod, PodSpec
+from avionix.kubernetes_objects.pod import Pod, PodSpec, PodTemplateSpec
 from avionix.tests.utils import get_test_container, get_test_deployment
 import pandas
 
@@ -34,10 +34,17 @@ def chart_info():
 def test_folder():
     return Path(__file__).parent
 
+
 @pytest.fixture
 def pod_spec():
     return PodSpec([get_test_container(0)])
 
+
 @pytest.fixture
 def pod(pod_spec):
     return Pod(ObjectMeta(name="test-pod"), spec=pod_spec)
+
+
+@pytest.fixture
+def pod_template_spec(pod_spec):
+    return PodTemplateSpec(ObjectMeta(labels={"type": "master"}), pod_spec)

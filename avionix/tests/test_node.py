@@ -34,7 +34,7 @@ def test_create_empty_node(test_folder, chart_info, empty_node):
             node_info = get_node_info()
             assert node_info["NAME"][0] == "test-node"
             assert node_info["STATUS"][0] == "Unknown"
-            assert node_info["VERSION"][0] is None
+            assert node_info["VERSION"][0] == ''
 
 
 def test_create_non_empty_node(test_folder, chart_info, non_empty_node):
@@ -44,4 +44,4 @@ def test_create_non_empty_node(test_folder, chart_info, non_empty_node):
             node_info = get_node_info()
             assert node_info["NAME"][0] == "test-node"
             assert node_info["STATUS"][0] == "Unknown"
-            assert node_info["VERSION"][0] is None
+            assert node_info["VERSION"][0] == ""

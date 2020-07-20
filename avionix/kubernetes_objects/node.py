@@ -329,11 +329,11 @@ class NodeSpec(HelmYaml):
 
     def __init__(
         self,
-        external_id: str,
-        pod_cidr: str,
-        pod_cidrs: List[str],
-        provider_id: str,
-        unschedulable: bool,
+        external_id: Optional[str] = None,
+        pod_cidr: Optional[str] = None,
+        pod_cidrs: Optional[List[str]] = None,
+        provider_id: Optional[str] = None,
+        unschedulable: Optional[bool] = None,
         config_source: Optional[NodeConfigSource] = None,
         taints: Optional[List[Taint]] = None,
     ):
@@ -362,7 +362,10 @@ class Node(KubernetesBaseObject):
     """
 
     def __init__(
-        self, metadata: ObjectMeta, spec: NodeSpec, api_version: Optional[str] = None
+        self,
+        metadata: ObjectMeta,
+        spec: Optional[NodeSpec] = None,
+        api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
         self.metadata = metadata

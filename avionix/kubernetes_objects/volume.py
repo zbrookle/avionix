@@ -1795,6 +1795,10 @@ class PersistentVolumeSpec(HelmYaml):
         info: \
         https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes
     :type access_modes: List[str]
+    :param capacity:A description of the persistent volume's resources and capacity. \
+        More info: \
+        https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
+    :type capacity: dict
     :param aws_elastic_block_store:AWSElasticBlockStore represents an AWS Disk \
         resource that is attached to a kubelet's host machine and then exposed to the \
         pod. More info: \
@@ -1806,10 +1810,6 @@ class PersistentVolumeSpec(HelmYaml):
     :param azure_file:AzureFile represents an Azure File Service mount on the host and \
         bind mount to the pod.
     :type azure_file: AzureFilePersistentVolumeSource
-    :param capacity:A description of the persistent volume's resources and capacity. \
-        More info: \
-        https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
-    :type capacity: dict
     :param cephfs:CephFS represents a Ceph FS mount on the host that shares a pod's \
         lifetime
     :type cephfs: CephFSPersistentVolumeSource
@@ -1907,35 +1907,35 @@ class PersistentVolumeSpec(HelmYaml):
     def __init__(
         self,
         access_modes: List[str],
-        aws_elastic_block_store: AWSElasticBlockStoreVolumeSource,
-        azure_disk: AzureDiskVolumeSource,
-        azure_file: AzureFilePersistentVolumeSource,
         capacity: dict,
-        cephfs: CephFSPersistentVolumeSource,
-        cinder: CinderPersistentVolumeSource,
-        claim_ref: ObjectReference,
-        csi: CSIPersistentVolumeSource,
-        fc: FCVolumeSource,
-        flex_volume: FlexPersistentVolumeSource,
-        flocker: FlockerVolumeSource,
-        gce_persistent_disk: GCEPersistentDiskVolumeSource,
-        glusterfs: GlusterfsPersistentVolumeSource,
-        host_path: HostPathVolumeSource,
-        iscsi: ISCSIPersistentVolumeSource,
-        local: LocalVolumeSource,
-        mount_options: List[str],
-        nfs: NFSVolumeSource,
-        node_affinity: VolumeNodeAffinity,
-        persistent_volume_reclaim_policy: str,
-        photon_persistent_disk: PhotonPersistentDiskVolumeSource,
-        portworx_volume: PortworxVolumeSource,
-        quobyte: QuobyteVolumeSource,
-        rbd: RBDPersistentVolumeSource,
-        scale_io: ScaleIOPersistentVolumeSource,
-        storage_class_name: str,
-        storageos: StorageOSPersistentVolumeSource,
-        volume_mode: str,
-        vsphere_volume: VsphereVirtualDiskVolumeSource,
+        aws_elastic_block_store: Optional[AWSElasticBlockStoreVolumeSource] = None,
+        azure_disk: Optional[AzureDiskVolumeSource] = None,
+        azure_file: Optional[AzureFilePersistentVolumeSource] = None,
+        cephfs: Optional[CephFSPersistentVolumeSource] = None,
+        cinder: Optional[CinderPersistentVolumeSource] = None,
+        claim_ref: Optional[ObjectReference] = None,
+        csi: Optional[CSIPersistentVolumeSource] = None,
+        fc: Optional[FCVolumeSource] = None,
+        flex_volume: Optional[FlexPersistentVolumeSource] = None,
+        flocker: Optional[FlockerVolumeSource] = None,
+        gce_persistent_disk: Optional[GCEPersistentDiskVolumeSource] = None,
+        glusterfs: Optional[GlusterfsPersistentVolumeSource] = None,
+        host_path: Optional[HostPathVolumeSource] = None,
+        iscsi: Optional[ISCSIPersistentVolumeSource] = None,
+        local: Optional[LocalVolumeSource] = None,
+        mount_options: Optional[List[str]] = None,
+        nfs: Optional[NFSVolumeSource] = None,
+        node_affinity: Optional[VolumeNodeAffinity] = None,
+        persistent_volume_reclaim_policy: Optional[str] = None,
+        photon_persistent_disk: Optional[PhotonPersistentDiskVolumeSource] = None,
+        portworx_volume: Optional[PortworxVolumeSource] = None,
+        quobyte: Optional[QuobyteVolumeSource] = None,
+        rbd: Optional[RBDPersistentVolumeSource] = None,
+        scale_io: Optional[ScaleIOPersistentVolumeSource] = None,
+        storage_class_name: Optional[str] = None,
+        storageos: Optional[StorageOSPersistentVolumeSource] = None,
+        volume_mode: Optional[str] = None,
+        vsphere_volume: Optional[VsphereVirtualDiskVolumeSource] = None,
     ):
         self.accessModes = access_modes
         self.awsElasticBlockStore = aws_elastic_block_store

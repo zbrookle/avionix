@@ -1171,6 +1171,10 @@ class PersistentVolumeClaimSpec(HelmYaml):
         should have. More info: \
         https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
     :type access_modes: List[str]
+    :param resources:Resources represents the minimum resources the volume should \
+        have. More info: \
+        https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+    :type resources: Optional[ResourceRequirements]l
     :param data_source:This field can be used to specify either: * An existing \
         VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot - Beta) * An \
         existing PVC (PersistentVolumeClaim) * An existing custom resource/object that \
@@ -1192,10 +1196,6 @@ class PersistentVolumeClaimSpec(HelmYaml):
     :param volume_name:VolumeName is the binding reference to the PersistentVolume \
         backing this claim.
     :type volume_name: str
-    :param resources:Resources represents the minimum resources the volume should \
-        have. More info: \
-        https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
-    :type resources: Optional[ResourceRequirements]
     :param selector:A label query over volumes to consider for binding.
     :type selector: Optional[LabelSelector]
     """
@@ -1203,11 +1203,11 @@ class PersistentVolumeClaimSpec(HelmYaml):
     def __init__(
         self,
         access_modes: List[str],
-        data_source: TypedLocalObjectReference,
-        storage_class_name: str,
-        volume_mode: str,
-        volume_name: str,
-        resources: Optional[ResourceRequirements] = None,
+        resources: ResourceRequirements,
+        data_source: Optional[TypedLocalObjectReference] = None,
+        storage_class_name: Optional[str] = None,
+        volume_mode: Optional[str] = None,
+        volume_name: Optional[str] = None,
         selector: Optional[LabelSelector] = None,
     ):
         self.accessModes = access_modes

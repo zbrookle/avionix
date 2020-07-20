@@ -2,7 +2,7 @@ from logging import info
 import re
 from subprocess import check_output
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from pandas import DataFrame, Series
 
@@ -42,6 +42,7 @@ def space_split(output_line: str):
         if not re.match(r"^\s*$", value)
     ]
 
+
 def get_name_locations(names: List[str], name_string: str):
     locs = []
     last_pos = 0
@@ -55,6 +56,7 @@ def get_name_locations(names: List[str], name_string: str):
         locs[i] = (loc, len(name_string))
     return locs
 
+
 def split_using_locations(locations: List[Tuple[int, int]], values_string: str):
     vals = []
     for i, loc in enumerate(locations):
@@ -65,6 +67,7 @@ def split_using_locations(locations: List[Tuple[int, int]], values_string: str):
             continue
         vals.append(values_string[start:end].strip())
     return vals
+
 
 def parse_binary_output_to_dataframe(output: bin):
     output_lines = output.decode("utf-8").split("\n")
@@ -99,25 +102,29 @@ class ChartInstallationContext:
         chart_builder: ChartBuilder,
         status_resource: str = "pods",
         timeout: int = 20,
+        expected_status: Optional[set] = None,
     ):
         self.chart_builder = chart_builder
         self.status_resource = status_resource
         self.timeout = timeout
+        if expected_status is None:
+            self.expected_status = {"Running", "Success"}
+        else:
+            self.expected_status = expected_status
 
     def get_status_resources(self) -> Series:
         resources = kubectl_get(self.status_resource)
         if "STATUS" in resources:
             return resources["STATUS"]
-        return Series([])
+        return Series([], dtype="object")
 
     def wait_for_ready(self):
         tries = 0
-        expected_status = {"Running", "Success"}
         while True:
             resources = self.get_status_resources()
             expected_success_count = len(resources)
             successes = sum(
-                [1 if status in expected_status else 0 for status in resources]
+                [1 if status in self.expected_status else 0 for status in resources]
             )
             if successes == expected_success_count:
                 break

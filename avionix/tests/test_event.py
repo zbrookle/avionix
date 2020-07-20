@@ -13,9 +13,11 @@ from avionix.tests.utils import ChartInstallationContext, kubectl_get
 def object_meta_event():
     return ObjectMeta(name="test-event")
 
+
 @pytest.fixture
 def event_obj_ref():
     return ObjectReference("test-pod", name="test-ref")
+
 
 @pytest.fixture
 def empty_event(object_meta_event, event_obj_ref):
@@ -32,9 +34,11 @@ def non_empty_event(object_meta_event, event_obj_ref):
         type="test-type",
     )
 
+
 def get_event_info():
     info = kubectl_get("events")
-    return info[info['TYPE'] != "Normal"].reset_index(drop=True)
+    return info[info["TYPE"] != "Normal"].reset_index(drop=True)
+
 
 def test_create_empty_event(
     chart_info: ChartInfo, test_folder: Path, empty_event: Event

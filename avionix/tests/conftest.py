@@ -12,6 +12,7 @@ logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=loggi
 
 pandas.set_option("display.max_columns", 50)
 
+
 @pytest.fixture
 def test_deployment1():
     return get_test_deployment(1)

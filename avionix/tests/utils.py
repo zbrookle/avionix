@@ -58,11 +58,6 @@ def get_name_locations(names: List[str], name_string: str):
 def split_using_locations(locations: List[Tuple[int, int]], values_string: str):
     return [values_string[loc[0]:loc[1]].strip() for loc in locations]
 
-def is_empty_values(values: list):
-    for value in values:
-        if value:
-            return False
-    return True
 
 def parse_binary_output_to_dataframe(output: bin):
     output_lines = output.decode("utf-8").split("\n")
@@ -70,8 +65,8 @@ def parse_binary_output_to_dataframe(output: bin):
     value_locations = get_name_locations(names, output_lines[0])
     value_rows = []
     for line in output_lines[1:]:
-        values = split_using_locations(value_locations, line)
-        if not is_empty_values(values):
+        if line.strip():
+            values = split_using_locations(value_locations, line)
             value_rows.append(values)
     df = DataFrame(data=value_rows, columns=names)
     info("\n" + str(df))

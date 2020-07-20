@@ -34,7 +34,10 @@ def chart_info():
 def test_folder():
     return Path(__file__).parent
 
+@pytest.fixture
+def pod_spec():
+    return PodSpec([get_test_container(0)])
 
 @pytest.fixture
-def pod():
-    return Pod(ObjectMeta(name="test-pod"), spec=PodSpec([get_test_container(0)]))
+def pod(pod_spec):
+    return Pod(ObjectMeta(name="test-pod"), spec=pod_spec)

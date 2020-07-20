@@ -111,4 +111,7 @@ def test_default_version_option():
 
     DEFAULTS["default_api_version"] = "v2"
     changed_default_version = get_test_deployment(1)
-    assert changed_default_version.apiVersion == "v2"
+    assert changed_default_version.apiVersion == "apps/v2"
+
+    # Restore option state
+    DEFAULTS["default_api_version"] = "v1"

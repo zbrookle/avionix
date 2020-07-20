@@ -23,7 +23,7 @@ class ResourceQuotaSpec(HelmYaml):
 
     def __init__(
         self,
-        hard: dict,
+        hard: Optional[dict] = None,
         scope_selector: Optional[ScopeSelector] = None,
         scopes: Optional[List[str]] = None,
     ):

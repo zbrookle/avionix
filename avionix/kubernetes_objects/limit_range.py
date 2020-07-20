@@ -71,7 +71,7 @@ class LimitRange(KubernetesBaseObject):
     def __init__(
         self,
         metadata: ObjectMeta,
-        spec: LimitRangeSpec,
+        spec: Optional[LimitRangeSpec] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)

@@ -19,7 +19,7 @@ def empty_node(node_metadata):
 
 @pytest.fixture
 def non_empty_node(node_metadata):
-    return Node(node_metadata, NodeSpec(external_id="12345", pod_cidr="10.0.0.0/24" ))
+    return Node(node_metadata, NodeSpec(external_id="12345", pod_cidr="10.0.0.0/24"))
 
 
 def get_node_info():

@@ -6,9 +6,11 @@ import pytest
 from avionix import ChartInfo, ObjectMeta
 from avionix.kubernetes_objects.pod import Pod, PodSpec
 from avionix.tests.utils import get_test_container, get_test_deployment
+import pandas
 
 logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=logging.INFO)
 
+pandas.set_option("display.max_columns", 50)
 
 @pytest.fixture
 def test_deployment1():

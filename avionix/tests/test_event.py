@@ -10,24 +10,55 @@ from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 
 @pytest.fixture
-def non_empty_event():
+def object_meta_event():
+    return ObjectMeta(name="test-event")
+
+@pytest.fixture
+def event_obj_ref():
+    return ObjectReference("test-pod", name="test-ref")
+
+@pytest.fixture
+def empty_event(object_meta_event, event_obj_ref):
+    return Event(object_meta_event, event_obj_ref)
+
+
+@pytest.fixture
+def non_empty_event(object_meta_event, event_obj_ref):
     return Event(
-        ObjectMeta(name="test-event"),
-        ObjectReference("test-pod", name="test-ref"),
+        object_meta_event,
+        event_obj_ref,
         message="test message",
         reason="testing",
         type="test-type",
     )
+
+def get_event_info():
+    info = kubectl_get("events")
+    return info[info['TYPE'] != "Normal"].reset_index(drop=True)
+
+def test_create_empty_event(
+    chart_info: ChartInfo, test_folder: Path, empty_event: Event
+):
+    with TemporaryDirectory(dir=test_folder) as temp_folder:
+        print(empty_event)
+        builder = ChartBuilder(chart_info, [empty_event], temp_folder)
+        with ChartInstallationContext(builder):
+            event_info = get_event_info()
+            print(event_info)
+            assert event_info["TYPE"][0] == ""
+            assert event_info["REASON"][0] == ""
+            assert event_info["OBJECT"][0] == "/test-ref"
+            assert event_info["MESSAGE"][0] == ""
 
 
 def test_create_nonempty_event(
     chart_info: ChartInfo, test_folder: Path, non_empty_event: Event
 ):
     with TemporaryDirectory(dir=test_folder) as temp_folder:
+        print(non_empty_event)
         builder = ChartBuilder(chart_info, [non_empty_event], temp_folder)
         with ChartInstallationContext(builder):
-            event_info = kubectl_get("events")
-            print(event_info)
+            event_info = get_event_info()
             assert event_info["TYPE"][0] == "test-type"
             assert event_info["REASON"][0] == "testing"
             assert event_info["OBJECT"][0] == "/test-ref"

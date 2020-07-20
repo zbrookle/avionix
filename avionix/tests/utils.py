@@ -2,6 +2,7 @@ from logging import info
 import re
 from subprocess import check_output
 import time
+from typing import List, Tuple
 
 from pandas import DataFrame, Series
 
@@ -41,14 +42,36 @@ def space_split(output_line: str):
         if not re.match(r"^\s*$", value)
     ]
 
+def get_name_locations(names: List[str], name_string: str):
+    locs = []
+    last_pos = 0
+    for name in names:
+        last_pos = name_string.find(name, last_pos)
+        locs.append(last_pos)
+    for i, loc in enumerate(locs):
+        if i + 1 < len(locs):
+            locs[i] = (loc, locs[i + 1])
+            continue
+        locs[i] = (loc, len(name_string))
+    return locs
+
+def split_using_locations(locations: List[Tuple[int, int]], values_string: str):
+    return [values_string[loc[0]:loc[1]].strip() for loc in locations]
+
+def is_empty_values(values: list):
+    for value in values:
+        if value:
+            return False
+    return True
 
 def parse_binary_output_to_dataframe(output: bin):
     output_lines = output.decode("utf-8").split("\n")
     names = space_split(output_lines[0])
+    value_locations = get_name_locations(names, output_lines[0])
     value_rows = []
     for line in output_lines[1:]:
-        values = space_split(line)
-        if values:
+        values = split_using_locations(value_locations, line)
+        if not is_empty_values(values):
             value_rows.append(values)
     df = DataFrame(data=value_rows, columns=names)
     info("\n" + str(df))

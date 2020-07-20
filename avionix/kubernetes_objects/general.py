@@ -38,7 +38,7 @@ class ResourceRequirements(HelmYaml):
     :type requests: Optional[dict]
     """
 
-    def __init__(self, limits: dict, requests: Optional[dict] = None):
+    def __init__(self, limits: Optional[dict] = None, requests: Optional[dict] = None):
         self.limits = limits
         self.requests = requests
 

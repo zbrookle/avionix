@@ -81,6 +81,9 @@ class SecretEnvSource(HelmYaml):
 
 class Secret(KubernetesBaseObject):
     """
+    :param metadata:Standard object's metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ObjectMeta
     :param data:Data contains the secret data. Each key must consist of alphanumeric \
         characters, '-', '_' or '.'. The serialized form of the secret data is a \
         base64 encoded string, representing the arbitrary (possibly non-string) data \
@@ -91,9 +94,6 @@ class Secret(KubernetesBaseObject):
         the field can be modified at any time. Defaulted to nil. This is an alpha \
         field enabled by ImmutableEphemeralVolumes feature gate.
     :type immutable: bool
-    :param metadata:Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ObjectMeta
     :param string_data:stringData allows specifying non-binary secret data in string \
         form. It is provided as a write-only convenience method. All keys and values \
         are merged into the data field on write, overwriting any existing values. It \
@@ -110,17 +110,17 @@ class Secret(KubernetesBaseObject):
 
     def __init__(
         self,
-        data: dict,
-        immutable: bool,
         metadata: ObjectMeta,
-        string_data: dict,
-        type: str,
+        data: Optional[dict] = None,
+        immutable: Optional[bool] = None,
+        string_data: Optional[dict] = None,
+        type: Optional[str] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
+        self.metadata = metadata
         self.data = data
         self.immutable = immutable
-        self.metadata = metadata
         self.stringData = string_data
         self.type = type
 

@@ -14,7 +14,7 @@ from avionix.tests.utils import ChartInstallationContext, kubectl_get
 def replication_controller(pod_template_spec):
     return ReplicationController(
         ObjectMeta(name="test-replication-controller"),
-        spec=ReplicationControllerSpec(pod_template_spec, selector={"type": "master"})
+        spec=ReplicationControllerSpec(pod_template_spec, selector={"type": "master"}),
     )
 
 

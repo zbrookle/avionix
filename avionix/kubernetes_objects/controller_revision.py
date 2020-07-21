@@ -1,13 +1,13 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, Apps
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 
 
-class ControllerRevision(KubernetesBaseObject):
+class ControllerRevision(Apps):
     """
     :param data:Data is the serialized representation of the state.
-    :type data: str
+    :type data: dict
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ObjectMeta
@@ -22,8 +22,8 @@ class ControllerRevision(KubernetesBaseObject):
 
     def __init__(
         self,
-        data: str,
         metadata: ObjectMeta,
+        data: dict,
         revision: int,
         api_version: Optional[str] = None,
     ):

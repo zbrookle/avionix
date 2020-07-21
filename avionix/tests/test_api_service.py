@@ -7,10 +7,7 @@ from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 @pytest.fixture
 def api_service():
-    return APIService(
-        ObjectMeta(name="v0.test"),
-        APIServiceSpec("test", 1, "v0", 1),
-    )
+    return APIService(ObjectMeta(name="v0.test"), APIServiceSpec("test", 1, "v0", 1),)
 
 
 def test_create_api_service(test_folder, chart_info, api_service):

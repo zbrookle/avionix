@@ -57,6 +57,7 @@ class ApiExtensions(KubernetesBaseObject):
 
     _version_prefix = "apiextensions.k8s.io/"
 
+
 class ApiRegistration(KubernetesBaseObject):
     """
     Base class for api registration

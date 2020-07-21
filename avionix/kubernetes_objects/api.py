@@ -1,7 +1,10 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, ApiRegistration
+from avionix.kubernetes_objects.base_objects import (
+    KubernetesBaseObject,
+    ApiRegistration,
+)
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 from avionix.kubernetes_objects.service import ServiceReference
 from avionix.yaml.yaml_handling import HelmYaml
@@ -61,12 +64,9 @@ class APIServiceSpec(HelmYaml):
         group_priority_minimum: int,
         version: str,
         version_priority: int,
-            ca_bundle: Optional[str] = None,
-
-            insecure_skip_tlsverify: Optional[bool] = None,
-
-            service: Optional[ServiceReference] = None,
-
+        ca_bundle: Optional[str] = None,
+        insecure_skip_tlsverify: Optional[bool] = None,
+        service: Optional[ServiceReference] = None,
     ):
         self.caBundle = ca_bundle
         self.group = group

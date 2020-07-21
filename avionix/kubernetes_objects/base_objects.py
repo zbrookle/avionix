@@ -57,6 +57,13 @@ class ApiExtensions(KubernetesBaseObject):
 
     _version_prefix = "apiextensions.k8s.io/"
 
+class ApiRegistration(KubernetesBaseObject):
+    """
+    Base class for api registration
+    """
+
+    _version_prefix = "apiregistration.k8s.io/"
+
 
 class BaseSpec(HelmYaml):
     pass

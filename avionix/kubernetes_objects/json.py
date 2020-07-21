@@ -39,10 +39,6 @@ class JSON(HelmYaml):
 
 class JSONSchemaProps(HelmYaml):
     """
-    :param ref:None
-    :type ref: str
-    :param schema:None
-    :type schema: str
     :param additional_items:None
     :type additional_items: JSONSchemaPropsOrBool
     :param additional_properties:None
@@ -200,52 +196,48 @@ class JSONSchemaProps(HelmYaml):
 
     def __init__(
         self,
-        ref: str,
-        schema: str,
-        additional_items: JSONSchemaPropsOrBool,
-        additional_properties: JSONSchemaPropsOrBool,
-        all_of: List["JSONSchemaProps"],
-        any_of: List["JSONSchemaProps"],
-        definitions: dict,
-        dependencies: dict,
-        description: str,
-        enum: List[JSON],
-        example: JSON,
-        exclusive_maximum: bool,
-        exclusive_minimum: bool,
-        external_docs: ExternalDocumentation,
-        format: str,
-        id: str,
-        items: JSONSchemaPropsOrArray,
-        max_items: int,
-        max_length: int,
-        max_properties: int,
-        maximum: Union[int, float],
-        min_items: int,
-        min_length: int,
-        min_properties: int,
-        minimum: Union[int, float],
-        multiple_of: Union[int, float],
-        not_: "JSONSchemaProps",
-        nullable: bool,
-        one_of: List["JSONSchemaProps"],
-        pattern: str,
-        pattern_properties: dict,
-        properties: dict,
-        required: List[str],
-        title: str,
         type: str,
-        unique_items: bool,
-        x_kubernetes_embedded_resource: bool,
-        x_kubernetes_int_or_string: bool,
-        x_kubernetes_list_map_keys: List[str],
-        x_kubernetes_map_type: str,
-        x_kubernetes_preserve_unknown_fields: bool,
+        additional_items: Optional[JSONSchemaPropsOrBool] = None,
+        additional_properties: Optional[JSONSchemaPropsOrBool] = None,
+        all_of: Optional[List["JSONSchemaProps"]] = None,
+        any_of: Optional[List["JSONSchemaProps"]] = None,
+        definitions: Optional[dict] = None,
+        dependencies: Optional[dict] = None,
+        description: Optional[str] = None,
+        enum: Optional[List[JSON]] = None,
+        example: Optional[JSON] = None,
+        exclusive_maximum: Optional[bool] = None,
+        exclusive_minimum: Optional[bool] = None,
+        external_docs: Optional[ExternalDocumentation] = None,
+        format: Optional[str] = None,
+        id: Optional[str] = None,
+        items: Optional[JSONSchemaPropsOrArray] = None,
+        max_items: Optional[int] = None,
+        max_length: Optional[int] = None,
+        max_properties: Optional[int] = None,
+        maximum: Optional[Union[int, float]] = None,
+        min_items: Optional[int] = None,
+        min_length: Optional[int] = None,
+        min_properties: Optional[int] = None,
+        minimum: Optional[Union[int, float]] = None,
+        multiple_of: Optional[Union[int, float]] = None,
+        not_: Optional["JSONSchemaProps"] = None,
+        nullable: Optional[bool] = None,
+        one_of: Optional[List["JSONSchemaProps"]] = None,
+        pattern: Optional[str] = None,
+        pattern_properties: Optional[dict] = None,
+        properties: Optional[dict] = None,
+        required: Optional[List[str]] = None,
+        title: Optional[str] = None,
+        unique_items: Optional[bool] = None,
+        x_kubernetes_embedded_resource: Optional[bool] = None,
+        x_kubernetes_int_or_string: Optional[bool] = None,
+        x_kubernetes_list_map_keys: Optional[List[str]] = None,
+        x_kubernetes_map_type: Optional[str] = None,
+        x_kubernetes_preserve_unknown_fields: Optional[bool] = None,
         default: Optional[JSON] = None,
         x_kubernetes_list_type: Optional[str] = None,
     ):
-        self["$ref"] = ref
-        self["$schema"] = schema
         self.additionalItems = additional_items
         self.additionalProperties = additional_properties
         self.allOf = all_of

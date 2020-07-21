@@ -20,7 +20,6 @@ def test_replication_controller(chart_info, test_folder, replication_controller)
     builder = ChartBuilder(chart_info, [replication_controller])
     with ChartInstallationContext(builder):
         replication_info = kubectl_get("replicationcontrollers")
-        print(replication_info)
         assert replication_info["NAME"][0] == "test-replication-controller"
         assert replication_info["DESIRED"][0] == "1"
         assert replication_info["CURRENT"][0] == "1"

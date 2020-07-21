@@ -43,7 +43,6 @@ def test_create_empty_event(chart_info: ChartInfo, test_folder, empty_event: Eve
     builder = ChartBuilder(chart_info, [empty_event], test_folder)
     with ChartInstallationContext(builder):
         event_info = get_event_info()
-        print(event_info)
         assert event_info["TYPE"][0] == ""
         assert event_info["REASON"][0] == ""
         assert event_info["OBJECT"][0] == "/test-ref"

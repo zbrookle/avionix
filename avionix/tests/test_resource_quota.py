@@ -16,7 +16,5 @@ def test_resource_quota(chart_info, test_folder, resource_quota):
     builder = ChartBuilder(chart_info, [resource_quota], test_folder)
     with ChartInstallationContext(builder):
         quota_info = kubectl_get("resourcequotas")
-        print()
-        print(quota_info)
         assert quota_info["NAME"][0] == "test-resource-quota"
         assert quota_info["REQUEST"][0] == "cpu: 0/1"

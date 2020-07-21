@@ -28,7 +28,7 @@ class KubernetesBaseObject(HelmYaml):
 
         self.metadata = metadata
 
-    def _get_api_version(self, api_version: str):
+    def _get_api_version(self, api_version: Optional[str]):
         if api_version is None:
             return self._version_prefix + DEFAULTS["default_api_version"]
         return api_version

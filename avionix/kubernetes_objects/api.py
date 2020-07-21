@@ -2,8 +2,8 @@ from datetime import time
 from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import (
-    KubernetesBaseObject,
     ApiRegistration,
+    KubernetesBaseObject,
 )
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 from avionix.kubernetes_objects.service import ServiceReference

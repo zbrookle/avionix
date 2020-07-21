@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, Apps
+from avionix.kubernetes_objects.base_objects import Apps, KubernetesBaseObject
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 
 

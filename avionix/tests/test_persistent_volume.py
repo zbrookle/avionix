@@ -1,14 +1,12 @@
-from tempfile import TemporaryDirectory
-
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kubernetes_objects.volume import (
+    HostPathVolumeSource,
     PersistentVolume,
     PersistentVolumeClaim,
     PersistentVolumeClaimSpec,
     PersistentVolumeSpec,
-    HostPathVolumeSource,
     ResourceRequirements,
 )
 from avionix.tests.utils import ChartInstallationContext, kubectl_get

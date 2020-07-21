@@ -1,11 +1,10 @@
 from pathlib import Path
-from tempfile import TemporaryDirectory
+
+import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kubernetes_objects.pod import Pod, PodTemplate, PodTemplateSpec
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
-
-import pytest
 
 
 def test_create_pod(chart_info: ChartInfo, test_folder, pod: Pod):

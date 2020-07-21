@@ -1,5 +1,3 @@
-from tempfile import TemporaryDirectory
-
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta

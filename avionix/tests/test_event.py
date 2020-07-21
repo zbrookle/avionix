@@ -1,5 +1,4 @@
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 import pytest
 
@@ -38,12 +37,11 @@ def non_empty_event(object_meta_event, event_obj_ref):
 def get_event_info():
     info = kubectl_get("events")
     return info[(info["TYPE"] != "Normal") & (info["TYPE"] != "Warning")].reset_index(
-        drop=True)
+        drop=True
+    )
 
 
-def test_create_empty_event(
-    chart_info: ChartInfo, test_folder, empty_event: Event
-):
+def test_create_empty_event(chart_info: ChartInfo, test_folder, empty_event: Event):
     builder = ChartBuilder(chart_info, [empty_event], test_folder)
     with ChartInstallationContext(builder):
         event_info = get_event_info()

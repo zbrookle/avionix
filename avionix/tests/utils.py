@@ -1,8 +1,11 @@
 from logging import info
+import os
+from pathlib import Path
 import re
+import shutil
 from subprocess import check_output
 import time
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 from pandas import DataFrame, Series
 
@@ -13,10 +16,6 @@ from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.metadata import ObjectMeta
 from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
-
-import os
-import shutil
-from pathlib import Path
 
 
 def get_test_container(number: int):

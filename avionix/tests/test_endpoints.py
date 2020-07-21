@@ -42,22 +42,20 @@ def get_endpoints_info():
 
 
 def test_endpoints_no_subset(
-    chart_info: ChartInfo, test_folder: Path, endpoints_no_subset: Endpoints
+    chart_info: ChartInfo, test_folder, endpoints_no_subset: Endpoints
 ):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [endpoints_no_subset], temp_folder)
-        with ChartInstallationContext(builder):
-            endpoints_info = get_endpoints_info()
-            assert endpoints_info["NAME"][0] == "test-endpoints"
-            assert endpoints_info["ENDPOINTS"][0] == "<none>"
+    builder = ChartBuilder(chart_info, [endpoints_no_subset], test_folder)
+    with ChartInstallationContext(builder):
+        endpoints_info = get_endpoints_info()
+        assert endpoints_info["NAME"][0] == "test-endpoints"
+        assert endpoints_info["ENDPOINTS"][0] == "<none>"
 
 
 def test_endpoints_with_subset(
-    chart_info: ChartInfo, test_folder: Path, endpoints_with_subset: Endpoints
+    chart_info: ChartInfo, test_folder, endpoints_with_subset: Endpoints
 ):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [endpoints_with_subset], temp_folder)
-        with ChartInstallationContext(builder):
-            endpoints_info = get_endpoints_info()
-            assert endpoints_info["NAME"][0] == "test-endpoints"
-            assert endpoints_info["ENDPOINTS"][0] == "10.9.8.7"
+    builder = ChartBuilder(chart_info, [endpoints_with_subset], test_folder)
+    with ChartInstallationContext(builder):
+        endpoints_info = get_endpoints_info()
+        assert endpoints_info["NAME"][0] == "test-endpoints"
+        assert endpoints_info["ENDPOINTS"][0] == "10.9.8.7"

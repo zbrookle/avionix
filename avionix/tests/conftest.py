@@ -32,7 +32,7 @@ def chart_info():
 
 @pytest.fixture(scope="module")
 def test_folder():
-    return Path(__file__).parent
+    return Path.cwd() / "tmp"
 
 
 @pytest.fixture

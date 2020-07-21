@@ -13,8 +13,7 @@ def namespace():
 
 
 def test_create_namespace(test_folder, chart_info, namespace):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [namespace], temp_folder)
-        with ChartInstallationContext(builder):
-            namespace_info = kubectl_get("namespaces")
-            assert "test-namespace" in namespace_info["NAME"].values
+    builder = ChartBuilder(chart_info, [namespace], test_folder)
+    with ChartInstallationContext(builder):
+        namespace_info = kubectl_get("namespaces")
+        assert "test-namespace" in namespace_info["NAME"].values

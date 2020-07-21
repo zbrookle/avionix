@@ -23,18 +23,16 @@ def get_secret_info():
 
 
 def test_empty_secret(chart_info, test_folder, empty_secret):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [empty_secret], temp_folder)
-        with ChartInstallationContext(builder):
-            secret_info = get_secret_info()
-            assert secret_info["NAME"][0] == "test-secret"
-            assert secret_info["DATA"][0] == "0"
+    builder = ChartBuilder(chart_info, [empty_secret], test_folder)
+    with ChartInstallationContext(builder):
+        secret_info = get_secret_info()
+        assert secret_info["NAME"][0] == "test-secret"
+        assert secret_info["DATA"][0] == "0"
 
 
 def test_non_empty_secret(chart_info, test_folder, non_empty_secret):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [non_empty_secret], temp_folder)
-        with ChartInstallationContext(builder):
-            secret_info = get_secret_info()
-            assert secret_info["NAME"][0] == "test-secret"
-            assert secret_info["DATA"][0] == "1"
+    builder = ChartBuilder(chart_info, [non_empty_secret], test_folder)
+    with ChartInstallationContext(builder):
+        secret_info = get_secret_info()
+        assert secret_info["NAME"][0] == "test-secret"
+        assert secret_info["DATA"][0] == "1"

@@ -37,33 +37,30 @@ def non_empty_event(object_meta_event, event_obj_ref):
 
 def get_event_info():
     info = kubectl_get("events")
-    return info[info["TYPE"] != "Normal"].reset_index(drop=True)
+    return info[(info["TYPE"] != "Normal") & (info["TYPE"] != "Warning")].reset_index(
+        drop=True)
 
 
 def test_create_empty_event(
-    chart_info: ChartInfo, test_folder: Path, empty_event: Event
+    chart_info: ChartInfo, test_folder, empty_event: Event
 ):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        print(empty_event)
-        builder = ChartBuilder(chart_info, [empty_event], temp_folder)
-        with ChartInstallationContext(builder):
-            event_info = get_event_info()
-            print(event_info)
-            assert event_info["TYPE"][0] == ""
-            assert event_info["REASON"][0] == ""
-            assert event_info["OBJECT"][0] == "/test-ref"
-            assert event_info["MESSAGE"][0] == ""
+    builder = ChartBuilder(chart_info, [empty_event], test_folder)
+    with ChartInstallationContext(builder):
+        event_info = get_event_info()
+        print(event_info)
+        assert event_info["TYPE"][0] == ""
+        assert event_info["REASON"][0] == ""
+        assert event_info["OBJECT"][0] == "/test-ref"
+        assert event_info["MESSAGE"][0] == ""
 
 
 def test_create_nonempty_event(
-    chart_info: ChartInfo, test_folder: Path, non_empty_event: Event
+    chart_info: ChartInfo, test_folder, non_empty_event: Event
 ):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        print(non_empty_event)
-        builder = ChartBuilder(chart_info, [non_empty_event], temp_folder)
-        with ChartInstallationContext(builder):
-            event_info = get_event_info()
-            assert event_info["TYPE"][0] == "test-type"
-            assert event_info["REASON"][0] == "testing"
-            assert event_info["OBJECT"][0] == "/test-ref"
-            assert event_info["MESSAGE"][0] == "test message"
+    builder = ChartBuilder(chart_info, [non_empty_event], test_folder)
+    with ChartInstallationContext(builder):
+        event_info = get_event_info()
+        assert event_info["TYPE"][0] == "test-type"
+        assert event_info["REASON"][0] == "testing"
+        assert event_info["OBJECT"][0] == "/test-ref"
+        assert event_info["MESSAGE"][0] == "test message"

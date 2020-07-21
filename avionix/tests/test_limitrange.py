@@ -25,16 +25,14 @@ def nonempty_limit_range():
 
 
 def test_create_empty_limitrange(test_folder, chart_info, empty_limit_range):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [empty_limit_range], temp_folder)
-        with ChartInstallationContext(builder):
-            namespace_info = kubectl_get("limitranges")
-            assert namespace_info["NAME"][0] == "test-range"
+    builder = ChartBuilder(chart_info, [empty_limit_range], test_folder)
+    with ChartInstallationContext(builder):
+        namespace_info = kubectl_get("limitranges")
+        assert namespace_info["NAME"][0] == "test-range"
 
 
 def test_create_limitrange(test_folder, chart_info, nonempty_limit_range):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [nonempty_limit_range], temp_folder)
-        with ChartInstallationContext(builder):
-            namespace_info = kubectl_get("limitranges")
-            assert namespace_info["NAME"][0] == "test-range"
+    builder = ChartBuilder(chart_info, [nonempty_limit_range], test_folder)
+    with ChartInstallationContext(builder):
+        namespace_info = kubectl_get("limitranges")
+        assert namespace_info["NAME"][0] == "test-range"

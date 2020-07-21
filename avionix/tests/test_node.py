@@ -28,20 +28,18 @@ def get_node_info():
 
 
 def test_create_empty_node(test_folder, chart_info, empty_node):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [empty_node], temp_folder)
-        with ChartInstallationContext(builder):
-            node_info = get_node_info()
-            assert node_info["NAME"][0] == "test-node"
-            assert node_info["STATUS"][0] == "Unknown"
-            assert node_info["VERSION"][0] == ""
+    builder = ChartBuilder(chart_info, [empty_node], test_folder)
+    with ChartInstallationContext(builder):
+        node_info = get_node_info()
+        assert node_info["NAME"][0] == "test-node"
+        assert node_info["STATUS"][0] == "Unknown"
+        assert node_info["VERSION"][0] == ""
 
 
 def test_create_non_empty_node(test_folder, chart_info, non_empty_node):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [non_empty_node], temp_folder)
-        with ChartInstallationContext(builder):
-            node_info = get_node_info()
-            assert node_info["NAME"][0] == "test-node"
-            assert node_info["STATUS"][0] == "Unknown"
-            assert node_info["VERSION"][0] == ""
+    builder = ChartBuilder(chart_info, [non_empty_node], test_folder)
+    with ChartInstallationContext(builder):
+        node_info = get_node_info()
+        assert node_info["NAME"][0] == "test-node"
+        assert node_info["STATUS"][0] == "Unknown"
+        assert node_info["VERSION"][0] == ""

@@ -9,6 +9,8 @@ from avionix.yaml.yaml_handling import HelmYaml
 
 class ServicePort(HelmYaml):
     """
+    :param port:The port that will be exposed by this service.
+    :type port: int
     :param app_protocol:The application protocol for this port. This field follows \
         standard Kubernetes label syntax. Un-prefixed names are reserved for IANA \
         standard service names (as per RFC-6335 and \
@@ -16,8 +18,6 @@ class ServicePort(HelmYaml):
         use prefixed names such as mycompany.com/my-custom-protocol. Field can be \
         enabled with ServiceAppProtocol feature gate.
     :type app_protocol: str
-    :param port:The port that will be exposed by this service.
-    :type port: str
     :param name:The name of this port within the service. This must be a DNS_LABEL. \
         All ports within a ServiceSpec must have unique names. When considering the \
         endpoints for a Service, this must match the 'name' field in the EndpointPort. \
@@ -32,7 +32,7 @@ class ServicePort(HelmYaml):
     :type node_port: Optional[int]
     :param protocol:The IP protocol for this port. Supports "TCP", "UDP", and "SCTP". \
         Default is TCP.
-    :type protocol: Optional[int]
+    :type protocol: Optional[str]
     :param target_port:Number or name of the port to access on the pods targeted by \
         the service. Number must be in the range 1 to 65535. Name must be an \
         IANA_SVC_NAME. If this is a string, it will be looked up as a named port in \
@@ -46,11 +46,11 @@ class ServicePort(HelmYaml):
 
     def __init__(
         self,
-        app_protocol: str,
-        port: str,
+        port: int,
+        app_protocol: Optional[str] = None,
         name: Optional[str] = None,
         node_port: Optional[int] = None,
-        protocol: Optional[int] = None,
+        protocol: Optional[str] = None,
         target_port: Optional[str] = None,
     ):
         self.appProtocol = app_protocol
@@ -63,6 +63,9 @@ class ServicePort(HelmYaml):
 
 class ServiceSpec(HelmYaml):
     """
+    :param ports:The list of ports that are exposed by this service. More info: \
+        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
+    :type ports: Optional[List[ServicePort]]
     :param cluster_ip:clusterIP is the IP address of the service and is usually \
         assigned randomly by the master. If an address is specified manually and is \
         not in use by others, it will be allocated to the service; otherwise, creation \
@@ -130,9 +133,6 @@ class ServiceSpec(HelmYaml):
         cloud-provider does not support the feature." More info: \
         https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/  # noqa
     :type load_balancer_source_ranges: Optional[List[str]]
-    :param ports:The list of ports that are exposed by this service. More info: \
-        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
-    :type ports: Optional[List[ServicePort]]
     :param selector:Route service traffic to pods with label keys and values matching \
         this selector. If empty or not present, the service is assumed to have an \
         external process managing its endpoints, which Kubernetes will not modify. \
@@ -157,7 +157,7 @@ class ServiceSpec(HelmYaml):
         makes sense as the last value in the list. If this is not specified or empty, \
         no topology constraints will be applied.
     :type topology_keys: Optional[List[str]]
-    :param type:type determines how the Service is exposed. Defaults to ClusterIP. \
+    :param type: type determines how the Service is exposed. Defaults to ClusterIP. \
         Valid options are ExternalName, ClusterIP, NodePort, and LoadBalancer. \
         "ExternalName" maps to the specified externalName. "ClusterIP" allocates a \
         cluster-internal IP address for load-balancing to endpoints. Endpoints are \
@@ -174,17 +174,17 @@ class ServiceSpec(HelmYaml):
 
     def __init__(
         self,
-        cluster_ip: str,
-        external_ips: List[str],
-        external_name: str,
-        external_traffic_policy: str,
-        ip_family: str,
-        load_balancer_ip: str,
-        publish_not_ready_addresses: bool,
-        session_affinity_config: SessionAffinityConfig,
+        ports: List[ServicePort],
+        cluster_ip: Optional[str] = None,
+        external_ips: Optional[List[str]] = None,
+        external_name: Optional[str] = None,
+        external_traffic_policy: Optional[str] = None,
+        ip_family: Optional[str] = None,
+        load_balancer_ip: Optional[str] = None,
+        publish_not_ready_addresses: Optional[bool] = None,
+        session_affinity_config: Optional[SessionAffinityConfig] = None,
         health_check_node_port: Optional[int] = None,
         load_balancer_source_ranges: Optional[List[str]] = None,
-        ports: Optional[List[ServicePort]] = None,
         selector: Optional[dict] = None,
         session_affinity: Optional[str] = None,
         topology_keys: Optional[List[str]] = None,

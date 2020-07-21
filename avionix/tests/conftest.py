@@ -7,10 +7,20 @@ import pytest
 from avionix import ChartInfo, ObjectMeta
 from avionix.kubernetes_objects.pod import Pod, PodSpec, PodTemplateSpec
 from avionix.tests.utils import get_test_container, get_test_deployment
+import os
+import shutil
 
 logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=logging.INFO)
 
 pandas.set_option("display.max_columns", 50)
+
+
+@pytest.fixture(scope="function", autouse=True)
+def setup_environment(test_folder):
+    os.makedirs(test_folder, exist_ok=True)
+    yield
+    if os.path.exists(test_folder):
+        shutil.rmtree(test_folder)
 
 
 @pytest.fixture

@@ -8,14 +8,8 @@ from avionix.tests.utils import ChartInstallationContext, kubectl_get
 @pytest.fixture
 def deployment(test_labels, pod_template_spec, selector):
     return Deployment(
-        metadata=ObjectMeta(
-            name=f"test-deployment", labels=test_labels
-        ),
-        spec=DeploymentSpec(
-            replicas=1,
-            template=pod_template_spec,
-            selector=selector,
-        ),
+        metadata=ObjectMeta(name=f"test-deployment", labels=test_labels),
+        spec=DeploymentSpec(replicas=1, template=pod_template_spec, selector=selector,),
     )
 
 

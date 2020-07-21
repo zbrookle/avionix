@@ -3,9 +3,11 @@ from typing import Union
 
 from yaml import dump
 
+
 def is_empty_yaml(value):
     # If value is None, [], {}, '' do not include value
     return not value and not isinstance(value, bool)
+
 
 class HelmYaml:
     def __clean_nested(self, dictionary_or_list: Union[dict, list]):

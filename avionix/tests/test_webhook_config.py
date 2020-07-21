@@ -2,11 +2,11 @@ import pytest
 
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kubernetes_objects.webhook import (
-    MutatingWebhookConfiguration,
-    ValidatingWebhookConfiguration,
     MutatingWebhook,
-    ValidatingWebhook,
+    MutatingWebhookConfiguration,
     ServiceReference,
+    ValidatingWebhook,
+    ValidatingWebhookConfiguration,
     WebhookClientConfig,
 )
 from avionix.tests.utils import ChartInstallationContext, kubectl_get

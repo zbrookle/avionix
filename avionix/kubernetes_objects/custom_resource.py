@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import ApiExtensions, KubernetesBaseObject
 from avionix.kubernetes_objects.json import JSONSchemaProps
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 from avionix.kubernetes_objects.webhook import WebhookConversion
@@ -57,12 +57,16 @@ class CustomResourceSubresourceScale(HelmYaml):
         self.statusReplicasPath = status_replicas_path
 
 
-class CustomResourceDefinitionNames(KubernetesBaseObject):
+class CustomResourceDefinitionNames(HelmYaml):
     """
     :param categories:categories is a list of grouped resources this custom resource \
         belongs to (e.g. 'all'). This is published in API discovery documents, and \
         used by clients to support invocations like `kubectl get all`.
     :type categories: List[str]
+    :param kind: kind is the serialized kind of the resource. It is normally CamelCase
+     and singular. Custom resource instances will use this value as the `kind`
+     attribute in API calls.
+    :type: str
     :param plural:plural is the plural name of the resource to serve. The custom \
         resources are served under `/apis/<group>/<version>/.../<plural>`. Must match \
         the name of the CustomResourceDefinition (in the form \
@@ -83,12 +87,14 @@ class CustomResourceDefinitionNames(KubernetesBaseObject):
     def __init__(
         self,
         categories: List[str],
+        kind: str,
         plural: str,
-        short_names: List[str],
+        short_names: Optional[List[str]] = None,
         list_kind: Optional[str] = None,
         singular: Optional[str] = None,
     ):
         self.categories = categories
+        self.kind = kind
         self.plural = plural
         self.shortNames = short_names
         self.listKind = list_kind
@@ -141,14 +147,8 @@ class CustomResourceConversion(HelmYaml):
 
 class CustomResourceColumnDefinition(HelmYaml):
     """
-    :param description:description is a human readable description of this column.
-    :type description: str
-    :param format:format is an optional OpenAPI type definition for this column. The \
-        'name' format is applied to the primary identifier column to assist in clients \
-        identifying column is the resource name. See \
-        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
-        for details.
-    :type format: str
+    :param name: name is a human readable name for the column.
+    :type name: str
     :param json_path:jsonPath is a simple JSON path (i.e. with array notation) which \
         is evaluated against each custom resource to produce the value for this \
         column.
@@ -157,8 +157,14 @@ class CustomResourceColumnDefinition(HelmYaml):
         https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
         for details.
     :type type: str
-    :param name:name is a human readable name for the column.
-    :type name: Optional[str]
+    :param description:description is a human readable description of this column.
+    :type description: str
+    :param format:format is an optional OpenAPI type definition for this column. The \
+        'name' format is applied to the primary identifier column to assist in clients \
+        identifying column is the resource name. See \
+        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
+        for details.
+    :type format: str
     :param priority:priority is an integer defining the relative importance of this \
         column compared to others. Lower numbers are considered higher priority. \
         Columns that may be omitted in limited space scenarios should be given a \
@@ -168,11 +174,11 @@ class CustomResourceColumnDefinition(HelmYaml):
 
     def __init__(
         self,
-        description: str,
-        format: str,
+        name: str,
         json_path: str,
         type: str,
-        name: Optional[str] = None,
+        description: Optional[str] = None,
+        format: Optional[str] = None,
         priority: Optional[int] = None,
     ):
         self.description = description
@@ -196,6 +202,10 @@ class CustomResourceSubresources(HelmYaml):
 
 class CustomResourceDefinitionVersion(HelmYaml):
     """
+    :param name:name is the version name, e.g. “v1”, “v2beta1”, etc. The custom \
+        resources are served under this version at `/apis/<group>/<version>/...` if \
+        `served` is true.
+    :type name: Optional[str]
     :param additional_printer_columns:additionalPrinterColumns specifies additional \
         columns returned in Table output. See \
         https://kubernetes.io/docs/reference/using-api/api-concepts/#receiving-resources-as-tables  # noqa \
@@ -215,33 +225,27 @@ class CustomResourceDefinitionVersion(HelmYaml):
     :param subresources:subresources specify what subresources this version of the \
         defined custom resource have.
     :type subresources: CustomResourceSubresources
-    :param name:name is the version name, e.g. “v1”, “v2beta1”, etc. The custom \
-        resources are served under this version at `/apis/<group>/<version>/...` if \
-        `served` is true.
-    :type name: Optional[str]
     """
 
     def __init__(
         self,
+        name: str,
         additional_printer_columns: List[CustomResourceColumnDefinition],
         schema: CustomResourceValidation,
         served: bool,
         storage: bool,
-        subresources: CustomResourceSubresources,
-        name: Optional[str] = None,
+        subresources: Optional[CustomResourceSubresources] = None,
     ):
+        self.name = name
         self.additionalPrinterColumns = additional_printer_columns
         self.schema = schema
         self.served = served
         self.storage = storage
         self.subresources = subresources
-        self.name = name
 
 
 class CustomResourceDefinitionSpec(HelmYaml):
     """
-    :param conversion:conversion defines conversion settings for the CRD.
-    :type conversion: CustomResourceConversion
     :param group:group is the API group of the defined custom resource. The custom \
         resources are served under `/apis/<group>/...`. Must match the name of the \
         CustomResourceDefinition (in the form `<names.plural>.<group>`).
@@ -272,16 +276,18 @@ class CustomResourceDefinitionSpec(HelmYaml):
         versions: v10, v2, v1, v11beta2, v10beta3, v3beta1, v12alpha1, v11alpha2, \
         foo1, foo10.
     :type versions: List[CustomResourceDefinitionVersion]
+    :param conversion:conversion defines conversion settings for the CRD.
+    :type conversion: CustomResourceConversion
     """
 
     def __init__(
         self,
-        conversion: CustomResourceConversion,
         group: str,
         names: CustomResourceDefinitionNames,
-        preserve_unknown_fields: bool,
         scope: str,
         versions: List[CustomResourceDefinitionVersion],
+        preserve_unknown_fields: Optional[bool] = None,
+        conversion: Optional[CustomResourceConversion] = None,
     ):
         self.conversion = conversion
         self.group = group
@@ -291,7 +297,7 @@ class CustomResourceDefinitionSpec(HelmYaml):
         self.versions = versions
 
 
-class CustomResourceDefinition(KubernetesBaseObject):
+class CustomResourceDefinition(ApiExtensions):
     """
     :param metadata:None
     :type metadata: ObjectMeta

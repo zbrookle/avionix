@@ -19,11 +19,10 @@ def replication_controller(pod_template_spec):
 
 
 def test_replication_controller(chart_info, test_folder, replication_controller):
-    with TemporaryDirectory(dir=test_folder) as temp_folder:
-        builder = ChartBuilder(chart_info, [replication_controller], temp_folder)
-        with ChartInstallationContext(builder):
-            replication_info = kubectl_get("replicationcontrollers")
-            print(replication_info)
-            assert replication_info["NAME"][0] == "test-replication-controller"
-            assert replication_info["DESIRED"][0] == "1"
-            assert replication_info["CURRENT"][0] == "1"
+    builder = ChartBuilder(chart_info, [replication_controller])
+    with ChartInstallationContext(builder):
+        replication_info = kubectl_get("replicationcontrollers")
+        print(replication_info)
+        assert replication_info["NAME"][0] == "test-replication-controller"
+        assert replication_info["DESIRED"][0] == "1"
+        assert replication_info["CURRENT"][0] == "1"

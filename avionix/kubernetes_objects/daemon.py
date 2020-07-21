@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import Apps, KubernetesBaseObject
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 from avionix.kubernetes_objects.pod import PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
@@ -78,6 +78,11 @@ class DaemonSetSpec(HelmYaml):
         specified). More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template  # noqa
     :type template: PodTemplateSpec
+    :param selector:A label query over pods that are managed by the daemon set. Must \
+    match in order to be controlled. It must match the pod template's labels. More \
+    info: \
+    https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :type selector: LabelSelector
     :param update_strategy:An update strategy to replace existing DaemonSet pods with \
         new pods.
     :type update_strategy: DaemonSetUpdateStrategy
@@ -90,20 +95,15 @@ class DaemonSetSpec(HelmYaml):
         rollback. This is a pointer to distinguish between explicit zero and not \
         specified. Defaults to 10.
     :type revision_history_limit: Optional[int]
-    :param selector:A label query over pods that are managed by the daemon set. Must \
-        match in order to be controlled. It must match the pod template's labels. More \
-        info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :type selector: Optional[LabelSelector]
     """
 
     def __init__(
         self,
         template: PodTemplateSpec,
-        update_strategy: DaemonSetUpdateStrategy,
+        selector: LabelSelector,
+        update_strategy: Optional[DaemonSetUpdateStrategy] = None,
         min_ready_seconds: Optional[int] = None,
         revision_history_limit: Optional[int] = None,
-        selector: Optional[LabelSelector] = None,
     ):
         self.template = template
         self.updateStrategy = update_strategy
@@ -112,7 +112,7 @@ class DaemonSetSpec(HelmYaml):
         self.selector = selector
 
 
-class DaemonSet(KubernetesBaseObject):
+class DaemonSet(Apps):
     """
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

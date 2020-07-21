@@ -8,6 +8,7 @@ import pytest
 
 from avionix import ChartInfo, ObjectMeta
 from avionix.kubernetes_objects.pod import Pod, PodSpec, PodTemplateSpec
+from avionix.kubernetes_objects.selector import LabelSelector
 from avionix.tests.utils import get_test_container, get_test_deployment
 
 logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=logging.INFO)
@@ -56,5 +57,15 @@ def pod(pod_spec):
 
 
 @pytest.fixture
-def pod_template_spec(pod_spec):
-    return PodTemplateSpec(ObjectMeta(labels={"type": "master"}), pod_spec)
+def test_labels():
+    return {"type": "master"}
+
+
+@pytest.fixture
+def pod_template_spec(pod_spec, test_labels):
+    return PodTemplateSpec(ObjectMeta(labels=test_labels), pod_spec)
+
+
+@pytest.fixture
+def selector(test_labels):
+    return LabelSelector(match_labels=test_labels)

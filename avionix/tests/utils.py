@@ -14,6 +14,9 @@ from avionix.kubernetes_objects.metadata import ObjectMeta
 from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
 
+import os
+import shutil
+
 
 def get_test_container(number: int):
     return Container(name=f"test-container-{number}", image="k8s.gcr.io/echoserver:1.4")
@@ -103,6 +106,7 @@ class ChartInstallationContext:
         status_resource: str = "pods",
         timeout: int = 20,
         expected_status: Optional[set] = None,
+        temp_dir: Optional[str] = None
     ):
         self.chart_builder = chart_builder
         self.status_resource = status_resource
@@ -111,6 +115,7 @@ class ChartInstallationContext:
             self.expected_status = {"Running", "Success"}
         else:
             self.expected_status = expected_status
+        self.temp_dir = temp_dir
 
     def get_status_resources(self) -> Series:
         resources = kubectl_get(self.status_resource)
@@ -141,6 +146,7 @@ class ChartInstallationContext:
             time.sleep(1)
 
     def __enter__(self):
+        os.makedirs(self.temp_dir)
         try:
             self.chart_builder.install_chart()
         except ChartAlreadyInstalledError:
@@ -153,3 +159,4 @@ class ChartInstallationContext:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.chart_builder.uninstall_chart()
         self.wait_for_uninstall()
+        shutil.rmtree(self.temp_dir)

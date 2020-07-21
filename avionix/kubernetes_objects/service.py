@@ -255,6 +255,9 @@ class ServiceReference(HelmYaml):
 
 class ServiceAccount(KubernetesBaseObject):
     """
+    :param metadata:Standard object's metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ObjectMeta
     :param image_pull_secrets:ImagePullSecrets is a list of references to secrets in \
         the same namespace to use for pulling any images in pods that reference this \
         ServiceAccount. ImagePullSecrets are distinct from Secrets because Secrets can \
@@ -262,9 +265,6 @@ class ServiceAccount(KubernetesBaseObject):
         More info: \
         https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod  # noqa
     :type image_pull_secrets: List[LocalObjectReference]
-    :param metadata:Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ObjectMeta
     :param secrets:Secrets is the list of secrets allowed to be used by pods running \
         using this ServiceAccount. More info: \
         https://kubernetes.io/docs/concepts/configuration/secret
@@ -282,9 +282,9 @@ class ServiceAccount(KubernetesBaseObject):
 
     def __init__(
         self,
-        image_pull_secrets: List[LocalObjectReference],
         metadata: ObjectMeta,
-        secrets: List[ObjectReference],
+        image_pull_secrets: Optional[List[LocalObjectReference]] = None,
+        secrets: Optional[List[ObjectReference]] = None,
         api_version: Optional[str] = None,
         automount_service_account_token: Optional[bool] = None,
     ):

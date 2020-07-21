@@ -11,6 +11,8 @@ class KubernetesBaseObject(HelmYaml):
     https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
     """
 
+    _version_prefix = ""
+
     def __init__(
         self,
         api_version: Optional[str] = None,
@@ -26,10 +28,9 @@ class KubernetesBaseObject(HelmYaml):
 
         self.metadata = metadata
 
-    @staticmethod
-    def _get_api_version(api_version: str):
+    def _get_api_version(self, api_version: str):
         if api_version is None:
-            return DEFAULTS["default_api_version"]
+            return self._version_prefix + DEFAULTS["default_api_version"]
         return api_version
 
 
@@ -38,23 +39,23 @@ class Apps(KubernetesBaseObject):
     Base class for apps group
     """
 
-    @staticmethod
-    def _get_api_version(api_version: str):
-        if api_version is None:
-            return "apps/" + DEFAULTS["default_api_version"]
-        return api_version
+    _version_prefix = "apps/"
 
 
 class AdmissionRegistration(KubernetesBaseObject):
     """
-    Base class for apps group
+    Base class for admission registration group
     """
 
-    @staticmethod
-    def _get_api_version(api_version: str):
-        if api_version is None:
-            return "admissionregistration.k8s.io/" + DEFAULTS["default_api_version"]
-        return api_version
+    _version_prefix = "admissionregistration.k8s.io/"
+
+
+class ApiExtensions(KubernetesBaseObject):
+    """
+    Base class for api extensions group
+    """
+
+    _version_prefix = "apiextensions.k8s.io/"
 
 
 class BaseSpec(HelmYaml):

@@ -18,7 +18,8 @@ def nonempty_service():
             [
                 ServicePort(80, name="port1"),
                 ServicePort(8080, protocol="UDP", name="port2"),
-            ], external_ips=["152.0.0.0"]
+            ],
+            external_ips=["152.0.0.0"],
         ),
     )
 
@@ -41,5 +42,5 @@ def test_nonempty_service(chart_info, test_folder, nonempty_service):
     with ChartInstallationContext(builder):
         service_info = get_service_info()
         assert service_info["NAME"][0] == "test-service"
-        assert service_info["PORT(S)"][0] == '80/TCP,8080/UDP'
+        assert service_info["PORT(S)"][0] == "80/TCP,8080/UDP"
         assert service_info["EXTERNAL-IP"][0] == "152.0.0.0"

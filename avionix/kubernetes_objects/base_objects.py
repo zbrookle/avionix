@@ -45,5 +45,17 @@ class Apps(KubernetesBaseObject):
         return api_version
 
 
+class AdmissionRegistration(KubernetesBaseObject):
+    """
+    Base class for apps group
+    """
+
+    @staticmethod
+    def _get_api_version(api_version: str):
+        if api_version is None:
+            return "admissionregistration.k8s.io/" + DEFAULTS["default_api_version"]
+        return api_version
+
+
 class BaseSpec(HelmYaml):
     pass

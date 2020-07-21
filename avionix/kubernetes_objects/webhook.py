@@ -1,6 +1,9 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import (
+    KubernetesBaseObject,
+    AdmissionRegistration,
+)
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
 from avionix.kubernetes_objects.selector import LabelSelector
 from avionix.kubernetes_objects.service import ServiceReference
@@ -92,6 +95,10 @@ class WebhookClientConfig(HelmYaml):
 
 class ValidatingWebhook(HelmYaml):
     """
+    :param name:The name of the admission webhook. Name should be fully qualified, \
+        e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the \
+        webhook, and kubernetes.io is the name of the organization. Required.
+    :type name: Optional[str]
     :param admission_review_versions:AdmissionReviewVersions is an ordered list of \
         preferred `AdmissionReview` versions the Webhook expects. API server will try \
         to use first version in the list which it supports. If none of the versions \
@@ -103,6 +110,14 @@ class ValidatingWebhook(HelmYaml):
     :param client_config:ClientConfig defines how to communicate with the hook. \
         Required
     :type client_config: WebhookClientConfig
+    :param side_effects:SideEffects states whether this webhook has side effects. \
+        Acceptable values are: None, NoneOnDryRun (webhooks created via v1beta1 may \
+        also specify Some or Unknown). Webhooks with side effects MUST implement a \
+        reconciliation system, since a request may be rejected by a future step in the \
+        admission change and the side effects therefore need to be undone. Requests \
+        with the dryRun attribute will be auto-rejected if they match a webhook with \
+        sideEffects == Unknown or Some.
+    :type side_effects: str
     :param namespace_selector:NamespaceSelector decides whether to run the webhook on \
         an object based on whether the namespace for that object matches the selector. \
         If the object itself is a namespace, the matching is performed on \
@@ -139,14 +154,6 @@ class ValidatingWebhook(HelmYaml):
         admission requests for ValidatingWebhookConfiguration and \
         MutatingWebhookConfiguration objects.
     :type rules: List[RuleWithOperations]
-    :param side_effects:SideEffects states whether this webhook has side effects. \
-        Acceptable values are: None, NoneOnDryRun (webhooks created via v1beta1 may \
-        also specify Some or Unknown). Webhooks with side effects MUST implement a \
-        reconciliation system, since a request may be rejected by a future step in the \
-        admission change and the side effects therefore need to be undone. Requests \
-        with the dryRun attribute will be auto-rejected if they match a webhook with \
-        sideEffects == Unknown or Some.
-    :type side_effects: str
     :param timeout_seconds:TimeoutSeconds specifies the timeout for this webhook. \
         After the timeout passes, the webhook call will be ignored or the API call \
         will fail based on the failure policy. The timeout value must be between 1 and \
@@ -169,24 +176,20 @@ class ValidatingWebhook(HelmYaml):
         ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be \
         converted to apps/v1 and sent to the webhook.  Defaults to "Equivalent"
     :type match_policy: Optional[str]
-    :param name:The name of the admission webhook. Name should be fully qualified, \
-        e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the \
-        webhook, and kubernetes.io is the name of the organization. Required.
-    :type name: Optional[str]
     """
 
     def __init__(
         self,
+        name: str,
         admission_review_versions: List[str],
         client_config: WebhookClientConfig,
-        namespace_selector: LabelSelector,
-        object_selector: LabelSelector,
-        rules: List[RuleWithOperations],
         side_effects: str,
-        timeout_seconds: int,
+        namespace_selector: Optional[LabelSelector] = None,
+        object_selector: Optional[LabelSelector] = None,
+        rules: Optional[List[RuleWithOperations]] = None,
+        timeout_seconds: Optional[int] = None,
         failure_policy: Optional[str] = None,
         match_policy: Optional[str] = None,
-        name: Optional[str] = None,
     ):
         self.admissionReviewVersions = admission_review_versions
         self.clientConfig = client_config
@@ -200,7 +203,7 @@ class ValidatingWebhook(HelmYaml):
         self.name = name
 
 
-class ValidatingWebhookConfiguration(KubernetesBaseObject):
+class ValidatingWebhookConfiguration(AdmissionRegistration):
     """
     :param metadata:Standard object metadata; More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.  # noqa
@@ -275,6 +278,10 @@ class WebhookConversion(HelmYaml):
 
 class MutatingWebhook(HelmYaml):
     """
+    :param name:The name of the admission webhook. Name should be fully qualified, \
+        e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the \
+        webhook, and kubernetes.io is the name of the organization. Required.
+    :type name: str
     :param admission_review_versions:AdmissionReviewVersions is an ordered list of \
         preferred `AdmissionReview` versions the Webhook expects. API server will try \
         to use first version in the list which it supports. If none of the versions \
@@ -286,6 +293,14 @@ class MutatingWebhook(HelmYaml):
     :param client_config:ClientConfig defines how to communicate with the hook. \
         Required
     :type client_config: WebhookClientConfig
+    :param side_effects:SideEffects states whether this webhook has side effects. \
+        Acceptable values are: None, NoneOnDryRun (webhooks created via v1beta1 may \
+        also specify Some or Unknown). Webhooks with side effects MUST implement a \
+        reconciliation system, since a request may be rejected by a future step in the \
+        admission change and the side effects therefore need to be undone. Requests \
+        with the dryRun attribute will be auto-rejected if they match a webhook with \
+        sideEffects == Unknown or Some.
+    :type side_effects: str
     :param namespace_selector:NamespaceSelector decides whether to run the webhook on \
         an object based on whether the namespace for that object matches the selector. \
         If the object itself is a namespace, the matching is performed on \
@@ -322,14 +337,6 @@ class MutatingWebhook(HelmYaml):
         admission requests for ValidatingWebhookConfiguration and \
         MutatingWebhookConfiguration objects.
     :type rules: List[RuleWithOperations]
-    :param side_effects:SideEffects states whether this webhook has side effects. \
-        Acceptable values are: None, NoneOnDryRun (webhooks created via v1beta1 may \
-        also specify Some or Unknown). Webhooks with side effects MUST implement a \
-        reconciliation system, since a request may be rejected by a future step in the \
-        admission change and the side effects therefore need to be undone. Requests \
-        with the dryRun attribute will be auto-rejected if they match a webhook with \
-        sideEffects == Unknown or Some.
-    :type side_effects: str
     :param timeout_seconds:TimeoutSeconds specifies the timeout for this webhook. \
         After the timeout passes, the webhook call will be ignored or the API call \
         will fail based on the failure policy. The timeout value must be between 1 and \
@@ -352,10 +359,6 @@ class MutatingWebhook(HelmYaml):
         ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be \
         converted to apps/v1 and sent to the webhook.  Defaults to "Equivalent"
     :type match_policy: Optional[str]
-    :param name:The name of the admission webhook. Name should be fully qualified, \
-        e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the \
-        webhook, and kubernetes.io is the name of the organization. Required.
-    :type name: Optional[str]
     :param reinvocation_policy:reinvocationPolicy indicates whether this webhook \
         should be called multiple times as part of a single admission evaluation. \
         Allowed values are "Never" and "IfNeeded".  Never: the webhook will not be \
@@ -375,16 +378,16 @@ class MutatingWebhook(HelmYaml):
 
     def __init__(
         self,
+        name: str,
         admission_review_versions: List[str],
         client_config: WebhookClientConfig,
-        namespace_selector: LabelSelector,
-        object_selector: LabelSelector,
-        rules: List[RuleWithOperations],
         side_effects: str,
-        timeout_seconds: int,
+        namespace_selector: Optional[LabelSelector] = None,
+        object_selector: Optional[LabelSelector] = None,
+        rules: Optional[List[RuleWithOperations]] = None,
+        timeout_seconds: Optional[int] = None,
         failure_policy: Optional[str] = None,
         match_policy: Optional[str] = None,
-        name: Optional[str] = None,
         reinvocation_policy: Optional[str] = None,
     ):
         self.admissionReviewVersions = admission_review_versions
@@ -400,7 +403,7 @@ class MutatingWebhook(HelmYaml):
         self.reinvocationPolicy = reinvocation_policy
 
 
-class MutatingWebhookConfiguration(KubernetesBaseObject):
+class MutatingWebhookConfiguration(AdmissionRegistration):
     """
     :param metadata:Standard object metadata; More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.  # noqa

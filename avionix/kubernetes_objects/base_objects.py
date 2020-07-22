@@ -12,6 +12,7 @@ class KubernetesBaseObject(HelmYaml):
     """
 
     _version_prefix = ""
+    _base_object_name = "KubernetesBaseObject"
 
     def __init__(
         self,
@@ -20,7 +21,7 @@ class KubernetesBaseObject(HelmYaml):
         metadata=None,
     ):
         if kind is None:
-            self.kind = type(self).__name__
+            self.kind = self.__get_kube_object_type().__name__
         else:
             self.kind = kind
 
@@ -33,6 +34,14 @@ class KubernetesBaseObject(HelmYaml):
             return self._version_prefix + DEFAULTS["default_api_version"]
         return api_version
 
+    def __get_kube_object_type(self):
+        # Get all inherited to find classes exact kube object
+        mro = type(self).__mro__
+        for i, class_ in enumerate(mro):
+            if class_.__name__ == type(self)._base_object_name:
+                return mro[i - 1]
+        raise Exception("KubernetesObject ancestor class not found!")
+
 
 class Apps(KubernetesBaseObject):
     """
@@ -40,6 +49,7 @@ class Apps(KubernetesBaseObject):
     """
 
     _version_prefix = "apps/"
+    _base_object_name = "Apps"
 
 
 class AdmissionRegistration(KubernetesBaseObject):
@@ -48,6 +58,7 @@ class AdmissionRegistration(KubernetesBaseObject):
     """
 
     _version_prefix = "admissionregistration.k8s.io/"
+    _base_object_name = "AdmissionRegistration"
 
 
 class ApiExtensions(KubernetesBaseObject):
@@ -56,6 +67,7 @@ class ApiExtensions(KubernetesBaseObject):
     """
 
     _version_prefix = "apiextensions.k8s.io/"
+    _base_object_name = "ApiExtensions"
 
 
 class ApiRegistration(KubernetesBaseObject):
@@ -64,6 +76,7 @@ class ApiRegistration(KubernetesBaseObject):
     """
 
     _version_prefix = "apiregistration.k8s.io/"
+    _base_object_name = "ApiRegistration"
 
 
 class BaseSpec(HelmYaml):

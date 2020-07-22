@@ -3,29 +3,29 @@
 <summary>0% implemented</summary>
 
 - [ ] Binding
-- [ ] ConfigMap
-- [ ] Endpoints
-- [ ] Event
-- [ ] LimitRange
-- [ ] Namespace
-- [ ] Node
-- [ ] PersistentVolumeClaim
-- [ ] PersistentVolume
-- [ ] Pod
-- [ ] PodTemplate
-- [ ] ReplicationController
-- [ ] ResourceQuota
-- [ ] Secret
-- [ ] ServiceAccount
-- [ ] Service
-- [ ] MutatingWebhookConfiguration
-- [ ] ValidatingWebhookConfiguration
-- [ ] CustomResourceDefinition
-- [ ] APIService
-- [ ] ControllerRevision
-- [ ] DaemonSet
-- [ ] Deployment
-- [ ] ReplicaSet
+- [X] ConfigMap
+- [X] Endpoints
+- [X] Event
+- [X] LimitRange
+- [X] Namespace
+- [X] Node
+- [X] PersistentVolumeClaim
+- [X] PersistentVolume
+- [X] Pod
+- [X] PodTemplate
+- [X] ReplicationController
+- [X] ResourceQuota
+- [X] Secret
+- [X] ServiceAccount
+- [X] Service
+- [X] MutatingWebhookConfiguration
+- [X] ValidatingWebhookConfiguration
+- [X] CustomResourceDefinition
+- [X] APIService
+- [X] ControllerRevision
+- [X] DaemonSet
+- [X] Deployment
+- [X] ReplicaSet
 - [ ] StatefulSet
 - [ ] TokenReview
 - [ ] LocalSubjectAccessReview

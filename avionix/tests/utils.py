@@ -16,10 +16,15 @@ from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.metadata import ObjectMeta
 from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.selector import LabelSelector
+from avionix.kubernetes_objects.env import EnvVar
 
 
 def get_test_container(number: int):
-    return Container(name=f"test-container-{number}", image="k8s.gcr.io/echoserver:1.4")
+    return Container(
+        name=f"test-container-{number}",
+        image="k8s.gcr.io/echoserver:1.4",
+        env=[EnvVar("test", "test-value")],
+    )
 
 
 def get_test_deployment(number: int):

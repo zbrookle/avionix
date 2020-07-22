@@ -42,11 +42,8 @@ class EnvVarSource(HelmYaml):
 
 class EnvVar(HelmYaml):
     """
-    :param value_from:Source for the environment variable's value. Cannot be used if \
-        value is not empty.
-    :type value_from: EnvVarSource
     :param name:Name of the environment variable. Must be a C_IDENTIFIER.
-    :type name: Optional[str]
+    :type name: str
     :param value:Variable references $(VAR_NAME) are expanded using the previous \
         defined environment variables in the container and any service environment \
         variables. If a variable cannot be resolved, the reference in the input string \
@@ -54,13 +51,16 @@ class EnvVar(HelmYaml):
         $$(VAR_NAME). Escaped references will never be expanded, regardless of whether \
         the variable exists or not. Defaults to "".
     :type value: Optional[str]
+    :param value_from:Source for the environment variable's value. Cannot be used if \
+        value is not empty.
+    :type value_from: EnvVarSource
     """
 
     def __init__(
         self,
-        value_from: EnvVarSource,
-        name: Optional[str] = None,
+        name: str,
         value: Optional[str] = None,
+        value_from: Optional[EnvVarSource] = None,
     ):
         self.valueFrom = value_from
         self.name = name

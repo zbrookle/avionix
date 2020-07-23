@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
@@ -41,7 +41,7 @@ class ServicePort(HelmYaml):
         with clusterIP=None, and should be omitted or set equal to the 'port' field. \
         More info: \
         https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service  # noqa
-    :type target_port: Optional[str]
+    :type target_port: Optional[Union[int, str]]
     """
 
     def __init__(
@@ -51,7 +51,7 @@ class ServicePort(HelmYaml):
         name: Optional[str] = None,
         node_port: Optional[int] = None,
         protocol: Optional[str] = None,
-        target_port: Optional[str] = None,
+        target_port: Optional[Union[int, str]] = None,
     ):
         self.appProtocol = app_protocol
         self.port = port

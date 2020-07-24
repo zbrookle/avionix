@@ -25,3 +25,8 @@ Be sure that docker is running, then run the following command
 ```bash
 minikube start --driver=docker
 ```
+
+## Warnings
+
+Note that you currently cannot use public variables if subclassing one of the
+ kubernetes components.

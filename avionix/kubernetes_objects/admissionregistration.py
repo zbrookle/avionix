@@ -3,7 +3,6 @@ from typing import List, Optional
 from avionix.kubernetes_objects.apiregistration import ServiceReference
 from avionix.kubernetes_objects.base_objects import AdmissionRegistration
 from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
-from avionix.options import DEFAULTS
 from avionix.yaml.yaml_handling import HelmYaml
 
 

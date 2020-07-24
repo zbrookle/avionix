@@ -2,7 +2,7 @@ from datetime import time
 from typing import List, Optional, Union
 
 from avionix.kubernetes_objects.admissionregistration import WebhookClientConfig
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, ApiExtensions
+from avionix.kubernetes_objects.base_objects import ApiExtensions, KubernetesBaseObject
 from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 

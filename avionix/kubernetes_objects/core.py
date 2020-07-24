@@ -6,7 +6,6 @@ from avionix.kubernetes_objects.discovery import EndpointPort
 from avionix.kubernetes_objects.events import EventSeries
 from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.kubernetes_objects.reference import ObjectReference
-from avionix.options import DEFAULTS
 from avionix.yaml.yaml_handling import HelmYaml
 
 

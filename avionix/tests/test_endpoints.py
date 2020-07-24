@@ -1,11 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.core import (
-    EndpointAddress,
-    Endpoints,
-    EndpointSubset,
-)
+from avionix.kubernetes_objects.core import EndpointAddress, Endpoints, EndpointSubset
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

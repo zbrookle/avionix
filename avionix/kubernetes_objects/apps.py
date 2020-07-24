@@ -4,7 +4,6 @@ from typing import List, Optional
 from avionix.kubernetes_objects.base_objects import Apps
 from avionix.kubernetes_objects.core import PersistentVolumeClaim, PodTemplateSpec
 from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
-from avionix.options import DEFAULTS
 from avionix.yaml.yaml_handling import HelmYaml
 
 

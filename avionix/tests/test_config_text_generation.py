@@ -1,7 +1,7 @@
 import pytest
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.kubernetes_objects.apps import Deployment
+from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.kubernetes_objects.meta import ObjectMeta
 from avionix.options import DEFAULTS
 from avionix.tests.utils import get_test_deployment

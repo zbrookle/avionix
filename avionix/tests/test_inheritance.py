@@ -36,3 +36,23 @@ def test_installing_from_child_class(chart_info, my_deployment_object, test_fold
         pods = kubectl_get("pods")
         assert pods["READY"][0] == "1/1"
         assert pods["STATUS"][0] == "Running"
+
+
+def test_installing_from_child_class_with_extra_instance_vars(
+    chart_info, my_deployment_object, test_folder
+):
+    my_deployment_object._my_new_variable = "test"
+
+    builder = ChartBuilder(
+        ChartInfo(api_version="3.2.4", name="test", version="0.1.0", app_version="v1"),
+        [my_deployment_object],
+        test_folder,
+    )
+    with ChartInstallationContext(builder):
+        deployments = kubectl_get("deployments")
+        assert deployments["NAME"][0] == "test-deployment"
+        assert deployments["READY"][0] == "1/1"
+
+        pods = kubectl_get("pods")
+        assert pods["READY"][0] == "1/1"
+        assert pods["STATUS"][0] == "Running"

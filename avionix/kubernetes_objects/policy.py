@@ -26,14 +26,11 @@ class PodDisruptionBudgetSpec(HelmYaml):
     :type min_available: LabelSelector
     :param selector:Label query over pods whose evictions are managed by the \
         disruption budget.
-    :type selector: Optional[str]
+    :type selector: str
     """
 
     def __init__(
-        self,
-        max_unavailable: str,
-        min_available: LabelSelector,
-        selector: Optional[str] = None,
+        self, max_unavailable: str, min_available: LabelSelector, selector: str
     ):
         self.maxUnavailable = max_unavailable
         self.minAvailable = min_available
@@ -66,10 +63,10 @@ class PodDisruptionBudget(KubernetesBaseObject):
 
 class PodDisruptionBudgetList(KubernetesBaseObject):
     """
-    :param items:None
-    :type items: List[PodDisruptionBudget]
     :param metadata:None
     :type metadata: ListMeta
+    :param items:None
+    :type items: List[PodDisruptionBudget]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -79,13 +76,13 @@ class PodDisruptionBudgetList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[PodDisruptionBudget],
         metadata: ListMeta,
+        items: List[PodDisruptionBudget],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class AllowedHostPath(HelmYaml):
@@ -118,22 +115,6 @@ class HostPortRange(HelmYaml):
         self.min = min
 
 
-class SELinuxStrategyOptions(HelmYaml):
-    """
-    :param rule:rule is the strategy that will dictate the allowable labels that may \
-        be set.
-    :type rule: str
-    :param se_linux_options:seLinuxOptions required to run as; required for MustRunAs \
-        More info: \
-        https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-    :type se_linux_options: SELinuxOptions
-    """
-
-    def __init__(self, rule: str, se_linux_options: SELinuxOptions):
-        self.rule = rule
-        self.seLinuxOptions = se_linux_options
-
-
 class IDRange(HelmYaml):
     """
     :param max:max is the end of the range, inclusive.
@@ -163,22 +144,6 @@ class RunAsGroupStrategyOptions(HelmYaml):
         self.rule = rule
 
 
-class SupplementalGroupsStrategyOptions(HelmYaml):
-    """
-    :param ranges:ranges are the allowed ranges of supplemental groups.  If you would \
-        like to force a single supplemental group then supply a single range with the \
-        same start and end. Required for MustRunAs.
-    :type ranges: List[IDRange]
-    :param rule:rule is the strategy that will dictate what supplemental groups is \
-        used in the SecurityContext.
-    :type rule: str
-    """
-
-    def __init__(self, ranges: List[IDRange], rule: str):
-        self.ranges = ranges
-        self.rule = rule
-
-
 class RunAsUserStrategyOptions(HelmYaml):
     """
     :param ranges:ranges are the allowed ranges of uids that may be used. If you would \
@@ -195,23 +160,13 @@ class RunAsUserStrategyOptions(HelmYaml):
         self.rule = rule
 
 
-class AllowedFlexVolume(HelmYaml):
-    """
-    :param driver:driver is the name of the Flexvolume driver.
-    :type driver: str
-    """
-
-    def __init__(self, driver: str):
-        self.driver = driver
-
-
 class AllowedCSIDriver(HelmYaml):
     """
     :param name:Name is the registered name of the CSI driver
-    :type name: Optional[str]
+    :type name: str
     """
 
-    def __init__(self, name: Optional[str] = None):
+    def __init__(self, name: str):
         self.name = name
 
 
@@ -249,6 +204,48 @@ class RuntimeClassStrategyOptions(HelmYaml):
     ):
         self.allowedRuntimeClassNames = allowed_runtime_class_names
         self.defaultRuntimeClassName = default_runtime_class_name
+
+
+class AllowedFlexVolume(HelmYaml):
+    """
+    :param driver:driver is the name of the Flexvolume driver.
+    :type driver: str
+    """
+
+    def __init__(self, driver: str):
+        self.driver = driver
+
+
+class SupplementalGroupsStrategyOptions(HelmYaml):
+    """
+    :param ranges:ranges are the allowed ranges of supplemental groups.  If you would \
+        like to force a single supplemental group then supply a single range with the \
+        same start and end. Required for MustRunAs.
+    :type ranges: List[IDRange]
+    :param rule:rule is the strategy that will dictate what supplemental groups is \
+        used in the SecurityContext.
+    :type rule: str
+    """
+
+    def __init__(self, ranges: List[IDRange], rule: str):
+        self.ranges = ranges
+        self.rule = rule
+
+
+class SELinuxStrategyOptions(HelmYaml):
+    """
+    :param rule:rule is the strategy that will dictate the allowable labels that may \
+        be set.
+    :type rule: str
+    :param se_linux_options:seLinuxOptions required to run as; required for MustRunAs \
+        More info: \
+        https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+    :type se_linux_options: SELinuxOptions
+    """
+
+    def __init__(self, rule: str, se_linux_options: SELinuxOptions):
+        self.rule = rule
+        self.seLinuxOptions = se_linux_options
 
 
 class PodSecurityPolicySpec(HelmYaml):
@@ -411,10 +408,10 @@ class PodSecurityPolicySpec(HelmYaml):
 
 class Eviction(KubernetesBaseObject):
     """
-    :param delete_options:DeleteOptions may be provided
-    :type delete_options: DeleteOptions
     :param metadata:ObjectMeta describes the pod that is being evicted.
     :type metadata: ObjectMeta
+    :param delete_options:DeleteOptions may be provided
+    :type delete_options: DeleteOptions
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -424,13 +421,13 @@ class Eviction(KubernetesBaseObject):
 
     def __init__(
         self,
-        delete_options: DeleteOptions,
         metadata: ObjectMeta,
+        delete_options: DeleteOptions,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.deleteOptions = delete_options
         self.metadata = metadata
+        self.deleteOptions = delete_options
 
 
 class PodSecurityPolicy(KubernetesBaseObject):
@@ -460,11 +457,11 @@ class PodSecurityPolicy(KubernetesBaseObject):
 
 class PodSecurityPolicyList(KubernetesBaseObject):
     """
-    :param items:items is a list of schema objects.
-    :type items: List[PodSecurityPolicy]
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:items is a list of schema objects.
+    :type items: List[PodSecurityPolicy]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -474,10 +471,10 @@ class PodSecurityPolicyList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[PodSecurityPolicy],
         metadata: ListMeta,
+        items: List[PodSecurityPolicy],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

@@ -105,6 +105,8 @@ class Endpoint(HelmYaml):
 
 class EndpointSlice(KubernetesBaseObject):
     """
+    :param metadata:Standard object's metadata.
+    :type metadata: ObjectMeta
     :param address_type:addressType specifies the type of address carried by this \
         EndpointSlice. All addresses in this slice must be the same type. This field \
         is immutable after creation. The following address types are currently \
@@ -114,42 +116,12 @@ class EndpointSlice(KubernetesBaseObject):
     :param endpoints:endpoints is a list of unique endpoints in this slice. Each slice \
         may include a maximum of 1000 endpoints.
     :type endpoints: List[Endpoint]
-    :param metadata:Standard object's metadata.
-    :type metadata: ObjectMeta
-    :param api_version:APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
     :param ports:ports specifies the list of network ports exposed by each endpoint in \
         this slice. Each port must have a unique name. When ports is empty, it \
         indicates that there are no defined ports. When a port is defined with a nil \
         port value, it indicates "all ports". Each slice may include a maximum of 100 \
         ports.
-    :type ports: Optional[List[EndpointPort]]
-    """
-
-    def __init__(
-        self,
-        address_type: str,
-        endpoints: List[Endpoint],
-        metadata: ObjectMeta,
-        api_version: Optional[str] = None,
-        ports: Optional[List[EndpointPort]] = None,
-    ):
-        super().__init__(api_version)
-        self.addressType = address_type
-        self.endpoints = endpoints
-        self.metadata = metadata
-        self.ports = ports
-
-
-class EndpointSliceList(KubernetesBaseObject):
-    """
-    :param items:List of endpoint slices
-    :type items: List[EndpointSlice]
-    :param metadata:Standard list metadata.
-    :type metadata: ListMeta
+    :type ports: List[EndpointPort]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -159,10 +131,38 @@ class EndpointSliceList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[EndpointSlice],
-        metadata: ListMeta,
+        metadata: ObjectMeta,
+        address_type: str,
+        endpoints: List[Endpoint],
+        ports: List[EndpointPort],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.addressType = address_type
+        self.endpoints = endpoints
+        self.ports = ports
+
+
+class EndpointSliceList(KubernetesBaseObject):
+    """
+    :param metadata:Standard list metadata.
+    :type metadata: ListMeta
+    :param items:List of endpoint slices
+    :type items: List[EndpointSlice]
+    :param api_version:APIVersion defines the versioned schema of this representation \
+        of an object. Servers should convert recognized schemas to the latest internal \
+        value, and may reject unrecognized values. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
+    """
+
+    def __init__(
+        self,
+        metadata: ListMeta,
+        items: List[EndpointSlice],
+        api_version: Optional[str] = None,
+    ):
+        super().__init__(api_version)
+        self.metadata = metadata
+        self.items = items

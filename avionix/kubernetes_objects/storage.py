@@ -112,11 +112,11 @@ class CSIDriver(KubernetesBaseObject):
 
 class CSIDriverList(KubernetesBaseObject):
     """
-    :param items:items is the list of CSIDriver
-    :type items: List[CSIDriver]
     :param metadata:Standard list metadata More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:items is the list of CSIDriver
+    :type items: List[CSIDriver]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -126,13 +126,13 @@ class CSIDriverList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[CSIDriver],
         metadata: ListMeta,
+        items: List[CSIDriver],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class VolumeNodeResources(HelmYaml):
@@ -151,6 +151,10 @@ class VolumeNodeResources(HelmYaml):
 
 class CSINodeDriver(HelmYaml):
     """
+    :param name:This is the name of the CSI driver that this object refers to. This \
+        MUST be the same name returned by the CSI GetPluginName() call for that \
+        driver.
+    :type name: str
     :param allocatable:allocatable represents the volume resources of a node that are \
         available for scheduling. This field is beta.
     :type allocatable: VolumeNodeResources
@@ -173,23 +177,19 @@ class CSINodeDriver(HelmYaml):
         back to the driver. It is possible for different nodes to use different \
         topology keys. This can be empty if driver does not support topology.
     :type topology_keys: List[str]
-    :param name:This is the name of the CSI driver that this object refers to. This \
-        MUST be the same name returned by the CSI GetPluginName() call for that \
-        driver.
-    :type name: Optional[str]
     """
 
     def __init__(
         self,
+        name: str,
         allocatable: VolumeNodeResources,
         node_id: str,
         topology_keys: List[str],
-        name: Optional[str] = None,
     ):
+        self.name = name
         self.allocatable = allocatable
         self.nodeID = node_id
         self.topologyKeys = topology_keys
-        self.name = name
 
 
 class CSINodeSpec(HelmYaml):
@@ -226,6 +226,9 @@ class CSINode(KubernetesBaseObject):
 
 class StorageClass(KubernetesBaseObject):
     """
+    :param metadata:Standard object's metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ObjectMeta
     :param allow_volume_expansion:AllowVolumeExpansion shows whether the storage class \
         allow volume expand
     :type allow_volume_expansion: bool
@@ -235,13 +238,6 @@ class StorageClass(KubernetesBaseObject):
         restriction. This field is only honored by servers that enable the \
         VolumeScheduling feature.
     :type allowed_topologies: List[TopologySelectorTerm]
-    :param metadata:Standard object's metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ObjectMeta
-    :param mount_options:Dynamically provisioned PersistentVolumes of this storage \
-        class are created with these mountOptions, e.g. ["ro", "soft"]. Not validated \
-        - mount of the PVs will simply fail if one is invalid.
-    :type mount_options: List[str]
     :param parameters:Parameters holds the parameters for the provisioner that should \
         create volumes of this storage class.
     :type parameters: dict
@@ -252,46 +248,50 @@ class StorageClass(KubernetesBaseObject):
         This field is only honored by servers that enable the VolumeScheduling \
         feature.
     :type volume_binding_mode: str
+    :param mount_options:Dynamically provisioned PersistentVolumes of this storage \
+        class are created with these mountOptions, e.g. ["ro", "soft"]. Not validated \
+        - mount of the PVs will simply fail if one is invalid.
+    :type mount_options: Optional[List[str]]
+    :param reclaim_policy:Dynamically provisioned PersistentVolumes of this storage \
+        class are created with this reclaimPolicy. Defaults to Delete.
+    :type reclaim_policy: Optional[str]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :type api_version: Optional[str]
-    :param reclaim_policy:Dynamically provisioned PersistentVolumes of this storage \
-        class are created with this reclaimPolicy. Defaults to Delete.
-    :type reclaim_policy: Optional[str]
     """
 
     def __init__(
         self,
+        metadata: ObjectMeta,
         allow_volume_expansion: bool,
         allowed_topologies: List[TopologySelectorTerm],
-        metadata: ObjectMeta,
-        mount_options: List[str],
         parameters: dict,
         provisioner: str,
         volume_binding_mode: str,
-        api_version: Optional[str] = None,
+        mount_options: Optional[List[str]] = None,
         reclaim_policy: Optional[str] = None,
+        api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
+        self.metadata = metadata
         self.allowVolumeExpansion = allow_volume_expansion
         self.allowedTopologies = allowed_topologies
-        self.metadata = metadata
-        self.mountOptions = mount_options
         self.parameters = parameters
         self.provisioner = provisioner
         self.volumeBindingMode = volume_binding_mode
+        self.mountOptions = mount_options
         self.reclaimPolicy = reclaim_policy
 
 
 class StorageClassList(KubernetesBaseObject):
     """
-    :param items:Items is the list of StorageClasses
-    :type items: List[StorageClass]
     :param metadata:Standard list metadata More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:Items is the list of StorageClasses
+    :type items: List[StorageClass]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -301,22 +301,22 @@ class StorageClassList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[StorageClass],
         metadata: ListMeta,
+        items: List[StorageClass],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class CSINodeList(KubernetesBaseObject):
     """
-    :param items:items is the list of CSINode
-    :type items: List[CSINode]
     :param metadata:Standard list metadata More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:items is the list of CSINode
+    :type items: List[CSINode]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -326,13 +326,13 @@ class CSINodeList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[CSINode],
         metadata: ListMeta,
+        items: List[CSINode],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class VolumeAttachmentSource(HelmYaml):
@@ -405,11 +405,11 @@ class VolumeAttachment(KubernetesBaseObject):
 
 class VolumeAttachmentList(KubernetesBaseObject):
     """
-    :param items:Items is the list of VolumeAttachments
-    :type items: List[VolumeAttachment]
     :param metadata:Standard list metadata More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:Items is the list of VolumeAttachments
+    :type items: List[VolumeAttachment]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -419,10 +419,10 @@ class VolumeAttachmentList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[VolumeAttachment],
         metadata: ListMeta,
+        items: List[VolumeAttachment],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

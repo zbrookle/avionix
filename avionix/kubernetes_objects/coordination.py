@@ -65,11 +65,11 @@ class Lease(KubernetesBaseObject):
 
 class LeaseList(KubernetesBaseObject):
     """
-    :param items:Items is a list of schema objects.
-    :type items: List[Lease]
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:Items is a list of schema objects.
+    :type items: List[Lease]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -78,8 +78,8 @@ class LeaseList(KubernetesBaseObject):
     """
 
     def __init__(
-        self, items: List[Lease], metadata: ListMeta, api_version: Optional[str] = None
+        self, metadata: ListMeta, items: List[Lease], api_version: Optional[str] = None
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

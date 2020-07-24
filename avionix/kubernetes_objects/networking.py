@@ -243,10 +243,10 @@ class IngressClass(KubernetesBaseObject):
 
 class IngressClassList(KubernetesBaseObject):
     """
-    :param items:Items is the list of IngressClasses.
-    :type items: List[IngressClass]
     :param metadata:Standard list metadata.
     :type metadata: ListMeta
+    :param items:Items is the list of IngressClasses.
+    :type items: List[IngressClass]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -256,13 +256,13 @@ class IngressClassList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[IngressClass],
         metadata: ListMeta,
+        items: List[IngressClass],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class NetworkPolicyPort(HelmYaml):
@@ -281,32 +281,6 @@ class NetworkPolicyPort(HelmYaml):
         self.protocol = protocol
 
 
-class NetworkPolicyEgressRule(HelmYaml):
-    """
-    :param to:List of destinations for outgoing traffic of pods selected for this \
-        rule. Items in this list are combined using a logical OR operation. If this \
-        field is empty or missing, this rule matches all destinations (traffic not \
-        restricted by destination). If this field is present and contains at least one \
-        item, this rule allows traffic only if the traffic matches at least one item \
-        in the to list.
-    :type to: List[NetworkPolicyPeer]
-    :param ports:List of destination ports for outgoing traffic. Each item in this \
-        list is combined using a logical OR. If this field is empty or missing, this \
-        rule matches all ports (traffic not restricted by port). If this field is \
-        present and contains at least one item, then this rule allows traffic only if \
-        the traffic matches at least one port in the list.
-    :type ports: Optional[List[NetworkPolicyPort]]
-    """
-
-    def __init__(
-        self,
-        to: List[NetworkPolicyPeer],
-        ports: Optional[List[NetworkPolicyPort]] = None,
-    ):
-        self.to = to
-        self.ports = ports
-
-
 class NetworkPolicyIngressRule(HelmYaml):
     """
     :param from_:List of sources which should be able to access the pods selected for \
@@ -321,16 +295,34 @@ class NetworkPolicyIngressRule(HelmYaml):
         field is empty or missing, this rule matches all ports (traffic not restricted \
         by port). If this field is present and contains at least one item, then this \
         rule allows traffic only if the traffic matches at least one port in the list.
-    :type ports: Optional[List[NetworkPolicyPort]]
+    :type ports: List[NetworkPolicyPort]
     """
 
-    def __init__(
-        self,
-        from_: List[NetworkPolicyPeer],
-        ports: Optional[List[NetworkPolicyPort]] = None,
-    ):
+    def __init__(self, from_: List[NetworkPolicyPeer], ports: List[NetworkPolicyPort]):
         self["from"] = from_
         self.ports = ports
+
+
+class NetworkPolicyEgressRule(HelmYaml):
+    """
+    :param ports:List of destination ports for outgoing traffic. Each item in this \
+        list is combined using a logical OR. If this field is empty or missing, this \
+        rule matches all ports (traffic not restricted by port). If this field is \
+        present and contains at least one item, then this rule allows traffic only if \
+        the traffic matches at least one port in the list.
+    :type ports: List[NetworkPolicyPort]
+    :param to:List of destinations for outgoing traffic of pods selected for this \
+        rule. Items in this list are combined using a logical OR operation. If this \
+        field is empty or missing, this rule matches all destinations (traffic not \
+        restricted by destination). If this field is present and contains at least one \
+        item, this rule allows traffic only if the traffic matches at least one item \
+        in the to list.
+    :type to: List[NetworkPolicyPeer]
+    """
+
+    def __init__(self, ports: List[NetworkPolicyPort], to: List[NetworkPolicyPeer]):
+        self.ports = ports
+        self.to = to
 
 
 class NetworkPolicySpec(HelmYaml):
@@ -412,11 +404,11 @@ class NetworkPolicy(KubernetesBaseObject):
 
 class NetworkPolicyList(KubernetesBaseObject):
     """
-    :param items:Items is a list of schema objects.
-    :type items: List[NetworkPolicy]
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:Items is a list of schema objects.
+    :type items: List[NetworkPolicy]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -426,10 +418,10 @@ class NetworkPolicyList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[NetworkPolicy],
         metadata: ListMeta,
+        items: List[NetworkPolicy],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

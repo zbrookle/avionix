@@ -45,7 +45,7 @@ def test_create_empty_event(chart_info: ChartInfo, test_folder, empty_event: Eve
         event_info = get_event_info()
         assert event_info["TYPE"][0] == ""
         assert event_info["REASON"][0] == ""
-        assert event_info["OBJECT"][0] == "/test-ref"
+        assert event_info["OBJECT"][0] == "objectreference/test-ref"
         assert event_info["MESSAGE"][0] == ""
 
 
@@ -57,5 +57,5 @@ def test_create_nonempty_event(
         event_info = get_event_info()
         assert event_info["TYPE"][0] == "test-type"
         assert event_info["REASON"][0] == "testing"
-        assert event_info["OBJECT"][0] == "/test-ref"
+        assert event_info["OBJECT"][0] == "objectreference/test-ref"
         assert event_info["MESSAGE"][0] == "test message"

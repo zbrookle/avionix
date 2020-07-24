@@ -49,11 +49,11 @@ class IngressTLS(HelmYaml):
 
 class IngressList(KubernetesBaseObject):
     """
-    :param items:Items is the list of Ingress.
-    :type items: List[Ingress]
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:Items is the list of Ingress.
+    :type items: List[Ingress]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -63,10 +63,10 @@ class IngressList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[Ingress],
         metadata: ListMeta,
+        items: List[Ingress],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

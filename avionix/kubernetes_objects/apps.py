@@ -1,9 +1,10 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import Apps
 from avionix.kubernetes_objects.core import PersistentVolumeClaim, PodTemplateSpec
 from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.options import DEFAULTS
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -35,6 +36,11 @@ class ReplicaSetSpec(HelmYaml):
         if insufficient replicas are detected. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template  # noqa
     :type template: PodTemplateSpec
+    :param selector:Selector is a label query over pods that should match the replica \
+        count. Label keys and values that must match in order to be controlled by this \
+        replica set. It must match the pod template's labels. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :type selector: LabelSelector
     :param min_ready_seconds:Minimum number of seconds for which a newly created pod \
         should be ready without any of its container crashing, for it to be considered \
         available. Defaults to 0 (pod will be considered available as soon as it is \
@@ -44,27 +50,22 @@ class ReplicaSetSpec(HelmYaml):
         distinguish between explicit zero and unspecified. Defaults to 1. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller  # noqa
     :type replicas: Optional[int]
-    :param selector:Selector is a label query over pods that should match the replica \
-        count. Label keys and values that must match in order to be controlled by this \
-        replica set. It must match the pod template's labels. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :type selector: Optional[LabelSelector]
     """
 
     def __init__(
         self,
         template: PodTemplateSpec,
+        selector: LabelSelector,
         min_ready_seconds: Optional[int] = None,
         replicas: Optional[int] = None,
-        selector: Optional[LabelSelector] = None,
     ):
         self.template = template
+        self.selector = selector
         self.minReadySeconds = min_ready_seconds
         self.replicas = replicas
-        self.selector = selector
 
 
-class ReplicaSet(KubernetesBaseObject):
+class ReplicaSet(Apps):
     """
     :param metadata:If the Labels of a ReplicaSet are empty, they are defaulted to be \
         the same as the Pod(s) that the ReplicaSet manages. Standard object's \
@@ -125,6 +126,11 @@ class StatefulSetUpdateStrategy(HelmYaml):
 
 class StatefulSetSpec(HelmYaml):
     """
+    :param template:template is the object that describes the pod that will be created \
+        if insufficient replicas are detected. Each pod stamped out by the StatefulSet \
+        will fulfill this Template, but have a unique identity from the rest of the \
+        StatefulSet.
+    :type template: PodTemplateSpec
     :param pod_management_policy:podManagementPolicy controls how pods are created \
         during initial scale up, when replacing pods on nodes, or when scaling down. \
         The default policy is `OrderedReady`, where pods are created in increasing \
@@ -139,21 +145,16 @@ class StatefulSetSpec(HelmYaml):
         revision history consists of all revisions not represented by a currently \
         applied StatefulSetSpec version. The default value is 10.
     :type revision_history_limit: int
+    :param selector:selector is a label query over pods that should match the replica \
+        count. It must match the pod template's labels. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :type selector: LabelSelector
     :param service_name:serviceName is the name of the service that governs this \
         StatefulSet. This service must exist before the StatefulSet, and is \
         responsible for the network identity of the set. Pods get DNS/hostnames that \
         follow the pattern: pod-specific-string.serviceName.default.svc.cluster.local \
         where "pod-specific-string" is managed by the StatefulSet controller.
     :type service_name: str
-    :param template:template is the object that describes the pod that will be created \
-        if insufficient replicas are detected. Each pod stamped out by the StatefulSet \
-        will fulfill this Template, but have a unique identity from the rest of the \
-        StatefulSet.
-    :type template: PodTemplateSpec
-    :param update_strategy:updateStrategy indicates the StatefulSetUpdateStrategy that \
-        will be employed to update Pods in the StatefulSet when a revision is made to \
-        Template.
-    :type update_strategy: StatefulSetUpdateStrategy
     :param volume_claim_templates:volumeClaimTemplates is a list of claims that pods \
         are allowed to reference. The StatefulSet controller is responsible for \
         mapping network identities to claims in a way that maintains the identity of a \
@@ -166,31 +167,31 @@ class StatefulSetSpec(HelmYaml):
         Template, but individual replicas also have a consistent identity. If \
         unspecified, defaults to 1.
     :type replicas: Optional[int]
-    :param selector:selector is a label query over pods that should match the replica \
-        count. It must match the pod template's labels. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :type selector: Optional[LabelSelector]
+    :param update_strategy:updateStrategy indicates the StatefulSetUpdateStrategy that \
+        will be employed to update Pods in the StatefulSet when a revision is made to \
+        Template.
+    :type update_strategy: Optional[StatefulSetUpdateStrategy]
     """
 
     def __init__(
         self,
+        template: PodTemplateSpec,
         pod_management_policy: str,
         revision_history_limit: int,
+        selector: LabelSelector,
         service_name: str,
-        template: PodTemplateSpec,
-        update_strategy: StatefulSetUpdateStrategy,
         volume_claim_templates: List[PersistentVolumeClaim],
         replicas: Optional[int] = None,
-        selector: Optional[LabelSelector] = None,
+        update_strategy: Optional[StatefulSetUpdateStrategy] = None,
     ):
+        self.template = template
         self.podManagementPolicy = pod_management_policy
         self.revisionHistoryLimit = revision_history_limit
+        self.selector = selector
         self.serviceName = service_name
-        self.template = template
-        self.updateStrategy = update_strategy
         self.volumeClaimTemplates = volume_claim_templates
         self.replicas = replicas
-        self.selector = selector
+        self.updateStrategy = update_strategy
 
 
 class RollingUpdateDeployment(HelmYaml):
@@ -247,6 +248,10 @@ class DeploymentSpec(HelmYaml):
     """
     :param template:Template describes the pods that will be created.
     :type template: PodTemplateSpec
+    :param selector:Label selector for pods. Existing ReplicaSets whose pods are \
+        selected by this will be the ones affected by this deployment. It must match \
+        the pod template's labels.
+    :type selector: LabelSelector
     :param min_ready_seconds:Minimum number of seconds for which a newly created pod \
         should be ready without any of its container crashing, for it to be considered \
         available. Defaults to 0 (pod will be considered available as soon as it is \
@@ -268,10 +273,6 @@ class DeploymentSpec(HelmYaml):
         rollback. This is a pointer to distinguish between explicit zero and not \
         specified. Defaults to 10.
     :type revision_history_limit: Optional[int]
-    :param selector:Label selector for pods. Existing ReplicaSets whose pods are \
-        selected by this will be the ones affected by this deployment. It must match \
-        the pod template's labels.
-    :type selector: Optional[LabelSelector]
     :param strategy:The deployment strategy to use to replace existing pods with new \
         ones.
     :type strategy: Optional[DeploymentStrategy]
@@ -280,21 +281,21 @@ class DeploymentSpec(HelmYaml):
     def __init__(
         self,
         template: PodTemplateSpec,
+        selector: LabelSelector,
         min_ready_seconds: Optional[int] = None,
         paused: Optional[bool] = None,
         progress_deadline_seconds: Optional[int] = None,
         replicas: Optional[int] = None,
         revision_history_limit: Optional[int] = None,
-        selector: Optional[LabelSelector] = None,
         strategy: Optional[DeploymentStrategy] = None,
     ):
         self.template = template
+        self.selector = selector
         self.minReadySeconds = min_ready_seconds
         self.paused = paused
         self.progressDeadlineSeconds = progress_deadline_seconds
         self.replicas = replicas
         self.revisionHistoryLimit = revision_history_limit
-        self.selector = selector
         self.strategy = strategy
 
 
@@ -320,7 +321,7 @@ class StatefulSetCondition(HelmYaml):
         self.type = type
 
 
-class StatefulSet(KubernetesBaseObject):
+class StatefulSet(Apps):
     """
     :param metadata:None
     :type metadata: ObjectMeta
@@ -344,12 +345,12 @@ class StatefulSet(KubernetesBaseObject):
         self.spec = spec
 
 
-class StatefulSetList(KubernetesBaseObject):
+class StatefulSetList(Apps):
     """
-    :param items:None
-    :type items: List[StatefulSet]
     :param metadata:None
     :type metadata: ListMeta
+    :param items:None
+    :type items: List[StatefulSet]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -359,13 +360,13 @@ class StatefulSetList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[StatefulSet],
         metadata: ListMeta,
+        items: List[StatefulSet],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class DeploymentCondition(HelmYaml):
@@ -398,7 +399,7 @@ class DeploymentCondition(HelmYaml):
         self.type = type
 
 
-class Deployment(KubernetesBaseObject):
+class Deployment(Apps):
     """
     :param metadata:Standard object metadata.
     :type metadata: ObjectMeta
@@ -422,12 +423,12 @@ class Deployment(KubernetesBaseObject):
         self.spec = spec
 
 
-class DeploymentList(KubernetesBaseObject):
+class DeploymentList(Apps):
     """
-    :param items:Items is the list of Deployments.
-    :type items: List[Deployment]
     :param metadata:Standard list metadata.
     :type metadata: ListMeta
+    :param items:Items is the list of Deployments.
+    :type items: List[Deployment]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -437,13 +438,13 @@ class DeploymentList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[Deployment],
         metadata: ListMeta,
+        items: List[Deployment],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class DaemonSetCondition(HelmYaml):
@@ -468,13 +469,13 @@ class DaemonSetCondition(HelmYaml):
         self.type = type
 
 
-class ControllerRevision(KubernetesBaseObject):
+class ControllerRevision(Apps):
     """
-    :param data:Data is the serialized representation of the state.
-    :type data: str
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ObjectMeta
+    :param data:Data is the serialized representation of the state.
+    :type data: str
     :param revision:Revision indicates the revision of the state represented by Data.
     :type revision: int
     :param api_version:APIVersion defines the versioned schema of this representation \
@@ -486,24 +487,24 @@ class ControllerRevision(KubernetesBaseObject):
 
     def __init__(
         self,
-        data: str,
         metadata: ObjectMeta,
+        data: str,
         revision: int,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.data = data
         self.metadata = metadata
+        self.data = data
         self.revision = revision
 
 
-class ControllerRevisionList(KubernetesBaseObject):
+class ControllerRevisionList(Apps):
     """
-    :param items:Items is the list of ControllerRevisions
-    :type items: List[ControllerRevision]
     :param metadata:More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:Items is the list of ControllerRevisions
+    :type items: List[ControllerRevision]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -513,23 +514,23 @@ class ControllerRevisionList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[ControllerRevision],
         metadata: ListMeta,
+        items: List[ControllerRevision],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
-class ReplicaSetList(KubernetesBaseObject):
+class ReplicaSetList(Apps):
     """
-    :param items:List of ReplicaSets. More info: \
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller  # noqa
-    :type items: List[ReplicaSet]
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
     :type metadata: ListMeta
+    :param items:List of ReplicaSets. More info: \
+        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller  # noqa
+    :type items: List[ReplicaSet]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -539,13 +540,13 @@ class ReplicaSetList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[ReplicaSet],
         metadata: ListMeta,
+        items: List[ReplicaSet],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class RollingUpdateDaemonSet(HelmYaml):
@@ -596,9 +597,11 @@ class DaemonSetSpec(HelmYaml):
         specified). More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template  # noqa
     :type template: PodTemplateSpec
-    :param update_strategy:An update strategy to replace existing DaemonSet pods with \
-        new pods.
-    :type update_strategy: DaemonSetUpdateStrategy
+    :param selector:A label query over pods that are managed by the daemon set. Must \
+        match in order to be controlled. It must match the pod template's labels. More \
+        info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :type selector: LabelSelector
     :param min_ready_seconds:The minimum number of seconds for which a newly created \
         DaemonSet pod should be ready without any of its container crashing, for it to \
         be considered available. Defaults to 0 (pod will be considered available as \
@@ -608,29 +611,27 @@ class DaemonSetSpec(HelmYaml):
         rollback. This is a pointer to distinguish between explicit zero and not \
         specified. Defaults to 10.
     :type revision_history_limit: Optional[int]
-    :param selector:A label query over pods that are managed by the daemon set. Must \
-        match in order to be controlled. It must match the pod template's labels. More \
-        info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :type selector: Optional[LabelSelector]
+    :param update_strategy:An update strategy to replace existing DaemonSet pods with \
+        new pods.
+    :type update_strategy: Optional[DaemonSetUpdateStrategy]
     """
 
     def __init__(
         self,
         template: PodTemplateSpec,
-        update_strategy: DaemonSetUpdateStrategy,
+        selector: LabelSelector,
         min_ready_seconds: Optional[int] = None,
         revision_history_limit: Optional[int] = None,
-        selector: Optional[LabelSelector] = None,
+        update_strategy: Optional[DaemonSetUpdateStrategy] = None,
     ):
         self.template = template
-        self.updateStrategy = update_strategy
+        self.selector = selector
         self.minReadySeconds = min_ready_seconds
         self.revisionHistoryLimit = revision_history_limit
-        self.selector = selector
+        self.updateStrategy = update_strategy
 
 
-class DaemonSet(KubernetesBaseObject):
+class DaemonSet(Apps):
     """
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -656,13 +657,13 @@ class DaemonSet(KubernetesBaseObject):
         self.spec = spec
 
 
-class DaemonSetList(KubernetesBaseObject):
+class DaemonSetList(Apps):
     """
-    :param items:A list of daemon sets.
-    :type items: List[DaemonSet]
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:A list of daemon sets.
+    :type items: List[DaemonSet]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -672,10 +673,10 @@ class DaemonSetList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[DaemonSet],
         metadata: ListMeta,
+        items: List[DaemonSet],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

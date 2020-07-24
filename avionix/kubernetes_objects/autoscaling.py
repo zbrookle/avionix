@@ -7,14 +7,14 @@ from avionix.yaml.yaml_handling import HelmYaml
 
 class CrossVersionObjectReference(KubernetesBaseObject):
     """
-    :param api_version:API version of the referent
-    :type api_version: Optional[str]
     :param name:Name of the referent; More info: \
         http://kubernetes.io/docs/user-guide/identifiers#names
-    :type name: Optional[str]
+    :type name: str
+    :param api_version:API version of the referent
+    :type api_version: Optional[str]
     """
 
-    def __init__(self, api_version: Optional[str] = None, name: Optional[str] = None):
+    def __init__(self, name: str, api_version: Optional[str] = None):
         super().__init__(api_version)
         self.name = name
 
@@ -81,10 +81,10 @@ class HorizontalPodAutoscaler(KubernetesBaseObject):
 
 class HorizontalPodAutoscalerList(KubernetesBaseObject):
     """
-    :param items:list of horizontal pod autoscaler objects.
-    :type items: List[HorizontalPodAutoscaler]
     :param metadata:Standard list metadata.
     :type metadata: ListMeta
+    :param items:list of horizontal pod autoscaler objects.
+    :type items: List[HorizontalPodAutoscaler]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -94,13 +94,13 @@ class HorizontalPodAutoscalerList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[HorizontalPodAutoscaler],
         metadata: ListMeta,
+        items: List[HorizontalPodAutoscaler],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class Scale(KubernetesBaseObject):

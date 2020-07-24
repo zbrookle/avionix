@@ -1,15 +1,16 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import ApiRegistration
 from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
+from avionix.options import DEFAULTS
 from avionix.yaml.yaml_handling import HelmYaml
 
 
 class ServiceReference(HelmYaml):
     """
     :param name:Name is the name of the service
-    :type name: Optional[str]
+    :type name: str
     :param namespace:Namespace is the namespace of the service
     :type namespace: Optional[str]
     :param port:If specified, the port on the service that hosting webhook. Default to \
@@ -19,10 +20,7 @@ class ServiceReference(HelmYaml):
     """
 
     def __init__(
-        self,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
-        port: Optional[int] = None,
+        self, name: str, namespace: Optional[str] = None, port: Optional[int] = None
     ):
         self.name = name
         self.namespace = namespace
@@ -31,10 +29,6 @@ class ServiceReference(HelmYaml):
 
 class APIServiceSpec(HelmYaml):
     """
-    :param ca_bundle:CABundle is a PEM encoded CA bundle which will be used to \
-        validate an API server's serving certificate. If unspecified, system trust \
-        roots on the apiserver are used.
-    :type ca_bundle: str
     :param group:Group is the API group name this server hosts
     :type group: str
     :param group_priority_minimum:GroupPriorityMininum is the priority this group \
@@ -47,15 +41,6 @@ class APIServiceSpec(HelmYaml):
         We'd recommend something like: *.k8s.io (except extensions) at 18000 and \
         PaaSes (OpenShift, Deis) are recommended to be in the 2000s
     :type group_priority_minimum: int
-    :param insecure_skip_tlsverify:InsecureSkipTLSVerify disables TLS certificate \
-        verification when communicating with this server. This is strongly \
-        discouraged.  You should use the CABundle instead.
-    :type insecure_skip_tlsverify: bool
-    :param service:Service is a reference to the service for this API server.  It must \
-        communicate on port 443 If the Service is nil, that means the handling for the \
-        API groupversion is handled locally on this server. The call will simply \
-        delegate to the normal handler chain to be fulfilled.
-    :type service: ServiceReference
     :param version:Version is the API version this server hosts.  For example, "v1"
     :type version: str
     :param version_priority:VersionPriority controls the ordering of this API version \
@@ -72,25 +57,38 @@ class APIServiceSpec(HelmYaml):
         then minor version. An example sorted list of versions: v10, v2, v1, v11beta2, \
         v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10.
     :type version_priority: int
+    :param ca_bundle:CABundle is a PEM encoded CA bundle which will be used to \
+        validate an API server's serving certificate. If unspecified, system trust \
+        roots on the apiserver are used.
+    :type ca_bundle: Optional[str]
+    :param insecure_skip_tlsverify:InsecureSkipTLSVerify disables TLS certificate \
+        verification when communicating with this server. This is strongly \
+        discouraged.  You should use the CABundle instead.
+    :type insecure_skip_tlsverify: Optional[bool]
+    :param service:Service is a reference to the service for this API server.  It must \
+        communicate on port 443 If the Service is nil, that means the handling for the \
+        API groupversion is handled locally on this server. The call will simply \
+        delegate to the normal handler chain to be fulfilled.
+    :type service: Optional[ServiceReference]
     """
 
     def __init__(
         self,
-        ca_bundle: str,
         group: str,
         group_priority_minimum: int,
-        insecure_skip_tlsverify: bool,
-        service: ServiceReference,
         version: str,
         version_priority: int,
+        ca_bundle: Optional[str] = None,
+        insecure_skip_tlsverify: Optional[bool] = None,
+        service: Optional[ServiceReference] = None,
     ):
-        self.caBundle = ca_bundle
         self.group = group
         self.groupPriorityMinimum = group_priority_minimum
-        self.insecureSkipTLSVerify = insecure_skip_tlsverify
-        self.service = service
         self.version = version
         self.versionPriority = version_priority
+        self.caBundle = ca_bundle
+        self.insecureSkipTLSVerify = insecure_skip_tlsverify
+        self.service = service
 
 
 class APIServiceCondition(HelmYaml):
@@ -116,7 +114,7 @@ class APIServiceCondition(HelmYaml):
         self.type = type
 
 
-class APIService(KubernetesBaseObject):
+class APIService(ApiRegistration):
     """
     :param metadata:None
     :type metadata: ObjectMeta
@@ -140,12 +138,12 @@ class APIService(KubernetesBaseObject):
         self.spec = spec
 
 
-class APIServiceList(KubernetesBaseObject):
+class APIServiceList(ApiRegistration):
     """
-    :param items:None
-    :type items: List[APIService]
     :param metadata:None
     :type metadata: ListMeta
+    :param items:None
+    :type items: List[APIService]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -155,10 +153,10 @@ class APIServiceList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[APIService],
         metadata: ListMeta,
+        items: List[APIService],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

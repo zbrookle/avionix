@@ -12,10 +12,10 @@ from avionix.kubernetes_objects.rbac_authorization import (
 
 class ClusterRoleBindingList(KubernetesBaseObject):
     """
-    :param items:Items is a list of ClusterRoleBindings
-    :type items: List[ClusterRoleBinding]
     :param metadata:Standard object's metadata.
     :type metadata: ListMeta
+    :param items:Items is a list of ClusterRoleBindings
+    :type items: List[ClusterRoleBinding]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -25,21 +25,21 @@ class ClusterRoleBindingList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[ClusterRoleBinding],
         metadata: ListMeta,
+        items: List[ClusterRoleBinding],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class RoleBindingList(KubernetesBaseObject):
     """
-    :param items:Items is a list of RoleBindings
-    :type items: List[RoleBinding]
     :param metadata:Standard object's metadata.
     :type metadata: ListMeta
+    :param items:Items is a list of RoleBindings
+    :type items: List[RoleBinding]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -49,21 +49,21 @@ class RoleBindingList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[RoleBinding],
         metadata: ListMeta,
+        items: List[RoleBinding],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class ClusterRoleList(KubernetesBaseObject):
     """
-    :param items:Items is a list of ClusterRoles
-    :type items: List[ClusterRole]
     :param metadata:Standard object's metadata.
     :type metadata: ListMeta
+    :param items:Items is a list of ClusterRoles
+    :type items: List[ClusterRole]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -73,21 +73,21 @@ class ClusterRoleList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[ClusterRole],
         metadata: ListMeta,
+        items: List[ClusterRole],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class RoleList(KubernetesBaseObject):
     """
-    :param items:Items is a list of Roles
-    :type items: List[Role]
     :param metadata:Standard object's metadata.
     :type metadata: ListMeta
+    :param items:Items is a list of Roles
+    :type items: List[Role]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -96,8 +96,8 @@ class RoleList(KubernetesBaseObject):
     """
 
     def __init__(
-        self, items: List[Role], metadata: ListMeta, api_version: Optional[str] = None
+        self, metadata: ListMeta, items: List[Role], api_version: Optional[str] = None
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

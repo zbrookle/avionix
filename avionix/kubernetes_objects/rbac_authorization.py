@@ -5,14 +5,27 @@ from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
+class RoleRef(KubernetesBaseObject):
+    """
+    :param name:Name is the name of resource being referenced
+    :type name: str
+    :param api_group:APIGroup is the group for the resource being referenced
+    :type api_group: str
+    """
+
+    def __init__(self, name: str, api_group: str):
+        self.name = name
+        self.apiGroup = api_group
+
+
 class Subject(KubernetesBaseObject):
     """
+    :param name:Name of the object being referenced.
+    :type name: str
     :param api_group:APIGroup holds the API group of the referenced subject. Defaults \
         to "" for ServiceAccount subjects. Defaults to "rbac.authorization.k8s.io" for \
         User and Group subjects.
     :type api_group: Optional[str]
-    :param name:Name of the object being referenced.
-    :type name: Optional[str]
     :param namespace:Namespace of the referenced object.  If the object kind is \
         non-namespace, such as "User" or "Group", and this value is not empty the \
         Authorizer should report an error.
@@ -21,26 +34,13 @@ class Subject(KubernetesBaseObject):
 
     def __init__(
         self,
+        name: str,
         api_group: Optional[str] = None,
-        name: Optional[str] = None,
         namespace: Optional[str] = None,
     ):
-        self.apiGroup = api_group
         self.name = name
+        self.apiGroup = api_group
         self.namespace = namespace
-
-
-class RoleRef(KubernetesBaseObject):
-    """
-    :param api_group:APIGroup is the group for the resource being referenced
-    :type api_group: str
-    :param name:Name is the name of resource being referenced
-    :type name: Optional[str]
-    """
-
-    def __init__(self, api_group: str, name: Optional[str] = None):
-        self.apiGroup = api_group
-        self.name = name
 
 
 class ClusterRoleBinding(KubernetesBaseObject):
@@ -118,12 +118,12 @@ class PolicyRule(HelmYaml):
     :param resource_names:ResourceNames is an optional white list of names that the \
         rule applies to.  An empty set means that everything is allowed.
     :type resource_names: List[str]
+    :param resources:Resources is a list of resources this rule applies to.  \
+        ResourceAll represents all resources.
+    :type resources: List[str]
     :param verbs:Verbs is a list of Verbs that apply to ALL the ResourceKinds and \
         AttributeRestrictions contained in this rule.  VerbAll represents all kinds.
     :type verbs: List[str]
-    :param resources:Resources is a list of resources this rule applies to.  \
-        ResourceAll represents all resources.
-    :type resources: Optional[List[str]]
     """
 
     def __init__(
@@ -131,14 +131,14 @@ class PolicyRule(HelmYaml):
         api_groups: List[str],
         non_resource_urls: List[str],
         resource_names: List[str],
+        resources: List[str],
         verbs: List[str],
-        resources: Optional[List[str]] = None,
     ):
         self.apiGroups = api_groups
         self.nonResourceURLs = non_resource_urls
         self.resourceNames = resource_names
-        self.verbs = verbs
         self.resources = resources
+        self.verbs = verbs
 
 
 class Role(KubernetesBaseObject):
@@ -179,13 +179,13 @@ class AggregationRule(HelmYaml):
 
 class ClusterRole(KubernetesBaseObject):
     """
+    :param metadata:Standard object's metadata.
+    :type metadata: ObjectMeta
     :param aggregation_rule:AggregationRule is an optional field that describes how to \
         build the Rules for this ClusterRole. If AggregationRule is set, then the \
         Rules are controller managed and direct changes to Rules will be stomped by \
         the controller.
     :type aggregation_rule: AggregationRule
-    :param metadata:Standard object's metadata.
-    :type metadata: ObjectMeta
     :param rules:Rules holds all the PolicyRules for this ClusterRole
     :type rules: List[PolicyRule]
     :param api_version:APIVersion defines the versioned schema of this representation \
@@ -197,12 +197,12 @@ class ClusterRole(KubernetesBaseObject):
 
     def __init__(
         self,
-        aggregation_rule: AggregationRule,
         metadata: ObjectMeta,
+        aggregation_rule: AggregationRule,
         rules: List[PolicyRule],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.aggregationRule = aggregation_rule
         self.metadata = metadata
+        self.aggregationRule = aggregation_rule
         self.rules = rules

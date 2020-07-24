@@ -5,21 +5,11 @@ from avionix.kubernetes_objects.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class NonResourceAttributes(HelmYaml):
-    """
-    :param path:Path is the URL path of the request
-    :type path: str
-    :param verb:Verb is the standard HTTP verb
-    :type verb: str
-    """
-
-    def __init__(self, path: str, verb: str):
-        self.path = path
-        self.verb = verb
-
-
 class ResourceAttributes(HelmYaml):
     """
+    :param name:Name is the name of the resource being requested for a "get" or \
+        deleted for a "delete". "" (empty) means all.
+    :type name: str
     :param group:Group is the API Group of the Resource.  "*" means all.
     :type group: str
     :param resource:Resource is one of the existing resource types.  "*" means all.
@@ -32,9 +22,6 @@ class ResourceAttributes(HelmYaml):
     :type verb: str
     :param version:Version is the API Version of the Resource.  "*" means all.
     :type version: str
-    :param name:Name is the name of the resource being requested for a "get" or \
-        deleted for a "delete". "" (empty) means all.
-    :type name: Optional[str]
     :param namespace:Namespace is the namespace of the action being requested.  \
         Currently, there is no distinction between no namespace and all namespaces "" \
         (empty) is defaulted for LocalSubjectAccessReviews "" (empty) is empty for \
@@ -45,21 +32,34 @@ class ResourceAttributes(HelmYaml):
 
     def __init__(
         self,
+        name: str,
         group: str,
         resource: str,
         subresource: str,
         verb: str,
         version: str,
-        name: Optional[str] = None,
         namespace: Optional[str] = None,
     ):
+        self.name = name
         self.group = group
         self.resource = resource
         self.subresource = subresource
         self.verb = verb
         self.version = version
-        self.name = name
         self.namespace = namespace
+
+
+class NonResourceAttributes(HelmYaml):
+    """
+    :param path:Path is the URL path of the request
+    :type path: str
+    :param verb:Verb is the standard HTTP verb
+    :type verb: str
+    """
+
+    def __init__(self, path: str, verb: str):
+        self.path = path
+        self.verb = verb
 
 
 class SelfSubjectAccessReviewSpec(HelmYaml):
@@ -92,26 +92,36 @@ class ResourceRule(HelmYaml):
         rule applies to.  An empty set means that everything is allowed.  "*" means \
         all.
     :type resource_names: List[str]
-    :param verbs:Verb is a list of kubernetes resource API verbs, like: get, list, \
-        watch, create, update, delete, proxy.  "*" means all.
-    :type verbs: List[str]
     :param resources:Resources is a list of resources this rule applies to.  "*" means \
         all in the specified apiGroups.  "*/foo" represents the subresource 'foo' for \
         all resources in the specified apiGroups.
-    :type resources: Optional[List[str]]
+    :type resources: List[str]
+    :param verbs:Verb is a list of kubernetes resource API verbs, like: get, list, \
+        watch, create, update, delete, proxy.  "*" means all.
+    :type verbs: List[str]
     """
 
     def __init__(
         self,
         api_groups: List[str],
         resource_names: List[str],
+        resources: List[str],
         verbs: List[str],
-        resources: Optional[List[str]] = None,
     ):
         self.apiGroups = api_groups
         self.resourceNames = resource_names
-        self.verbs = verbs
         self.resources = resources
+        self.verbs = verbs
+
+
+class SelfSubjectRulesReviewSpec(HelmYaml):
+    """
+    :param namespace:Namespace to evaluate rules for. Required.
+    :type namespace: Optional[str]
+    """
+
+    def __init__(self, namespace: Optional[str] = None):
+        self.namespace = namespace
 
 
 class NonResourceRule(HelmYaml):
@@ -128,16 +138,6 @@ class NonResourceRule(HelmYaml):
     def __init__(self, non_resource_urls: List[str], verbs: List[str]):
         self.nonResourceURLs = non_resource_urls
         self.verbs = verbs
-
-
-class SelfSubjectRulesReviewSpec(HelmYaml):
-    """
-    :param namespace:Namespace to evaluate rules for. Required.
-    :type namespace: Optional[str]
-    """
-
-    def __init__(self, namespace: Optional[str] = None):
-        self.namespace = namespace
 
 
 class SelfSubjectRulesReview(KubernetesBaseObject):
@@ -178,12 +178,12 @@ class SubjectAccessReviewSpec(HelmYaml):
     :param resource_attributes:ResourceAuthorizationAttributes describes information \
         for a resource access request
     :type resource_attributes: ResourceAttributes
-    :param uid:UID information about the requesting user.
-    :type uid: str
     :param user:User is the user you're testing for. If you specify "User" but not \
         "Groups", then is it interpreted as "What if User were not a member of any \
         groups
     :type user: str
+    :param uid:UID information about the requesting user.
+    :type uid: Optional[str]
     """
 
     def __init__(
@@ -192,15 +192,15 @@ class SubjectAccessReviewSpec(HelmYaml):
         groups: List[str],
         non_resource_attributes: NonResourceAttributes,
         resource_attributes: ResourceAttributes,
-        uid: str,
         user: str,
+        uid: Optional[str] = None,
     ):
         self.extra = extra
         self.groups = groups
         self.nonResourceAttributes = non_resource_attributes
         self.resourceAttributes = resource_attributes
-        self.uid = uid
         self.user = user
+        self.uid = uid
 
 
 class LocalSubjectAccessReview(KubernetesBaseObject):

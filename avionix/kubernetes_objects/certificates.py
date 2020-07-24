@@ -44,9 +44,6 @@ class CertificateSigningRequestSpec(HelmYaml):
         trust for signers happens out of band. You can select on this field using \
         `spec.signerName`.
     :type signer_name: str
-    :param uid:UID information about the requesting user. See user.Info interface for \
-        details.
-    :type uid: str
     :param usages:allowedUsages specifies a set of usage contexts the key will be \
         valid for. See: https://tools.ietf.org/html/rfc5280#section-4.2.1.3      \
         https://tools.ietf.org/html/rfc5280#section-4.2.1.12
@@ -54,6 +51,9 @@ class CertificateSigningRequestSpec(HelmYaml):
     :param username:Information about the requesting user. See user.Info interface for \
         details.
     :type username: str
+    :param uid:UID information about the requesting user. See user.Info interface for \
+        details.
+    :type uid: Optional[str]
     """
 
     def __init__(
@@ -62,17 +62,17 @@ class CertificateSigningRequestSpec(HelmYaml):
         groups: List[str],
         request: str,
         signer_name: str,
-        uid: str,
         usages: List[str],
         username: str,
+        uid: Optional[str] = None,
     ):
         self.extra = extra
         self.groups = groups
         self.request = request
         self.signerName = signer_name
-        self.uid = uid
         self.usages = usages
         self.username = username
+        self.uid = uid
 
 
 class CertificateSigningRequest(KubernetesBaseObject):
@@ -101,10 +101,10 @@ class CertificateSigningRequest(KubernetesBaseObject):
 
 class CertificateSigningRequestList(KubernetesBaseObject):
     """
-    :param items:None
-    :type items: List[CertificateSigningRequest]
     :param metadata:None
     :type metadata: ListMeta
+    :param items:None
+    :type items: List[CertificateSigningRequest]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -114,10 +114,10 @@ class CertificateSigningRequestList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[CertificateSigningRequest],
         metadata: ListMeta,
+        items: List[CertificateSigningRequest],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

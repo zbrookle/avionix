@@ -39,6 +39,10 @@ class JobCondition(HelmYaml):
 
 class JobSpec(HelmYaml):
     """
+    :param template:Describes the pod that will be created when executing a job. More \
+        info: \
+        https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
+    :type template: PodTemplateSpec
     :param completions:Specifies the desired number of successfully finished pods the \
         job should be run with.  Setting to nil means that the success of any pod \
         signals the success of all pods, and allows parallelism to have any positive \
@@ -63,10 +67,10 @@ class JobSpec(HelmYaml):
         parallelism. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
     :type parallelism: int
-    :param template:Describes the pod that will be created when executing a job. More \
-        info: \
-        https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
-    :type template: PodTemplateSpec
+    :param selector:A label query over pods that should match the pod count. Normally, \
+        the system sets this field for you. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :type selector: LabelSelector
     :param ttl_seconds_after_finished:ttlSecondsAfterFinished limits the lifetime of a \
         Job that has finished execution (either Complete or Failed). If this field is \
         set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be \
@@ -83,31 +87,27 @@ class JobSpec(HelmYaml):
     :param backoff_limit:Specifies the number of retries before marking this job \
         failed. Defaults to 6
     :type backoff_limit: Optional[int]
-    :param selector:A label query over pods that should match the pod count. Normally, \
-        the system sets this field for you. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :type selector: Optional[LabelSelector]
     """
 
     def __init__(
         self,
+        template: PodTemplateSpec,
         completions: int,
         manual_selector: bool,
         parallelism: int,
-        template: PodTemplateSpec,
+        selector: LabelSelector,
         ttl_seconds_after_finished: int,
         active_deadline_seconds: Optional[int] = None,
         backoff_limit: Optional[int] = None,
-        selector: Optional[LabelSelector] = None,
     ):
+        self.template = template
         self.completions = completions
         self.manualSelector = manual_selector
         self.parallelism = parallelism
-        self.template = template
+        self.selector = selector
         self.ttlSecondsAfterFinished = ttl_seconds_after_finished
         self.activeDeadlineSeconds = active_deadline_seconds
         self.backoffLimit = backoff_limit
-        self.selector = selector
 
 
 class Job(KubernetesBaseObject):
@@ -135,11 +135,11 @@ class Job(KubernetesBaseObject):
 
 class JobList(KubernetesBaseObject):
     """
-    :param items:items is the list of Jobs.
-    :type items: List[Job]
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:items is the list of Jobs.
+    :type items: List[Job]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -148,11 +148,11 @@ class JobList(KubernetesBaseObject):
     """
 
     def __init__(
-        self, items: List[Job], metadata: ListMeta, api_version: Optional[str] = None
+        self, metadata: ListMeta, items: List[Job], api_version: Optional[str] = None
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items
 
 
 class JobTemplateSpec(HelmYaml):
@@ -247,11 +247,11 @@ class CronJob(KubernetesBaseObject):
 
 class CronJobList(KubernetesBaseObject):
     """
-    :param items:items is the list of CronJobs.
-    :type items: List[CronJob]
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
     :type metadata: ListMeta
+    :param items:items is the list of CronJobs.
+    :type items: List[CronJob]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -261,10 +261,10 @@ class CronJobList(KubernetesBaseObject):
 
     def __init__(
         self,
-        items: List[CronJob],
         metadata: ListMeta,
+        items: List[CronJob],
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
-        self.items = items
         self.metadata = metadata
+        self.items = items

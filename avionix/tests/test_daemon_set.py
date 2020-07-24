@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.daemon import DaemonSet, DaemonSetSpec
+from avionix.kubernetes_objects.apps import DaemonSet, DaemonSetSpec
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

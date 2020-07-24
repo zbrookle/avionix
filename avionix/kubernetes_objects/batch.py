@@ -2,10 +2,39 @@ from datetime import time
 from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
-from avionix.kubernetes_objects.pod import PodTemplateSpec
-from avionix.kubernetes_objects.selector import LabelSelector
+from avionix.kubernetes_objects.core import PodTemplateSpec
+from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
+
+
+class JobCondition(HelmYaml):
+    """
+    :param last_probe_time:Last time the condition was checked.
+    :type last_probe_time: time
+    :param last_transition_time:Last time the condition transit from one status to \
+        another.
+    :type last_transition_time: time
+    :param message:Human readable message indicating details about last transition.
+    :type message: str
+    :param reason:(brief) reason for the condition's last transition.
+    :type reason: str
+    :param type:Type of job condition, Complete or Failed.
+    :type type: str
+    """
+
+    def __init__(
+        self,
+        last_probe_time: time,
+        last_transition_time: time,
+        message: str,
+        reason: str,
+        type: str,
+    ):
+        self.lastProbeTime = last_probe_time
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
 
 
 class JobSpec(HelmYaml):
@@ -81,36 +110,6 @@ class JobSpec(HelmYaml):
         self.selector = selector
 
 
-class JobCondition(HelmYaml):
-    """
-    :param last_probe_time:Last time the condition was checked.
-    :type last_probe_time: time
-    :param last_transition_time:Last time the condition transit from one status to \
-        another.
-    :type last_transition_time: time
-    :param message:Human readable message indicating details about last transition.
-    :type message: str
-    :param reason:(brief) reason for the condition's last transition.
-    :type reason: str
-    :param type:Type of job condition, Complete or Failed.
-    :type type: str
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class Job(KubernetesBaseObject):
     """
     :param metadata:Standard object's metadata. More info: \
@@ -150,6 +149,121 @@ class JobList(KubernetesBaseObject):
 
     def __init__(
         self, items: List[Job], metadata: ListMeta, api_version: Optional[str] = None
+    ):
+        super().__init__(api_version)
+        self.items = items
+        self.metadata = metadata
+
+
+class JobTemplateSpec(HelmYaml):
+    """
+    :param metadata:Standard object's metadata of the jobs created from this template. \
+        More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ObjectMeta
+    :param spec:Specification of the desired behavior of the job. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+    :type spec: JobSpec
+    """
+
+    def __init__(self, metadata: ObjectMeta, spec: JobSpec):
+        self.metadata = metadata
+        self.spec = spec
+
+
+class CronJobSpec(HelmYaml):
+    """
+    :param concurrency_policy:Specifies how to treat concurrent executions of a Job. \
+        Valid values are: - "Allow" (default): allows CronJobs to run concurrently; - \
+        "Forbid": forbids concurrent runs, skipping next run if previous run hasn't \
+        finished yet; - "Replace": cancels currently running job and replaces it with \
+        a new one
+    :type concurrency_policy: str
+    :param job_template:Specifies the job that will be created when executing a \
+        CronJob.
+    :type job_template: JobTemplateSpec
+    :param schedule:The schedule in Cron format, see \
+        https://en.wikipedia.org/wiki/Cron.
+    :type schedule: str
+    :param starting_deadline_seconds:Optional deadline in seconds for starting the job \
+        if it misses scheduled time for any reason.  Missed jobs executions will be \
+        counted as failed ones.
+    :type starting_deadline_seconds: int
+    :param failed_jobs_history_limit:The number of failed finished jobs to retain. \
+        This is a pointer to distinguish between explicit zero and not specified. \
+        Defaults to 1.
+    :type failed_jobs_history_limit: Optional[int]
+    :param successful_jobs_history_limit:The number of successful finished jobs to \
+        retain. This is a pointer to distinguish between explicit zero and not \
+        specified. Defaults to 3.
+    :type successful_jobs_history_limit: Optional[int]
+    :param suspend:This flag tells the controller to suspend subsequent executions, it \
+        does not apply to already started executions.  Defaults to false.
+    :type suspend: Optional[bool]
+    """
+
+    def __init__(
+        self,
+        concurrency_policy: str,
+        job_template: JobTemplateSpec,
+        schedule: str,
+        starting_deadline_seconds: int,
+        failed_jobs_history_limit: Optional[int] = None,
+        successful_jobs_history_limit: Optional[int] = None,
+        suspend: Optional[bool] = None,
+    ):
+        self.concurrencyPolicy = concurrency_policy
+        self.jobTemplate = job_template
+        self.schedule = schedule
+        self.startingDeadlineSeconds = starting_deadline_seconds
+        self.failedJobsHistoryLimit = failed_jobs_history_limit
+        self.successfulJobsHistoryLimit = successful_jobs_history_limit
+        self.suspend = suspend
+
+
+class CronJob(KubernetesBaseObject):
+    """
+    :param metadata:Standard object's metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ObjectMeta
+    :param spec:Specification of the desired behavior of a cron job, including the \
+        schedule. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+    :type spec: CronJobSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
+        of an object. Servers should convert recognized schemas to the latest internal \
+        value, and may reject unrecognized values. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
+    """
+
+    def __init__(
+        self, metadata: ObjectMeta, spec: CronJobSpec, api_version: Optional[str] = None
+    ):
+        super().__init__(api_version)
+        self.metadata = metadata
+        self.spec = spec
+
+
+class CronJobList(KubernetesBaseObject):
+    """
+    :param items:items is the list of CronJobs.
+    :type items: List[CronJob]
+    :param metadata:Standard list metadata. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: ListMeta
+    :param api_version:APIVersion defines the versioned schema of this representation \
+        of an object. Servers should convert recognized schemas to the latest internal \
+        value, and may reject unrecognized values. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
+    """
+
+    def __init__(
+        self,
+        items: List[CronJob],
+        metadata: ListMeta,
+        api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
         self.items = items

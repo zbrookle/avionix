@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.secret import Secret
+from avionix.kubernetes_objects.core import Secret
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

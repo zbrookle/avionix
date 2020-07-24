@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.metadata import ListMeta, ObjectMeta
+from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 
 
 class PriorityClass(KubernetesBaseObject):

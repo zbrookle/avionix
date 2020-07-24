@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.pod import Pod, PodTemplate
+from avionix.kubernetes_objects.core import Pod, PodTemplate
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.node import Node, NodeSpec
+from avionix.kubernetes_objects.core import Node, NodeSpec
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

@@ -7,8 +7,8 @@ import pandas
 import pytest
 
 from avionix import ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.pod import Pod, PodSpec, PodTemplateSpec
-from avionix.kubernetes_objects.selector import LabelSelector
+from avionix.kubernetes_objects.core import Pod, PodSpec, PodTemplateSpec
+from avionix.kubernetes_objects.meta import LabelSelector
 from avionix.tests.utils import get_test_container, get_test_deployment
 
 logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=logging.INFO)

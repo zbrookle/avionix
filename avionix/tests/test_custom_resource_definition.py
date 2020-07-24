@@ -1,15 +1,15 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.custom_resource import (
+from avionix.kubernetes_objects.apiextensions import (
     CustomResourceColumnDefinition,
     CustomResourceDefinition,
     CustomResourceDefinitionNames,
     CustomResourceDefinitionSpec,
     CustomResourceDefinitionVersion,
     CustomResourceValidation,
+    JSONSchemaProps,
 )
-from avionix.kubernetes_objects.json import JSONSchemaProps
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

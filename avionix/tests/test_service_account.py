@@ -2,7 +2,7 @@ import pytest
 
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kubernetes_objects.reference import ObjectReference
-from avionix.kubernetes_objects.service import ServiceAccount
+from avionix.kubernetes_objects.core import ServiceAccount
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

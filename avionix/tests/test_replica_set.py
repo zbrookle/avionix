@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.replica_set import ReplicaSet, ReplicaSetSpec
+from avionix.kubernetes_objects.apps import ReplicaSet, ReplicaSetSpec
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

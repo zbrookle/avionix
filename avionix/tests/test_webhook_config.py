@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.webhook import (
+from avionix.kubernetes_objects.admissionregistration import (
     MutatingWebhook,
     MutatingWebhookConfiguration,
     ServiceReference,

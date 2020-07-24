@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.replication_controller import (
+from avionix.kubernetes_objects.core import (
     ReplicationController,
     ReplicationControllerSpec,
 )

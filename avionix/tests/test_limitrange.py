@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.limit_range import (
+from avionix.kubernetes_objects.core import (
     LimitRange,
     LimitRangeItem,
     LimitRangeSpec,

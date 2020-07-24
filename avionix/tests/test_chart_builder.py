@@ -4,7 +4,7 @@ import re
 import shutil
 
 from avionix import ChartBuilder, ChartInfo
-from avionix.kubernetes_objects.deployment import Deployment
+from avionix.kubernetes_objects.apps import Deployment
 from avionix.tests.utils import (
     ChartInstallationContext,
     get_helm_installations,

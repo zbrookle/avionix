@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.controller_revision import ControllerRevision
+from avionix.kubernetes_objects.apps import ControllerRevision
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

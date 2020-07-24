@@ -11,12 +11,9 @@ from pandas import DataFrame, Series
 
 from avionix.chart import ChartBuilder
 from avionix.errors import ChartAlreadyInstalledError
-from avionix.kubernetes_objects.container import Container
-from avionix.kubernetes_objects.deployment import Deployment, DeploymentSpec
-from avionix.kubernetes_objects.env import EnvVar
-from avionix.kubernetes_objects.metadata import ObjectMeta
-from avionix.kubernetes_objects.pod import PodSpec, PodTemplateSpec
-from avionix.kubernetes_objects.selector import LabelSelector
+from avionix.kubernetes_objects.core import Container, EnvVar, PodSpec, PodTemplateSpec
+from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
+from avionix.kubernetes_objects.meta import ObjectMeta, LabelSelector
 
 
 def get_test_container(number: int):

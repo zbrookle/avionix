@@ -1,8 +1,21 @@
 from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.metadata import ObjectMeta
+from avionix.kubernetes_objects.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
+
+
+class NonResourceAttributes(HelmYaml):
+    """
+    :param path:Path is the URL path of the request
+    :type path: str
+    :param verb:Verb is the standard HTTP verb
+    :type verb: str
+    """
+
+    def __init__(self, path: str, verb: str):
+        self.path = path
+        self.verb = verb
 
 
 class ResourceAttributes(HelmYaml):
@@ -49,19 +62,6 @@ class ResourceAttributes(HelmYaml):
         self.namespace = namespace
 
 
-class NonResourceAttributes(HelmYaml):
-    """
-    :param path:Path is the URL path of the request
-    :type path: str
-    :param verb:Verb is the standard HTTP verb
-    :type verb: str
-    """
-
-    def __init__(self, path: str, verb: str):
-        self.path = path
-        self.verb = verb
-
-
 class SelfSubjectAccessReviewSpec(HelmYaml):
     """
     :param non_resource_attributes:NonResourceAttributes describes information for a \
@@ -79,57 +79,6 @@ class SelfSubjectAccessReviewSpec(HelmYaml):
     ):
         self.nonResourceAttributes = non_resource_attributes
         self.resourceAttributes = resource_attributes
-
-
-class SelfSubjectAccessReview(KubernetesBaseObject):
-    """
-    :param metadata:None
-    :type metadata: ObjectMeta
-    :param spec:Spec holds information about the request being evaluated.  user and \
-        groups must be empty
-    :type spec: SelfSubjectAccessReviewSpec
-    :param api_version:APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
-    """
-
-    def __init__(
-        self,
-        metadata: ObjectMeta,
-        spec: SelfSubjectAccessReviewSpec,
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.spec = spec
-
-
-class SelfSubjectRulesReviewSpec(HelmYaml):
-    """
-    :param namespace:Namespace to evaluate rules for. Required.
-    :type namespace: Optional[str]
-    """
-
-    def __init__(self, namespace: Optional[str] = None):
-        self.namespace = namespace
-
-
-class NonResourceRule(HelmYaml):
-    """
-    :param non_resource_urls:NonResourceURLs is a set of partial urls that a user \
-        should have access to.  *s are allowed, but only as the full, final step in \
-        the path.  "*" means all.
-    :type non_resource_urls: List[str]
-    :param verbs:Verb is a list of kubernetes non-resource API verbs, like: get, post, \
-        put, delete, patch, head, options.  "*" means all.
-    :type verbs: List[str]
-    """
-
-    def __init__(self, non_resource_urls: List[str], verbs: List[str]):
-        self.nonResourceURLs = non_resource_urls
-        self.verbs = verbs
 
 
 class ResourceRule(HelmYaml):
@@ -163,6 +112,56 @@ class ResourceRule(HelmYaml):
         self.resourceNames = resource_names
         self.verbs = verbs
         self.resources = resources
+
+
+class NonResourceRule(HelmYaml):
+    """
+    :param non_resource_urls:NonResourceURLs is a set of partial urls that a user \
+        should have access to.  *s are allowed, but only as the full, final step in \
+        the path.  "*" means all.
+    :type non_resource_urls: List[str]
+    :param verbs:Verb is a list of kubernetes non-resource API verbs, like: get, post, \
+        put, delete, patch, head, options.  "*" means all.
+    :type verbs: List[str]
+    """
+
+    def __init__(self, non_resource_urls: List[str], verbs: List[str]):
+        self.nonResourceURLs = non_resource_urls
+        self.verbs = verbs
+
+
+class SelfSubjectRulesReviewSpec(HelmYaml):
+    """
+    :param namespace:Namespace to evaluate rules for. Required.
+    :type namespace: Optional[str]
+    """
+
+    def __init__(self, namespace: Optional[str] = None):
+        self.namespace = namespace
+
+
+class SelfSubjectRulesReview(KubernetesBaseObject):
+    """
+    :param metadata:None
+    :type metadata: ObjectMeta
+    :param spec:Spec holds information about the request being evaluated.
+    :type spec: SelfSubjectRulesReviewSpec
+    :param api_version:APIVersion defines the versioned schema of this representation \
+        of an object. Servers should convert recognized schemas to the latest internal \
+        value, and may reject unrecognized values. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
+    """
+
+    def __init__(
+        self,
+        metadata: ObjectMeta,
+        spec: SelfSubjectRulesReviewSpec,
+        api_version: Optional[str] = None,
+    ):
+        super().__init__(api_version)
+        self.metadata = metadata
+        self.spec = spec
 
 
 class SubjectAccessReviewSpec(HelmYaml):
@@ -204,11 +203,13 @@ class SubjectAccessReviewSpec(HelmYaml):
         self.user = user
 
 
-class SubjectAccessReview(KubernetesBaseObject):
+class LocalSubjectAccessReview(KubernetesBaseObject):
     """
     :param metadata:None
     :type metadata: ObjectMeta
-    :param spec:Spec holds information about the request being evaluated
+    :param spec:Spec holds information about the request being evaluated.  \
+        spec.namespace must be equal to the namespace you made the request against.  \
+        If empty, it is defaulted.
     :type spec: SubjectAccessReviewSpec
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
@@ -228,37 +229,13 @@ class SubjectAccessReview(KubernetesBaseObject):
         self.spec = spec
 
 
-class Subject(KubernetesBaseObject):
-    """
-    :param api_group:APIGroup holds the API group of the referenced subject. Defaults \
-        to "" for ServiceAccount subjects. Defaults to "rbac.authorization.k8s.io" for \
-        User and Group subjects.
-    :type api_group: Optional[str]
-    :param name:Name of the object being referenced.
-    :type name: Optional[str]
-    :param namespace:Namespace of the referenced object.  If the object kind is \
-        non-namespace, such as "User" or "Group", and this value is not empty the \
-        Authorizer should report an error.
-    :type namespace: Optional[str]
-    """
-
-    def __init__(
-        self,
-        api_group: Optional[str] = None,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
-    ):
-        self.apiGroup = api_group
-        self.name = name
-        self.namespace = namespace
-
-
-class SelfSubjectRulesReview(KubernetesBaseObject):
+class SelfSubjectAccessReview(KubernetesBaseObject):
     """
     :param metadata:None
     :type metadata: ObjectMeta
-    :param spec:Spec holds information about the request being evaluated.
-    :type spec: SelfSubjectRulesReviewSpec
+    :param spec:Spec holds information about the request being evaluated.  user and \
+        groups must be empty
+    :type spec: SelfSubjectAccessReviewSpec
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -269,7 +246,7 @@ class SelfSubjectRulesReview(KubernetesBaseObject):
     def __init__(
         self,
         metadata: ObjectMeta,
-        spec: SelfSubjectRulesReviewSpec,
+        spec: SelfSubjectAccessReviewSpec,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
@@ -277,13 +254,11 @@ class SelfSubjectRulesReview(KubernetesBaseObject):
         self.spec = spec
 
 
-class LocalSubjectAccessReview(KubernetesBaseObject):
+class SubjectAccessReview(KubernetesBaseObject):
     """
     :param metadata:None
     :type metadata: ObjectMeta
-    :param spec:Spec holds information about the request being evaluated.  \
-        spec.namespace must be equal to the namespace you made the request against.  \
-        If empty, it is defaulted.
+    :param spec:Spec holds information about the request being evaluated
     :type spec: SubjectAccessReviewSpec
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \

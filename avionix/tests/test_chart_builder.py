@@ -5,11 +5,8 @@ import shutil
 
 from avionix import ChartBuilder, ChartInfo
 from avionix.kubernetes_objects.apps import Deployment
-from avionix.tests.utils import (
-    ChartInstallationContext,
-    get_helm_installations,
-    kubectl_get,
-)
+from avionix.testing import ChartInstallationContext, kubectl_get
+from avionix.tests.utils import get_helm_installations
 
 
 def test_chart_folder_building(test_deployment1: Deployment, test_folder):

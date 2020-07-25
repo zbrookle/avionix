@@ -2,7 +2,7 @@ import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
-from avionix.tests.utils import ChartInstallationContext, kubectl_get
+from avionix.testing import ChartInstallationContext, kubectl_get
 
 
 @pytest.fixture

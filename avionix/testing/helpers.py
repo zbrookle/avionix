@@ -61,8 +61,11 @@ def parse_binary_output_to_dataframe(output: bytes):
     return df
 
 
-def kubectl_get(resource: str):
-    return parse_binary_output_to_dataframe(check_output(["kubectl", "get", resource]))
+def kubectl_get(resource: str, namespace: Optional[str] = None):
+    command = f"kubectl get {resource}"
+    if namespace:
+        command += f" -n {namespace}"
+    return parse_binary_output_to_dataframe(check_output(command.split(" ")))
 
 
 class ChartInstallationContext:

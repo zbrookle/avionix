@@ -35,7 +35,6 @@ def custom_resource():
 
 
 def test_custom_resource(chart_info, custom_resource, test_folder):
-    print(custom_resource)
     builder = ChartBuilder(chart_info, [custom_resource], test_folder)
     with ChartInstallationContext(builder):
         custom_resource_info = kubectl_get("customresourcedefinitions")

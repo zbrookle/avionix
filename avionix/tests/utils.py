@@ -5,7 +5,7 @@ import re
 import shutil
 from subprocess import check_output
 import time
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any
 
 from pandas import DataFrame, Series
 
@@ -49,7 +49,7 @@ def space_split(output_line: str):
 
 
 def get_name_locations(names: List[str], name_string: str):
-    locs = []
+    locs: List[Any] = []
     last_pos = 0
     for name in names:
         last_pos = name_string.find(name, last_pos)
@@ -74,7 +74,7 @@ def split_using_locations(locations: List[Tuple[int, int]], values_string: str):
     return vals
 
 
-def parse_binary_output_to_dataframe(output: bin):
+def parse_binary_output_to_dataframe(output: bytes):
     output_lines = output.decode("utf-8").split("\n")
     names = space_split(output_lines[0])
     value_locations = get_name_locations(names, output_lines[0])

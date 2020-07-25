@@ -4,11 +4,11 @@ from avionix import ChartBuilder, ObjectMeta
 from avionix.kubernetes_objects.admissionregistration import (
     MutatingWebhook,
     MutatingWebhookConfiguration,
-    ServiceReference,
     ValidatingWebhook,
     ValidatingWebhookConfiguration,
     WebhookClientConfig,
 )
+from avionix.kubernetes_objects.apiregistration import ServiceReference
 from avionix.tests.utils import ChartInstallationContext, kubectl_get
 
 

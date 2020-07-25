@@ -104,6 +104,8 @@ spec:
           value: test-value
         image: k8s.gcr.io/echoserver:1.4
         name: test-container-1
+        ports:
+        - containerPort: 8080
 """
     )
 

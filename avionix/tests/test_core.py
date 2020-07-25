@@ -429,5 +429,5 @@ def binding():
 def test_create_binding(chart_info: ChartInfo, binding: Binding, pod: Pod, test_folder):
     builder = ChartBuilder(chart_info, [binding, pod], str(test_folder))
     with ChartInstallationContext(builder):
-        print(kubectl_get("bindings"))
+        kubectl_get("bindings")
     builder.uninstall_chart()

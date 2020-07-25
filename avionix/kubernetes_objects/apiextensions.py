@@ -1,55 +1,56 @@
 from datetime import time
 from typing import List, Optional, Union
 
-from avionix.kubernetes_objects.admissionregistration import \
-    WebhookClientConfig
+from avionix.kubernetes_objects.apiregistration import ServiceReference
 from avionix.kubernetes_objects.base_objects import ApiExtensions
 from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class CustomResourceColumnDefinition(HelmYaml):
+class JSONSchemaPropsOrBool(HelmYaml):
     """
-    :param name:name is a human readable name for the column.
-    :type name: str
-    :param json_path:jsonPath is a simple JSON path (i.e. with array notation) which \
-        is evaluated against each custom resource to produce the value for this \
-        column.
-    :type json_path: str
-    :param type:type is an OpenAPI type definition for this column. See \
-        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
-        for details.
-    :type type: str
-    :param description:description is a human readable description of this column.
-    :type description: Optional[str]
-    :param format:format is an optional OpenAPI type definition for this column. The \
-        'name' format is applied to the primary identifier column to assist in clients \
-        identifying column is the resource name. See \
-        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
-        for details.
-    :type format: Optional[str]
-    :param priority:priority is an integer defining the relative importance of this \
-        column compared to others. Lower numbers are considered higher priority. \
-        Columns that may be omitted in limited space scenarios should be given a \
-        priority greater than 0.
-    :type priority: Optional[int]
+    """
+
+    pass
+
+
+class WebhookClientConfig(HelmYaml):
+    """
+    :param ca_bundle:caBundle is a PEM encoded CA bundle which will be used to \
+        validate the webhook's server certificate. If unspecified, system trust roots \
+        on the apiserver are used.
+    :type ca_bundle: Optional[str]
+    :param service:service is a reference to the service for this webhook. Either \
+        service or url must be specified.  If the webhook is running within the \
+        cluster, then you should use `service`.
+    :type service: Optional[ServiceReference]
+    :param url:url gives the location of the webhook, in standard URL form \
+        (`scheme://host:port/path`). Exactly one of `url` or `service` must be \
+        specified.  The `host` should not refer to a service running in the cluster; \
+        use the `service` field instead. The host might be resolved via external DNS \
+        in some apiservers (e.g., `kube-apiserver` cannot resolve in-cluster DNS as \
+        that would be a layering violation). `host` may also be an IP address.  Please \
+        note that using `localhost` or `127.0.0.1` as a `host` is risky unless you \
+        take great care to run this webhook on all hosts which run an apiserver which \
+        might need to make calls to this webhook. Such installs are likely to be \
+        non-portable, i.e., not easy to turn up in a new cluster.  The scheme must be \
+        "https"; the URL must begin with "https://".  A path is optional, and if \
+        present may be any string permissible in a URL. You may use the path to pass \
+        an arbitrary string to the webhook, for example, a cluster identifier.  \
+        Attempting to use a user or basic auth e.g. "user:password@" is not allowed. \
+        Fragments ("#...") and query parameters ("?...") are not allowed, either.
+    :type url: Optional[str]
     """
 
     def __init__(
         self,
-        name: str,
-        json_path: str,
-        type: str,
-        description: Optional[str] = None,
-        format: Optional[str] = None,
-        priority: Optional[int] = None,
+        ca_bundle: Optional[str] = None,
+        service: Optional[ServiceReference] = None,
+        url: Optional[str] = None,
     ):
-        self.name = name
-        self.jsonPath = json_path
-        self.type = type
-        self.description = description
-        self.format = format
-        self.priority = priority
+        self.caBundle = ca_bundle
+        self.service = service
+        self.url = url
 
 
 class CustomResourceDefinitionCondition(HelmYaml):
@@ -77,89 +78,18 @@ class CustomResourceDefinitionCondition(HelmYaml):
         self.type = type
 
 
-class CustomResourceDefinitionNames(HelmYaml):
+class JSON(HelmYaml):
     """
-    :param categories:categories is a list of grouped resources this custom resource \
-        belongs to (e.g. 'all'). This is published in API discovery documents, and \
-        used by clients to support invocations like `kubectl get all`.
-    :type categories: List[str]
-    :param kind:kind is the serialized kind of the resource. It is normally CamelCase \
-        and singular. Custom resource instances will use this value as the `kind` \
-        attribute in API calls.
-    :type kind: str
-    :param plural:plural is the plural name of the resource to serve. The custom \
-        resources are served under `/apis/<group>/<version>/.../<plural>`. Must match \
-        the name of the CustomResourceDefinition (in the form \
-        `<names.plural>.<group>`). Must be all lowercase.
-    :type plural: str
-    :param list_kind:listKind is the serialized kind of the list for this resource. \
-        Defaults to "`kind`List".
-    :type list_kind: Optional[str]
-    :param short_names:shortNames are short names for the resource, exposed in API \
-        discovery documents, and used by clients to support invocations like `kubectl \
-        get <shortname>`. It must be all lowercase.
-    :type short_names: Optional[List[str]]
-    :param singular:singular is the singular name of the resource. It must be all \
-        lowercase. Defaults to lowercased `kind`.
-    :type singular: Optional[str]
     """
 
-    def __init__(
-        self,
-        categories: List[str],
-        kind: str,
-        plural: str,
-        list_kind: Optional[str] = None,
-        short_names: Optional[List[str]] = None,
-        singular: Optional[str] = None,
-    ):
-        self.categories = categories
-        self.kind = kind
-        self.plural = plural
-        self.listKind = list_kind
-        self.shortNames = short_names
-        self.singular = singular
+    pass
 
 
-class WebhookConversion(HelmYaml):
+class JSONSchemaPropsOrArray(HelmYaml):
     """
-    :param client_config:clientConfig is the instructions for how to call the webhook \
-        if strategy is `Webhook`.
-    :type client_config: WebhookClientConfig
-    :param conversion_review_versions:conversionReviewVersions is an ordered list of \
-        preferred `ConversionReview` versions the Webhook expects. The API server will \
-        use the first version in the list which it supports. If none of the versions \
-        specified in this list are supported by API server, conversion will fail for \
-        the custom resource. If a persisted Webhook configuration specifies allowed \
-        versions and does not include any versions known to the API Server, calls to \
-        the webhook will fail.
-    :type conversion_review_versions: List[str]
     """
 
-    def __init__(
-        self, client_config: WebhookClientConfig, conversion_review_versions: List[str]
-    ):
-        self.clientConfig = client_config
-        self.conversionReviewVersions = conversion_review_versions
-
-
-class CustomResourceConversion(HelmYaml):
-    """
-    :param webhook:webhook describes how to call the conversion webhook. Required when \
-        `strategy` is set to `Webhook`.
-    :type webhook: WebhookConversion
-    :param strategy:strategy specifies how custom resources are converted between \
-        versions. Allowed values are: - `None`: The converter only change the \
-        apiVersion and would not touch any other field in the custom resource. - \
-        `Webhook`: API Server will call to an external webhook to do the conversion. \
-        Additional information   is needed for this option. This requires \
-        spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
-    :type strategy: Optional[str]
-    """
-
-    def __init__(self, webhook: WebhookConversion, strategy: Optional[str] = None):
-        self.webhook = webhook
-        self.strategy = strategy
+    pass
 
 
 class ExternalDocumentation(HelmYaml):
@@ -173,27 +103,6 @@ class ExternalDocumentation(HelmYaml):
     def __init__(self, url: str, description: Optional[str] = None):
         self.url = url
         self.description = description
-
-
-class JSONSchemaPropsOrBool(HelmYaml):
-    """
-    """
-
-    pass
-
-
-class JSON(HelmYaml):
-    """
-    """
-
-    pass
-
-
-class JSONSchemaPropsOrArray(HelmYaml):
-    """
-    """
-
-    pass
 
 
 class JSONSchemaProps(HelmYaml):
@@ -453,6 +362,50 @@ class CustomResourceValidation(HelmYaml):
         self.openAPIV3Schema = open_apiv3_schema
 
 
+class CustomResourceColumnDefinition(HelmYaml):
+    """
+    :param name:name is a human readable name for the column.
+    :type name: str
+    :param json_path:jsonPath is a simple JSON path (i.e. with array notation) which \
+        is evaluated against each custom resource to produce the value for this \
+        column.
+    :type json_path: str
+    :param type:type is an OpenAPI type definition for this column. See \
+        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
+        for details.
+    :type type: str
+    :param description:description is a human readable description of this column.
+    :type description: Optional[str]
+    :param format:format is an optional OpenAPI type definition for this column. The \
+        'name' format is applied to the primary identifier column to assist in clients \
+        identifying column is the resource name. See \
+        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
+        for details.
+    :type format: Optional[str]
+    :param priority:priority is an integer defining the relative importance of this \
+        column compared to others. Lower numbers are considered higher priority. \
+        Columns that may be omitted in limited space scenarios should be given a \
+        priority greater than 0.
+    :type priority: Optional[int]
+    """
+
+    def __init__(
+        self,
+        name: str,
+        json_path: str,
+        type: str,
+        description: Optional[str] = None,
+        format: Optional[str] = None,
+        priority: Optional[int] = None,
+    ):
+        self.name = name
+        self.jsonPath = json_path
+        self.type = type
+        self.description = description
+        self.format = format
+        self.priority = priority
+
+
 class CustomResourceSubresourceScale(HelmYaml):
     """
     :param label_selector_path:labelSelectorPath defines the JSON path inside of a \
@@ -544,6 +497,91 @@ class CustomResourceDefinitionVersion(HelmYaml):
         self.served = served
         self.storage = storage
         self.subresources = subresources
+
+
+class CustomResourceDefinitionNames(HelmYaml):
+    """
+    :param categories:categories is a list of grouped resources this custom resource \
+        belongs to (e.g. 'all'). This is published in API discovery documents, and \
+        used by clients to support invocations like `kubectl get all`.
+    :type categories: List[str]
+    :param kind:kind is the serialized kind of the resource. It is normally CamelCase \
+        and singular. Custom resource instances will use this value as the `kind` \
+        attribute in API calls.
+    :type kind: str
+    :param plural:plural is the plural name of the resource to serve. The custom \
+        resources are served under `/apis/<group>/<version>/.../<plural>`. Must match \
+        the name of the CustomResourceDefinition (in the form \
+        `<names.plural>.<group>`). Must be all lowercase.
+    :type plural: str
+    :param list_kind:listKind is the serialized kind of the list for this resource. \
+        Defaults to "`kind`List".
+    :type list_kind: Optional[str]
+    :param short_names:shortNames are short names for the resource, exposed in API \
+        discovery documents, and used by clients to support invocations like `kubectl \
+        get <shortname>`. It must be all lowercase.
+    :type short_names: Optional[List[str]]
+    :param singular:singular is the singular name of the resource. It must be all \
+        lowercase. Defaults to lowercased `kind`.
+    :type singular: Optional[str]
+    """
+
+    def __init__(
+        self,
+        categories: List[str],
+        kind: str,
+        plural: str,
+        list_kind: Optional[str] = None,
+        short_names: Optional[List[str]] = None,
+        singular: Optional[str] = None,
+    ):
+        self.categories = categories
+        self.kind = kind
+        self.plural = plural
+        self.listKind = list_kind
+        self.shortNames = short_names
+        self.singular = singular
+
+
+class WebhookConversion(HelmYaml):
+    """
+    :param client_config:clientConfig is the instructions for how to call the webhook \
+        if strategy is `Webhook`.
+    :type client_config: WebhookClientConfig
+    :param conversion_review_versions:conversionReviewVersions is an ordered list of \
+        preferred `ConversionReview` versions the Webhook expects. The API server will \
+        use the first version in the list which it supports. If none of the versions \
+        specified in this list are supported by API server, conversion will fail for \
+        the custom resource. If a persisted Webhook configuration specifies allowed \
+        versions and does not include any versions known to the API Server, calls to \
+        the webhook will fail.
+    :type conversion_review_versions: List[str]
+    """
+
+    def __init__(
+        self, client_config: WebhookClientConfig, conversion_review_versions: List[str]
+    ):
+        self.clientConfig = client_config
+        self.conversionReviewVersions = conversion_review_versions
+
+
+class CustomResourceConversion(HelmYaml):
+    """
+    :param webhook:webhook describes how to call the conversion webhook. Required when \
+        `strategy` is set to `Webhook`.
+    :type webhook: WebhookConversion
+    :param strategy:strategy specifies how custom resources are converted between \
+        versions. Allowed values are: - `None`: The converter only change the \
+        apiVersion and would not touch any other field in the custom resource. - \
+        `Webhook`: API Server will call to an external webhook to do the conversion. \
+        Additional information   is needed for this option. This requires \
+        spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
+    :type strategy: Optional[str]
+    """
+
+    def __init__(self, webhook: WebhookConversion, strategy: Optional[str] = None):
+        self.webhook = webhook
+        self.strategy = strategy
 
 
 class CustomResourceDefinitionSpec(HelmYaml):

@@ -6,17 +6,6 @@ from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class Overhead(HelmYaml):
-    """
-    :param pod_fixed:PodFixed represents the fixed resource overhead associated with \
-        running a pod.
-    :type pod_fixed: dict
-    """
-
-    def __init__(self, pod_fixed: dict):
-        self.podFixed = pod_fixed
-
-
 class Scheduling(HelmYaml):
     """
     :param tolerations:tolerations are appended (excluding duplicates) to pods running \
@@ -36,6 +25,17 @@ class Scheduling(HelmYaml):
     ):
         self.tolerations = tolerations
         self.nodeSelector = node_selector
+
+
+class Overhead(HelmYaml):
+    """
+    :param pod_fixed:PodFixed represents the fixed resource overhead associated with \
+        running a pod.
+    :type pod_fixed: dict
+    """
+
+    def __init__(self, pod_fixed: dict):
+        self.podFixed = pod_fixed
 
 
 class RuntimeClass(KubernetesBaseObject):

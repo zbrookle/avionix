@@ -2,9 +2,62 @@ from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.kubernetes_objects.core import SELinuxOptions
-from avionix.kubernetes_objects.meta import (DeleteOptions, LabelSelector,
-                                             ListMeta, ObjectMeta)
+from avionix.kubernetes_objects.meta import (
+    DeleteOptions,
+    LabelSelector,
+    ListMeta,
+    ObjectMeta,
+)
 from avionix.yaml.yaml_handling import HelmYaml
+
+
+class IDRange(HelmYaml):
+    """
+    :param max:max is the end of the range, inclusive.
+    :type max: int
+    :param min:min is the start of the range, inclusive.
+    :type min: int
+    """
+
+    def __init__(self, max: int, min: int):
+        self.max = max
+        self.min = min
+
+
+class SupplementalGroupsStrategyOptions(HelmYaml):
+    """
+    :param ranges:ranges are the allowed ranges of supplemental groups.  If you would \
+        like to force a single supplemental group then supply a single range with the \
+        same start and end. Required for MustRunAs.
+    :type ranges: List[IDRange]
+    :param rule:rule is the strategy that will dictate what supplemental groups is \
+        used in the SecurityContext.
+    :type rule: str
+    """
+
+    def __init__(self, ranges: List[IDRange], rule: str):
+        self.ranges = ranges
+        self.rule = rule
+
+
+class RuntimeClassStrategyOptions(HelmYaml):
+    """
+    :param allowed_runtime_class_names:allowedRuntimeClassNames is a whitelist of \
+        RuntimeClass names that may be specified on a pod. A value of "*" means that \
+        any RuntimeClass name is allowed, and must be the only item in the list. An \
+        empty list requires the RuntimeClassName field to be unset.
+    :type allowed_runtime_class_names: List[str]
+    :param default_runtime_class_name:defaultRuntimeClassName is the default \
+        RuntimeClassName to set on the pod. The default MUST be allowed by the \
+        allowedRuntimeClassNames list. A value of nil does not mutate the Pod.
+    :type default_runtime_class_name: str
+    """
+
+    def __init__(
+        self, allowed_runtime_class_names: List[str], default_runtime_class_name: str
+    ):
+        self.allowedRuntimeClassNames = allowed_runtime_class_names
+        self.defaultRuntimeClassName = default_runtime_class_name
 
 
 class PodDisruptionBudgetSpec(HelmYaml):
@@ -19,14 +72,14 @@ class PodDisruptionBudgetSpec(HelmYaml):
         selected by "selector" will still be available after the eviction, i.e. even \
         in the absence of the evicted pod.  So for example you can prevent all \
         voluntary evictions by specifying "100%".
-    :type min_available: str
+    :type min_available: LabelSelector
     :param selector:Label query over pods whose evictions are managed by the \
         disruption budget.
-    :type selector: LabelSelector
+    :type selector: str
     """
 
     def __init__(
-        self, max_unavailable: str, min_available: str, selector: LabelSelector
+        self, max_unavailable: str, min_available: LabelSelector, selector: str
     ):
         self.maxUnavailable = max_unavailable
         self.minAvailable = min_available
@@ -57,6 +110,30 @@ class PodDisruptionBudget(KubernetesBaseObject):
         self.spec = spec
 
 
+class Eviction(KubernetesBaseObject):
+    """
+    :param metadata:ObjectMeta describes the pod that is being evicted.
+    :type metadata: ObjectMeta
+    :param delete_options:DeleteOptions may be provided
+    :type delete_options: DeleteOptions
+    :param api_version:APIVersion defines the versioned schema of this representation \
+        of an object. Servers should convert recognized schemas to the latest internal \
+        value, and may reject unrecognized values. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
+    """
+
+    def __init__(
+        self,
+        metadata: ObjectMeta,
+        delete_options: DeleteOptions,
+        api_version: Optional[str] = None,
+    ):
+        super().__init__(api_version)
+        self.metadata = metadata
+        self.deleteOptions = delete_options
+
+
 class PodDisruptionBudgetList(KubernetesBaseObject):
     """
     :param metadata:None
@@ -81,23 +158,6 @@ class PodDisruptionBudgetList(KubernetesBaseObject):
         self.items = items
 
 
-class AllowedHostPath(HelmYaml):
-    """
-    :param path_prefix:pathPrefix is the path prefix that the host volume must match. \
-        It does not support `*`. Trailing slashes are trimmed when validating the path \
-        prefix with a host path.  Examples: `/foo` would allow `/foo`, `/foo/` and \
-        `/foo/bar` `/foo` would not allow `/food` or `/etc/foo`
-    :type path_prefix: str
-    :param read_only:when set to true, will allow host volumes matching the pathPrefix \
-        only if all volume mounts are readOnly.
-    :type read_only: bool
-    """
-
-    def __init__(self, path_prefix: str, read_only: bool):
-        self.pathPrefix = path_prefix
-        self.readOnly = read_only
-
-
 class HostPortRange(HelmYaml):
     """
     :param max:max is the end of the range, inclusive.
@@ -111,24 +171,14 @@ class HostPortRange(HelmYaml):
         self.min = min
 
 
-class RuntimeClassStrategyOptions(HelmYaml):
+class AllowedCSIDriver(HelmYaml):
     """
-    :param allowed_runtime_class_names:allowedRuntimeClassNames is a whitelist of \
-        RuntimeClass names that may be specified on a pod. A value of "*" means that \
-        any RuntimeClass name is allowed, and must be the only item in the list. An \
-        empty list requires the RuntimeClassName field to be unset.
-    :type allowed_runtime_class_names: List[str]
-    :param default_runtime_class_name:defaultRuntimeClassName is the default \
-        RuntimeClassName to set on the pod. The default MUST be allowed by the \
-        allowedRuntimeClassNames list. A value of nil does not mutate the Pod.
-    :type default_runtime_class_name: str
+    :param name:Name is the registered name of the CSI driver
+    :type name: str
     """
 
-    def __init__(
-        self, allowed_runtime_class_names: List[str], default_runtime_class_name: str
-    ):
-        self.allowedRuntimeClassNames = allowed_runtime_class_names
-        self.defaultRuntimeClassName = default_runtime_class_name
+    def __init__(self, name: str):
+        self.name = name
 
 
 class AllowedFlexVolume(HelmYaml):
@@ -139,35 +189,6 @@ class AllowedFlexVolume(HelmYaml):
 
     def __init__(self, driver: str):
         self.driver = driver
-
-
-class IDRange(HelmYaml):
-    """
-    :param max:max is the end of the range, inclusive.
-    :type max: int
-    :param min:min is the start of the range, inclusive.
-    :type min: int
-    """
-
-    def __init__(self, max: int, min: int):
-        self.max = max
-        self.min = min
-
-
-class RunAsGroupStrategyOptions(HelmYaml):
-    """
-    :param ranges:ranges are the allowed ranges of gids that may be used. If you would \
-        like to force a single gid then supply a single range with the same start and \
-        end. Required for MustRunAs.
-    :type ranges: List[IDRange]
-    :param rule:rule is the strategy that will dictate the allowable RunAsGroup values \
-        that may be set.
-    :type rule: str
-    """
-
-    def __init__(self, ranges: List[IDRange], rule: str):
-        self.ranges = ranges
-        self.rule = rule
 
 
 class RunAsUserStrategyOptions(HelmYaml):
@@ -186,16 +207,6 @@ class RunAsUserStrategyOptions(HelmYaml):
         self.rule = rule
 
 
-class AllowedCSIDriver(HelmYaml):
-    """
-    :param name:Name is the registered name of the CSI driver
-    :type name: str
-    """
-
-    def __init__(self, name: str):
-        self.name = name
-
-
 class FSGroupStrategyOptions(HelmYaml):
     """
     :param ranges:ranges are the allowed ranges of fs groups.  If you would like to \
@@ -204,22 +215,6 @@ class FSGroupStrategyOptions(HelmYaml):
     :type ranges: List[IDRange]
     :param rule:rule is the strategy that will dictate what FSGroup is used in the \
         SecurityContext.
-    :type rule: str
-    """
-
-    def __init__(self, ranges: List[IDRange], rule: str):
-        self.ranges = ranges
-        self.rule = rule
-
-
-class SupplementalGroupsStrategyOptions(HelmYaml):
-    """
-    :param ranges:ranges are the allowed ranges of supplemental groups.  If you would \
-        like to force a single supplemental group then supply a single range with the \
-        same start and end. Required for MustRunAs.
-    :type ranges: List[IDRange]
-    :param rule:rule is the strategy that will dictate what supplemental groups is \
-        used in the SecurityContext.
     :type rule: str
     """
 
@@ -242,6 +237,39 @@ class SELinuxStrategyOptions(HelmYaml):
     def __init__(self, rule: str, se_linux_options: SELinuxOptions):
         self.rule = rule
         self.seLinuxOptions = se_linux_options
+
+
+class AllowedHostPath(HelmYaml):
+    """
+    :param path_prefix:pathPrefix is the path prefix that the host volume must match. \
+        It does not support `*`. Trailing slashes are trimmed when validating the path \
+        prefix with a host path.  Examples: `/foo` would allow `/foo`, `/foo/` and \
+        `/foo/bar` `/foo` would not allow `/food` or `/etc/foo`
+    :type path_prefix: str
+    :param read_only:when set to true, will allow host volumes matching the pathPrefix \
+        only if all volume mounts are readOnly.
+    :type read_only: bool
+    """
+
+    def __init__(self, path_prefix: str, read_only: bool):
+        self.pathPrefix = path_prefix
+        self.readOnly = read_only
+
+
+class RunAsGroupStrategyOptions(HelmYaml):
+    """
+    :param ranges:ranges are the allowed ranges of gids that may be used. If you would \
+        like to force a single gid then supply a single range with the same start and \
+        end. Required for MustRunAs.
+    :type ranges: List[IDRange]
+    :param rule:rule is the strategy that will dictate the allowable RunAsGroup values \
+        that may be set.
+    :type rule: str
+    """
+
+    def __init__(self, ranges: List[IDRange], rule: str):
+        self.ranges = ranges
+        self.rule = rule
 
 
 class PodSecurityPolicySpec(HelmYaml):
@@ -400,30 +428,6 @@ class PodSecurityPolicySpec(HelmYaml):
         self.forbiddenSysctls = forbidden_sysctls
         self.hostNetwork = host_network
         self.volumes = volumes
-
-
-class Eviction(KubernetesBaseObject):
-    """
-    :param metadata:ObjectMeta describes the pod that is being evicted.
-    :type metadata: ObjectMeta
-    :param delete_options:DeleteOptions may be provided
-    :type delete_options: DeleteOptions
-    :param api_version:APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
-    """
-
-    def __init__(
-        self,
-        metadata: ObjectMeta,
-        delete_options: DeleteOptions,
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.deleteOptions = delete_options
 
 
 class PodSecurityPolicy(KubernetesBaseObject):

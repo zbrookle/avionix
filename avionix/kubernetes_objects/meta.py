@@ -5,39 +5,64 @@ from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class OwnerReference(KubernetesBaseObject):
+class APIResource(KubernetesBaseObject):
     """
-    :param name:Name of the referent. More info: \
-        http://kubernetes.io/docs/user-guide/identifiers#names
+    :param name:name is the plural name of the resource.
     :type name: str
-    :param controller:If true, this reference points to the managing controller.
-    :type controller: bool
-    :param block_owner_deletion:If true, AND if the owner has the "foregroundDeletion" \
-        finalizer, then the owner cannot be deleted from the key-value store until \
-        this reference is removed. Defaults to false. To set this field, a user needs \
-        "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be \
-        returned.
-    :type block_owner_deletion: Optional[bool]
-    :param uid:UID of the referent. More info: \
-        http://kubernetes.io/docs/user-guide/identifiers#uids
-    :type uid: Optional[str]
-    :param api_version:API version of the referent.
-    :type api_version: Optional[str]
+    :param categories:categories is a list of the grouped resources this resource \
+        belongs to (e.g. 'all')
+    :type categories: List[str]
+    :param group:group is the preferred group of the resource.  Empty implies the \
+        group of the containing resource list. For subresources, this may have a \
+        different value, for example: Scale".
+    :type group: str
+    :param namespaced:namespaced indicates if a resource is namespaced or not.
+    :type namespaced: bool
+    :param short_names:shortNames is a list of suggested short names of the resource.
+    :type short_names: List[str]
+    :param singular_name:singularName is the singular name of the resource.  This \
+        allows clients to handle plural and singular opaquely. The singularName is \
+        more correct for reporting status on a single item and both singular and \
+        plural are allowed from the kubectl CLI interface.
+    :type singular_name: str
+    :param storage_version_hash:The hash value of the storage version, the version \
+        this resource is converted to when written to the data store. Value must be \
+        treated as opaque by clients. Only equality comparison on the value is valid. \
+        This is an alpha feature and may change or be removed in the future. The field \
+        is populated by the apiserver only if the StorageVersionHash feature gate is \
+        enabled. This field will remain optional even if it graduates.
+    :type storage_version_hash: str
+    :param verbs:verbs is a list of supported kube verbs (this includes get, list, \
+        watch, create, update, patch, delete, deletecollection, and proxy)
+    :type verbs: List[str]
+    :param version:version is the preferred version of the resource.  Empty implies \
+        the version of the containing resource list For subresources, this may have a \
+        different value, for example: v1 (while inside a v1beta1 version of the core \
+        resource's group)".
+    :type version: str
     """
 
     def __init__(
         self,
         name: str,
-        controller: bool,
-        block_owner_deletion: Optional[bool] = None,
-        uid: Optional[str] = None,
-        api_version: Optional[str] = None,
+        categories: List[str],
+        group: str,
+        namespaced: bool,
+        short_names: List[str],
+        singular_name: str,
+        storage_version_hash: str,
+        verbs: List[str],
+        version: str,
     ):
-        super().__init__(api_version)
         self.name = name
-        self.controller = controller
-        self.blockOwnerDeletion = block_owner_deletion
-        self.uid = uid
+        self.categories = categories
+        self.group = group
+        self.namespaced = namespaced
+        self.shortNames = short_names
+        self.singularName = singular_name
+        self.storageVersionHash = storage_version_hash
+        self.verbs = verbs
+        self.version = version
 
 
 class FieldsV1(HelmYaml):
@@ -86,6 +111,41 @@ class ManagedFieldsEntry(HelmYaml):
         self.operation = operation
         self.time = time
         self.apiVersion = api_version
+
+
+class OwnerReference(KubernetesBaseObject):
+    """
+    :param name:Name of the referent. More info: \
+        http://kubernetes.io/docs/user-guide/identifiers#names
+    :type name: str
+    :param controller:If true, this reference points to the managing controller.
+    :type controller: bool
+    :param block_owner_deletion:If true, AND if the owner has the "foregroundDeletion" \
+        finalizer, then the owner cannot be deleted from the key-value store until \
+        this reference is removed. Defaults to false. To set this field, a user needs \
+        "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be \
+        returned.
+    :type block_owner_deletion: Optional[bool]
+    :param uid:UID of the referent. More info: \
+        http://kubernetes.io/docs/user-guide/identifiers#uids
+    :type uid: Optional[str]
+    :param api_version:API version of the referent.
+    :type api_version: Optional[str]
+    """
+
+    def __init__(
+        self,
+        name: str,
+        controller: bool,
+        block_owner_deletion: Optional[bool] = None,
+        uid: Optional[str] = None,
+        api_version: Optional[str] = None,
+    ):
+        super().__init__(api_version)
+        self.name = name
+        self.controller = controller
+        self.blockOwnerDeletion = block_owner_deletion
+        self.uid = uid
 
 
 class ObjectMeta(HelmYaml):
@@ -183,35 +243,6 @@ class ObjectMeta(HelmYaml):
         self.ownerReferences = owner_references
 
 
-class ListMeta(HelmYaml):
-    """
-    :param continue_:continue may be set if the user set a limit on the number of \
-        items returned, and indicates that the server has more data available. The \
-        value is opaque and may be used to issue another request to the endpoint that \
-        served this list to retrieve the next set of available objects. Continuing a \
-        consistent list may not be possible if the server configuration has changed or \
-        more than a few minutes have passed. The resourceVersion field returned when \
-        using this continue value will be identical to the value in the first \
-        response, unless you have received this token from an error message.
-    :type continue_: str
-    :param remaining_item_count:remainingItemCount is the number of subsequent items \
-        in the list which are not included in this list response. If the list request \
-        contained label or field selectors, then the number of remaining items is \
-        unknown and the field will be left unset and omitted during serialization. If \
-        the list is complete (either because it is not chunking or because this is the \
-        last chunk), then there are no more remaining items and this field will be \
-        left unset and omitted during serialization. Servers older than v1.15 do not \
-        set this field. The intended use of the remainingItemCount is *estimating* the \
-        size of a collection. Clients should not rely on the remainingItemCount to be \
-        set or to be exact.
-    :type remaining_item_count: int
-    """
-
-    def __init__(self, continue_: str, remaining_item_count: int):
-        self["continue"] = continue_
-        self.remainingItemCount = remaining_item_count
-
-
 class LabelSelectorRequirement(HelmYaml):
     """
     :param key:key is the label key that the selector applies to.
@@ -253,19 +284,99 @@ class LabelSelector(HelmYaml):
         self.matchExpressions = match_expressions
 
 
-class GroupVersionForDiscovery(HelmYaml):
+class ListMeta(HelmYaml):
     """
-    :param group_version:groupVersion specifies the API group and version in the form \
-        "group/version"
-    :type group_version: str
-    :param version:version specifies the version in the form of "version". This is to \
-        save the clients the trouble of splitting the GroupVersion.
-    :type version: str
+    :param continue_:continue may be set if the user set a limit on the number of \
+        items returned, and indicates that the server has more data available. The \
+        value is opaque and may be used to issue another request to the endpoint that \
+        served this list to retrieve the next set of available objects. Continuing a \
+        consistent list may not be possible if the server configuration has changed or \
+        more than a few minutes have passed. The resourceVersion field returned when \
+        using this continue value will be identical to the value in the first \
+        response, unless you have received this token from an error message.
+    :type continue_: str
+    :param remaining_item_count:remainingItemCount is the number of subsequent items \
+        in the list which are not included in this list response. If the list request \
+        contained label or field selectors, then the number of remaining items is \
+        unknown and the field will be left unset and omitted during serialization. If \
+        the list is complete (either because it is not chunking or because this is the \
+        last chunk), then there are no more remaining items and this field will be \
+        left unset and omitted during serialization. Servers older than v1.15 do not \
+        set this field. The intended use of the remainingItemCount is *estimating* the \
+        size of a collection. Clients should not rely on the remainingItemCount to be \
+        set or to be exact.
+    :type remaining_item_count: int
     """
 
-    def __init__(self, group_version: str, version: str):
-        self.groupVersion = group_version
-        self.version = version
+    def __init__(self, continue_: str, remaining_item_count: int):
+        self["continue"] = continue_
+        self.remainingItemCount = remaining_item_count
+
+
+class Patch(HelmYaml):
+    """
+    """
+
+    pass
+
+
+class StatusCause(HelmYaml):
+    """
+    :param field:The field of the resource that has caused this error, as named by its \
+        JSON serialization. May include dot and postfix notation for nested \
+        attributes. Arrays are zero-indexed.  Fields may appear more than once in an \
+        array of causes due to fields having multiple errors. Optional.  Examples:   \
+        "name" - the field "name" on the current resource   "items[0].name" - the \
+        field "name" on the first array entry in "items"
+    :type field: str
+    :param message:A human-readable description of the cause of the error.  This field \
+        may be presented as-is to a reader.
+    :type message: str
+    :param reason:A machine-readable description of the cause of the error. If this \
+        value is empty there is no information available.
+    :type reason: str
+    """
+
+    def __init__(self, field: str, message: str, reason: str):
+        self.field = field
+        self.message = message
+        self.reason = reason
+
+
+class StatusDetails(KubernetesBaseObject):
+    """
+    :param name:The name attribute of the resource associated with the status \
+        StatusReason (when there is a single name which can be described).
+    :type name: str
+    :param causes:The Causes array includes more details associated with the \
+        StatusReason failure. Not all StatusReasons may provide detailed causes.
+    :type causes: List[StatusCause]
+    :param group:The group attribute of the resource associated with the status \
+        StatusReason.
+    :type group: str
+    :param retry_after_seconds:If specified, the time in seconds before the operation \
+        should be retried. Some errors may indicate the client must take an alternate \
+        action - for those errors this field may indicate how long to wait before \
+        taking the alternate action.
+    :type retry_after_seconds: Optional[int]
+    :param uid:UID of the resource. (when there is a single resource which can be \
+        described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+    :type uid: Optional[str]
+    """
+
+    def __init__(
+        self,
+        name: str,
+        causes: List[StatusCause],
+        group: str,
+        retry_after_seconds: Optional[int] = None,
+        uid: Optional[str] = None,
+    ):
+        self.name = name
+        self.causes = causes
+        self.group = group
+        self.retryAfterSeconds = retry_after_seconds
+        self.uid = uid
 
 
 class ServerAddressByClientCIDR(HelmYaml):
@@ -281,6 +392,21 @@ class ServerAddressByClientCIDR(HelmYaml):
     def __init__(self, client_cidr: str, server_address: str):
         self.clientCIDR = client_cidr
         self.serverAddress = server_address
+
+
+class GroupVersionForDiscovery(HelmYaml):
+    """
+    :param group_version:groupVersion specifies the API group and version in the form \
+        "group/version"
+    :type group_version: str
+    :param version:version specifies the version in the form of "version". This is to \
+        save the clients the trouble of splitting the GroupVersion.
+    :type version: str
+    """
+
+    def __init__(self, group_version: str, version: str):
+        self.groupVersion = group_version
+        self.version = version
 
 
 class APIGroup(KubernetesBaseObject):
@@ -339,103 +465,6 @@ class Preconditions(HelmYaml):
         self.uid = uid
 
 
-class APIResource(KubernetesBaseObject):
-    """
-    :param name:name is the plural name of the resource.
-    :type name: str
-    :param categories:categories is a list of the grouped resources this resource \
-        belongs to (e.g. 'all')
-    :type categories: List[str]
-    :param group:group is the preferred group of the resource.  Empty implies the \
-        group of the containing resource list. For subresources, this may have a \
-        different value, for example: Scale".
-    :type group: str
-    :param namespaced:namespaced indicates if a resource is namespaced or not.
-    :type namespaced: bool
-    :param short_names:shortNames is a list of suggested short names of the resource.
-    :type short_names: List[str]
-    :param singular_name:singularName is the singular name of the resource.  This \
-        allows clients to handle plural and singular opaquely. The singularName is \
-        more correct for reporting status on a single item and both singular and \
-        plural are allowed from the kubectl CLI interface.
-    :type singular_name: str
-    :param storage_version_hash:The hash value of the storage version, the version \
-        this resource is converted to when written to the data store. Value must be \
-        treated as opaque by clients. Only equality comparison on the value is valid. \
-        This is an alpha feature and may change or be removed in the future. The field \
-        is populated by the apiserver only if the StorageVersionHash feature gate is \
-        enabled. This field will remain optional even if it graduates.
-    :type storage_version_hash: str
-    :param verbs:verbs is a list of supported kube verbs (this includes get, list, \
-        watch, create, update, patch, delete, deletecollection, and proxy)
-    :type verbs: List[str]
-    :param version:version is the preferred version of the resource.  Empty implies \
-        the version of the containing resource list For subresources, this may have a \
-        different value, for example: v1 (while inside a v1beta1 version of the core \
-        resource's group)".
-    :type version: str
-    """
-
-    def __init__(
-        self,
-        name: str,
-        categories: List[str],
-        group: str,
-        namespaced: bool,
-        short_names: List[str],
-        singular_name: str,
-        storage_version_hash: str,
-        verbs: List[str],
-        version: str,
-    ):
-        self.name = name
-        self.categories = categories
-        self.group = group
-        self.namespaced = namespaced
-        self.shortNames = short_names
-        self.singularName = singular_name
-        self.storageVersionHash = storage_version_hash
-        self.verbs = verbs
-        self.version = version
-
-
-class Patch(HelmYaml):
-    """
-    """
-
-    pass
-
-
-class Time(HelmYaml):
-    """
-    """
-
-    pass
-
-
-class StatusCause(HelmYaml):
-    """
-    :param field:The field of the resource that has caused this error, as named by its \
-        JSON serialization. May include dot and postfix notation for nested \
-        attributes. Arrays are zero-indexed.  Fields may appear more than once in an \
-        array of causes due to fields having multiple errors. Optional.  Examples:   \
-        "name" - the field "name" on the current resource   "items[0].name" - the \
-        field "name" on the first array entry in "items"
-    :type field: str
-    :param message:A human-readable description of the cause of the error.  This field \
-        may be presented as-is to a reader.
-    :type message: str
-    :param reason:A machine-readable description of the cause of the error. If this \
-        value is empty there is no information available.
-    :type reason: str
-    """
-
-    def __init__(self, field: str, message: str, reason: str):
-        self.field = field
-        self.message = message
-        self.reason = reason
-
-
 class DeleteOptions(KubernetesBaseObject):
     """
     :param dry_run:When present, indicates that modifications should not be persisted. \
@@ -490,56 +519,36 @@ class DeleteOptions(KubernetesBaseObject):
         self.gracePeriodSeconds = grace_period_seconds
 
 
-class StatusDetails(KubernetesBaseObject):
+class APIVersions(KubernetesBaseObject):
     """
-    :param name:The name attribute of the resource associated with the status \
-        StatusReason (when there is a single name which can be described).
-    :type name: str
-    :param causes:The Causes array includes more details associated with the \
-        StatusReason failure. Not all StatusReasons may provide detailed causes.
-    :type causes: List[StatusCause]
-    :param group:The group attribute of the resource associated with the status \
-        StatusReason.
-    :type group: str
-    :param retry_after_seconds:If specified, the time in seconds before the operation \
-        should be retried. Some errors may indicate the client must take an alternate \
-        action - for those errors this field may indicate how long to wait before \
-        taking the alternate action.
-    :type retry_after_seconds: Optional[int]
-    :param uid:UID of the resource. (when there is a single resource which can be \
-        described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids
-    :type uid: Optional[str]
+    :param server_address_by_client_cidrs:a map of client CIDR to server address that \
+        is serving this group. This is to help clients reach servers in the most \
+        network-efficient way possible. Clients can use the appropriate server address \
+        as per the CIDR that they match. In case of multiple matches, clients should \
+        use the longest matching CIDR. The server returns only those CIDRs that it \
+        thinks that the client can match. For example: the master will return an \
+        internal IP CIDR only, if the client reaches the server using an internal IP. \
+        Server looks at X-Forwarded-For header or X-Real-Ip header or \
+        request.RemoteAddr (in that order) to get the client IP.
+    :type server_address_by_client_cidrs: List[ServerAddressByClientCIDR]
+    :param versions:versions are the api versions that are available.
+    :type versions: List[str]
+    :param api_version:APIVersion defines the versioned schema of this representation \
+        of an object. Servers should convert recognized schemas to the latest internal \
+        value, and may reject unrecognized values. More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+    :type api_version: Optional[str]
     """
 
     def __init__(
         self,
-        name: str,
-        causes: List[StatusCause],
-        group: str,
-        retry_after_seconds: Optional[int] = None,
-        uid: Optional[str] = None,
+        server_address_by_client_cidrs: List[ServerAddressByClientCIDR],
+        versions: List[str],
+        api_version: Optional[str] = None,
     ):
-        self.name = name
-        self.causes = causes
-        self.group = group
-        self.retryAfterSeconds = retry_after_seconds
-        self.uid = uid
-
-
-class WatchEvent(HelmYaml):
-    """
-    :param object:Object is:  * If Type is Added or Modified: the new state of the \
-        object.  * If Type is Deleted: the state of the object immediately before \
-        deletion.  * If Type is Error: *Status is recommended; other types may make \
-        sense    depending on context.
-    :type object: str
-    :param type:None
-    :type type: str
-    """
-
-    def __init__(self, object: str, type: str):
-        self.object = object
-        self.type = type
+        super().__init__(api_version)
+        self.serverAddressByClientCIDRs = server_address_by_client_cidrs
+        self.versions = versions
 
 
 class Status(KubernetesBaseObject):
@@ -583,39 +592,30 @@ class Status(KubernetesBaseObject):
         self.details = details
 
 
-class APIVersions(KubernetesBaseObject):
-    """
-    :param server_address_by_client_cidrs:a map of client CIDR to server address that \
-        is serving this group. This is to help clients reach servers in the most \
-        network-efficient way possible. Clients can use the appropriate server address \
-        as per the CIDR that they match. In case of multiple matches, clients should \
-        use the longest matching CIDR. The server returns only those CIDRs that it \
-        thinks that the client can match. For example: the master will return an \
-        internal IP CIDR only, if the client reaches the server using an internal IP. \
-        Server looks at X-Forwarded-For header or X-Real-Ip header or \
-        request.RemoteAddr (in that order) to get the client IP.
-    :type server_address_by_client_cidrs: List[ServerAddressByClientCIDR]
-    :param versions:versions are the api versions that are available.
-    :type versions: List[str]
-    :param api_version:APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
-    """
-
-    def __init__(
-        self,
-        server_address_by_client_cidrs: List[ServerAddressByClientCIDR],
-        versions: List[str],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.serverAddressByClientCIDRs = server_address_by_client_cidrs
-        self.versions = versions
-
-
 class MicroTime(HelmYaml):
+    """
+    """
+
+    pass
+
+
+class WatchEvent(HelmYaml):
+    """
+    :param object:Object is:  * If Type is Added or Modified: the new state of the \
+        object.  * If Type is Deleted: the state of the object immediately before \
+        deletion.  * If Type is Error: *Status is recommended; other types may make \
+        sense    depending on context.
+    :type object: str
+    :param type:None
+    :type type: str
+    """
+
+    def __init__(self, object: str, type: str):
+        self.object = object
+        self.type = type
+
+
+class Time(HelmYaml):
     """
     """
 

@@ -6,25 +6,6 @@ from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class CertificateSigningRequestCondition(HelmYaml):
-    """
-    :param last_update_time:timestamp for the last update to this condition
-    :type last_update_time: time
-    :param message:human readable message with details about the request state
-    :type message: str
-    :param reason:brief reason for the request state
-    :type reason: str
-    :param type:request approval state, currently Approved or Denied.
-    :type type: str
-    """
-
-    def __init__(self, last_update_time: time, message: str, reason: str, type: str):
-        self.lastUpdateTime = last_update_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class CertificateSigningRequestSpec(HelmYaml):
     """
     :param extra:Extra information about the requesting user. See user.Info interface \
@@ -73,6 +54,25 @@ class CertificateSigningRequestSpec(HelmYaml):
         self.usages = usages
         self.username = username
         self.uid = uid
+
+
+class CertificateSigningRequestCondition(HelmYaml):
+    """
+    :param last_update_time:timestamp for the last update to this condition
+    :type last_update_time: time
+    :param message:human readable message with details about the request state
+    :type message: str
+    :param reason:brief reason for the request state
+    :type reason: str
+    :param type:request approval state, currently Approved or Denied.
+    :type type: str
+    """
+
+    def __init__(self, last_update_time: time, message: str, reason: str, type: str):
+        self.lastUpdateTime = last_update_time
+        self.message = message
+        self.reason = reason
+        self.type = type
 
 
 class CertificateSigningRequest(KubernetesBaseObject):

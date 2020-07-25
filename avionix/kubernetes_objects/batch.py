@@ -7,36 +7,6 @@ from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class JobCondition(HelmYaml):
-    """
-    :param last_probe_time:Last time the condition was checked.
-    :type last_probe_time: time
-    :param last_transition_time:Last time the condition transit from one status to \
-        another.
-    :type last_transition_time: time
-    :param message:Human readable message indicating details about last transition.
-    :type message: str
-    :param reason:(brief) reason for the condition's last transition.
-    :type reason: str
-    :param type:Type of job condition, Complete or Failed.
-    :type type: str
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class JobSpec(HelmYaml):
     """
     :param template:Describes the pod that will be created when executing a job. More \
@@ -108,6 +78,36 @@ class JobSpec(HelmYaml):
         self.ttlSecondsAfterFinished = ttl_seconds_after_finished
         self.activeDeadlineSeconds = active_deadline_seconds
         self.backoffLimit = backoff_limit
+
+
+class JobCondition(HelmYaml):
+    """
+    :param last_probe_time:Last time the condition was checked.
+    :type last_probe_time: time
+    :param last_transition_time:Last time the condition transit from one status to \
+        another.
+    :type last_transition_time: time
+    :param message:Human readable message indicating details about last transition.
+    :type message: str
+    :param reason:(brief) reason for the condition's last transition.
+    :type reason: str
+    :param type:Type of job condition, Complete or Failed.
+    :type type: str
+    """
+
+    def __init__(
+        self,
+        last_probe_time: time,
+        last_transition_time: time,
+        message: str,
+        reason: str,
+        type: str,
+    ):
+        self.lastProbeTime = last_probe_time
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
 
 
 class Job(KubernetesBaseObject):

@@ -12,8 +12,13 @@ from pandas import DataFrame, Series
 from avionix.chart import ChartBuilder
 from avionix.errors import ChartAlreadyInstalledError
 from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
-from avionix.kubernetes_objects.core import Container, EnvVar, PodSpec, \
-    PodTemplateSpec, ContainerPort
+from avionix.kubernetes_objects.core import (
+    Container,
+    EnvVar,
+    PodSpec,
+    PodTemplateSpec,
+    ContainerPort,
+)
 from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
 
 
@@ -22,7 +27,7 @@ def get_test_container(number: int):
         name=f"test-container-{number}",
         image="k8s.gcr.io/echoserver:1.4",
         env=[EnvVar("test", "test-value")],
-        ports=[ContainerPort(8080)]
+        ports=[ContainerPort(8080)],
     )
 
 

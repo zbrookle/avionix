@@ -6,22 +6,6 @@ from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class NetworkPolicyPort(HelmYaml):
-    """
-    :param port:The port on the given protocol. This can either be a numerical or \
-        named port on a pod. If this field is not provided, this matches all port \
-        names and numbers.
-    :type port: Optional[int]
-    :param protocol:The protocol (TCP, UDP, or SCTP) which traffic must match. If not \
-        specified, this field defaults to TCP.
-    :type protocol: Optional[str]
-    """
-
-    def __init__(self, port: Optional[int] = None, protocol: Optional[str] = None):
-        self.port = port
-        self.protocol = protocol
-
-
 class IPBlock(HelmYaml):
     """
     :param cidr:CIDR is a string representing the IP Block Valid examples are \
@@ -68,6 +52,22 @@ class NetworkPolicyPeer(HelmYaml):
         self.ipBlock = ip_block
         self.namespaceSelector = namespace_selector
         self.podSelector = pod_selector
+
+
+class NetworkPolicyPort(HelmYaml):
+    """
+    :param port:The port on the given protocol. This can either be a numerical or \
+        named port on a pod. If this field is not provided, this matches all port \
+        names and numbers.
+    :type port: Optional[int]
+    :param protocol:The protocol (TCP, UDP, or SCTP) which traffic must match. If not \
+        specified, this field defaults to TCP.
+    :type protocol: Optional[str]
+    """
+
+    def __init__(self, port: Optional[int] = None, protocol: Optional[str] = None):
+        self.port = port
+        self.protocol = protocol
 
 
 class NetworkPolicyIngressRule(HelmYaml):
@@ -253,6 +253,8 @@ class IngressClass(KubernetesBaseObject):
     :type api_version: Optional[str]
     """
 
+    _non_standard_version = "v1beta1"
+
     def __init__(
         self,
         metadata: ObjectMeta,
@@ -276,6 +278,8 @@ class IngressClassList(KubernetesBaseObject):
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :type api_version: Optional[str]
     """
+
+    _non_standard_version = "v1beta1"
 
     def __init__(
         self,

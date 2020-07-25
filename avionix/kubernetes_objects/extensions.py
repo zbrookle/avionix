@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import Extensions
 from avionix.kubernetes_objects.core import TypedLocalObjectReference
 from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
@@ -132,36 +132,36 @@ class IngressSpec(HelmYaml):
         marked as default, which can be used to set a default value for this field. \
         For more information, refer to the IngressClass documentation.
     :type ingress_class_name: str
-    :param rules:A list of host rules used to configure the Ingress. If unspecified, \
-        or no rule matches, all traffic is sent to the default backend.
-    :type rules: List[IngressRule]
-    :param tls:TLS configuration. Currently the Ingress only supports a single TLS \
-        port, 443. If multiple members of this list specify different hosts, they will \
-        be multiplexed on the same port according to the hostname specified through \
-        the SNI TLS extension, if the ingress controller fulfilling the ingress \
-        supports SNI.
-    :type tls: List[IngressTLS]
     :param backend:A default backend capable of servicing requests that don't match \
         any rule. At least one of 'backend' or 'rules' must be specified. This field \
         is optional to allow the loadbalancer controller or defaulting logic to \
         specify a global default.
     :type backend: Optional[IngressBackend]
+    :param rules:A list of host rules used to configure the Ingress. If unspecified, \
+        or no rule matches, all traffic is sent to the default backend.
+    :type rules: Optional[List[IngressRule]]
+    :param tls:TLS configuration. Currently the Ingress only supports a single TLS \
+        port, 443. If multiple members of this list specify different hosts, they will \
+        be multiplexed on the same port according to the hostname specified through \
+        the SNI TLS extension, if the ingress controller fulfilling the ingress \
+        supports SNI.
+    :type tls: Optional[List[IngressTLS]]
     """
 
     def __init__(
         self,
         ingress_class_name: str,
-        rules: List[IngressRule],
-        tls: List[IngressTLS],
         backend: Optional[IngressBackend] = None,
+        rules: Optional[List[IngressRule]] = None,
+        tls: Optional[List[IngressTLS]] = None,
     ):
         self.ingressClassName = ingress_class_name
+        self.backend = backend
         self.rules = rules
         self.tls = tls
-        self.backend = backend
 
 
-class Ingress(KubernetesBaseObject):
+class Ingress(Extensions):
     """
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -176,6 +176,8 @@ class Ingress(KubernetesBaseObject):
     :type api_version: Optional[str]
     """
 
+    _non_standard_version = "v1beta1"
+
     def __init__(
         self, metadata: ObjectMeta, spec: IngressSpec, api_version: Optional[str] = None
     ):
@@ -184,7 +186,7 @@ class Ingress(KubernetesBaseObject):
         self.spec = spec
 
 
-class IngressList(KubernetesBaseObject):
+class IngressList(Extensions):
     """
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -197,6 +199,8 @@ class IngressList(KubernetesBaseObject):
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :type api_version: Optional[str]
     """
+
+    _non_standard_version = "v1beta1"
 
     def __init__(
         self,

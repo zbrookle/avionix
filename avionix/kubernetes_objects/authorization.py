@@ -5,19 +5,6 @@ from avionix.kubernetes_objects.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class NonResourceAttributes(HelmYaml):
-    """
-    :param path:Path is the URL path of the request
-    :type path: str
-    :param verb:Verb is the standard HTTP verb
-    :type verb: str
-    """
-
-    def __init__(self, path: str, verb: str):
-        self.path = path
-        self.verb = verb
-
-
 class ResourceAttributes(HelmYaml):
     """
     :param name:Name is the name of the resource being requested for a "get" or \
@@ -60,6 +47,19 @@ class ResourceAttributes(HelmYaml):
         self.verb = verb
         self.version = version
         self.namespace = namespace
+
+
+class NonResourceAttributes(HelmYaml):
+    """
+    :param path:Path is the URL path of the request
+    :type path: str
+    :param verb:Verb is the standard HTTP verb
+    :type verb: str
+    """
+
+    def __init__(self, path: str, verb: str):
+        self.path = path
+        self.verb = verb
 
 
 class SelfSubjectAccessReviewSpec(HelmYaml):
@@ -106,6 +106,22 @@ class SelfSubjectAccessReview(KubernetesBaseObject):
         self.spec = spec
 
 
+class NonResourceRule(HelmYaml):
+    """
+    :param non_resource_urls:NonResourceURLs is a set of partial urls that a user \
+        should have access to.  *s are allowed, but only as the full, final step in \
+        the path.  "*" means all.
+    :type non_resource_urls: List[str]
+    :param verbs:Verb is a list of kubernetes non-resource API verbs, like: get, post, \
+        put, delete, patch, head, options.  "*" means all.
+    :type verbs: List[str]
+    """
+
+    def __init__(self, non_resource_urls: List[str], verbs: List[str]):
+        self.nonResourceURLs = non_resource_urls
+        self.verbs = verbs
+
+
 class ResourceRule(HelmYaml):
     """
     :param api_groups:APIGroups is the name of the APIGroup that contains the \
@@ -136,22 +152,6 @@ class ResourceRule(HelmYaml):
         self.apiGroups = api_groups
         self.resourceNames = resource_names
         self.resources = resources
-        self.verbs = verbs
-
-
-class NonResourceRule(HelmYaml):
-    """
-    :param non_resource_urls:NonResourceURLs is a set of partial urls that a user \
-        should have access to.  *s are allowed, but only as the full, final step in \
-        the path.  "*" means all.
-    :type non_resource_urls: List[str]
-    :param verbs:Verb is a list of kubernetes non-resource API verbs, like: get, post, \
-        put, delete, patch, head, options.  "*" means all.
-    :type verbs: List[str]
-    """
-
-    def __init__(self, non_resource_urls: List[str], verbs: List[str]):
-        self.nonResourceURLs = non_resource_urls
         self.verbs = verbs
 
 

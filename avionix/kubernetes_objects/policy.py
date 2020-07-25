@@ -99,6 +99,8 @@ class PodDisruptionBudget(KubernetesBaseObject):
     :type api_version: Optional[str]
     """
 
+    _non_standard_version = "v1beta1"
+
     def __init__(
         self,
         metadata: ObjectMeta,
@@ -122,6 +124,8 @@ class Eviction(KubernetesBaseObject):
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :type api_version: Optional[str]
     """
+
+    _non_standard_version = "v1beta1"
 
     def __init__(
         self,
@@ -147,6 +151,8 @@ class PodDisruptionBudgetList(KubernetesBaseObject):
     :type api_version: Optional[str]
     """
 
+    _non_standard_version = "v1beta1"
+
     def __init__(
         self,
         metadata: ListMeta,
@@ -171,24 +177,21 @@ class HostPortRange(HelmYaml):
         self.min = min
 
 
-class AllowedCSIDriver(HelmYaml):
+class AllowedHostPath(HelmYaml):
     """
-    :param name:Name is the registered name of the CSI driver
-    :type name: str
-    """
-
-    def __init__(self, name: str):
-        self.name = name
-
-
-class AllowedFlexVolume(HelmYaml):
-    """
-    :param driver:driver is the name of the Flexvolume driver.
-    :type driver: str
+    :param path_prefix:pathPrefix is the path prefix that the host volume must match. \
+        It does not support `*`. Trailing slashes are trimmed when validating the path \
+        prefix with a host path.  Examples: `/foo` would allow `/foo`, `/foo/` and \
+        `/foo/bar` `/foo` would not allow `/food` or `/etc/foo`
+    :type path_prefix: str
+    :param read_only:when set to true, will allow host volumes matching the pathPrefix \
+        only if all volume mounts are readOnly.
+    :type read_only: bool
     """
 
-    def __init__(self, driver: str):
-        self.driver = driver
+    def __init__(self, path_prefix: str, read_only: bool):
+        self.pathPrefix = path_prefix
+        self.readOnly = read_only
 
 
 class RunAsUserStrategyOptions(HelmYaml):
@@ -207,20 +210,14 @@ class RunAsUserStrategyOptions(HelmYaml):
         self.rule = rule
 
 
-class FSGroupStrategyOptions(HelmYaml):
+class AllowedCSIDriver(HelmYaml):
     """
-    :param ranges:ranges are the allowed ranges of fs groups.  If you would like to \
-        force a single fs group then supply a single range with the same start and \
-        end. Required for MustRunAs.
-    :type ranges: List[IDRange]
-    :param rule:rule is the strategy that will dictate what FSGroup is used in the \
-        SecurityContext.
-    :type rule: str
+    :param name:Name is the registered name of the CSI driver
+    :type name: str
     """
 
-    def __init__(self, ranges: List[IDRange], rule: str):
-        self.ranges = ranges
-        self.rule = rule
+    def __init__(self, name: str):
+        self.name = name
 
 
 class SELinuxStrategyOptions(HelmYaml):
@@ -239,21 +236,30 @@ class SELinuxStrategyOptions(HelmYaml):
         self.seLinuxOptions = se_linux_options
 
 
-class AllowedHostPath(HelmYaml):
+class AllowedFlexVolume(HelmYaml):
     """
-    :param path_prefix:pathPrefix is the path prefix that the host volume must match. \
-        It does not support `*`. Trailing slashes are trimmed when validating the path \
-        prefix with a host path.  Examples: `/foo` would allow `/foo`, `/foo/` and \
-        `/foo/bar` `/foo` would not allow `/food` or `/etc/foo`
-    :type path_prefix: str
-    :param read_only:when set to true, will allow host volumes matching the pathPrefix \
-        only if all volume mounts are readOnly.
-    :type read_only: bool
+    :param driver:driver is the name of the Flexvolume driver.
+    :type driver: str
     """
 
-    def __init__(self, path_prefix: str, read_only: bool):
-        self.pathPrefix = path_prefix
-        self.readOnly = read_only
+    def __init__(self, driver: str):
+        self.driver = driver
+
+
+class FSGroupStrategyOptions(HelmYaml):
+    """
+    :param ranges:ranges are the allowed ranges of fs groups.  If you would like to \
+        force a single fs group then supply a single range with the same start and \
+        end. Required for MustRunAs.
+    :type ranges: List[IDRange]
+    :param rule:rule is the strategy that will dictate what FSGroup is used in the \
+        SecurityContext.
+    :type rule: str
+    """
+
+    def __init__(self, ranges: List[IDRange], rule: str):
+        self.ranges = ranges
+        self.rule = rule
 
 
 class RunAsGroupStrategyOptions(HelmYaml):
@@ -444,6 +450,8 @@ class PodSecurityPolicy(KubernetesBaseObject):
     :type api_version: Optional[str]
     """
 
+    _non_standard_version = "v1beta1"
+
     def __init__(
         self,
         metadata: ObjectMeta,
@@ -468,6 +476,8 @@ class PodSecurityPolicyList(KubernetesBaseObject):
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :type api_version: Optional[str]
     """
+
+    _non_standard_version = "v1beta1"
 
     def __init__(
         self,

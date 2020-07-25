@@ -1,3 +1,4 @@
+from functools import wraps
 from typing import Optional
 
 from avionix.options import DEFAULTS
@@ -13,6 +14,7 @@ class KubernetesBaseObject(HelmYaml):
 
     _version_prefix = ""
     _base_object_name = "KubernetesBaseObject"
+    _non_standard_version = ""
 
     def __init__(
         self,
@@ -30,6 +32,8 @@ class KubernetesBaseObject(HelmYaml):
         self.metadata = metadata
 
     def _get_api_version(self, api_version: Optional[str]):
+        if self._non_standard_version:
+            return self._version_prefix + self._non_standard_version
         if api_version is None:
             return self._version_prefix + DEFAULTS["default_api_version"]
         return api_version
@@ -77,6 +81,15 @@ class ApiRegistration(KubernetesBaseObject):
 
     _version_prefix = "apiregistration.k8s.io/"
     _base_object_name = "ApiRegistration"
+
+
+class Extensions(KubernetesBaseObject):
+    """
+    Base class for api registration
+    """
+
+    _version_prefix = "extensions/"
+    _base_object_name = "Extensions"
 
 
 class BaseSpec(HelmYaml):

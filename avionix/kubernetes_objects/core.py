@@ -291,54 +291,18 @@ class ExecAction(HelmYaml):
         self.command = command
 
 
-class SecretEnvSource(HelmYaml):
+class VolumeDevice(HelmYaml):
     """
-    :param name:Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+    :param name:name must match the name of a persistentVolumeClaim in the pod
     :type name: str
-    :param optional:Specify whether the Secret must be defined
-    :type optional: bool
+    :param device_path:devicePath is the path inside of the container that the device \
+        will be mapped to.
+    :type device_path: str
     """
 
-    def __init__(self, name: str, optional: bool):
+    def __init__(self, name: str, device_path: str):
         self.name = name
-        self.optional = optional
-
-
-class ConfigMapEnvSource(HelmYaml):
-    """
-    :param name:Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
-    :type name: str
-    :param optional:Specify whether the ConfigMap must be defined
-    :type optional: bool
-    """
-
-    def __init__(self, name: str, optional: bool):
-        self.name = name
-        self.optional = optional
-
-
-class EnvFromSource(HelmYaml):
-    """
-    :param config_map_ref:The ConfigMap to select from
-    :type config_map_ref: ConfigMapEnvSource
-    :param prefix:An optional identifier to prepend to each key in the ConfigMap. Must \
-        be a C_IDENTIFIER.
-    :type prefix: str
-    :param secret_ref:The Secret to select from
-    :type secret_ref: SecretEnvSource
-    """
-
-    def __init__(
-        self,
-        config_map_ref: ConfigMapEnvSource,
-        prefix: str,
-        secret_ref: SecretEnvSource,
-    ):
-        self.configMapRef = config_map_ref
-        self.prefix = prefix
-        self.secretRef = secret_ref
+        self.devicePath = device_path
 
 
 class ConfigMapKeySelector(HelmYaml):
@@ -430,6 +394,212 @@ class EnvVar(HelmYaml):
         self.name = name
         self.value = value
         self.valueFrom = value_from
+
+
+class ResourceRequirements(HelmYaml):
+    """
+    :param limits:Limits describes the maximum amount of compute resources allowed. \
+        More info: \
+        https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/  # noqa
+    :type limits: Optional[dict]
+    :param requests:Requests describes the minimum amount of compute resources \
+        required. If Requests is omitted for a container, it defaults to Limits if \
+        that is explicitly specified, otherwise to an implementation-defined value. \
+        More info: \
+        https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/  # noqa
+    :type requests: Optional[dict]
+    """
+
+    def __init__(self, limits: Optional[dict] = None, requests: Optional[dict] = None):
+        self.limits = limits
+        self.requests = requests
+
+
+class SELinuxOptions(HelmYaml):
+    """
+    :param level:Level is SELinux level label that applies to the container.
+    :type level: str
+    :param role:Role is a SELinux role label that applies to the container.
+    :type role: str
+    :param type:Type is a SELinux type label that applies to the container.
+    :type type: str
+    :param user:User is a SELinux user label that applies to the container.
+    :type user: str
+    """
+
+    def __init__(self, level: str, role: str, type: str, user: str):
+        self.level = level
+        self.role = role
+        self.type = type
+        self.user = user
+
+
+class WindowsSecurityContextOptions(HelmYaml):
+    """
+    :param gmsa_credential_spec:GMSACredentialSpec is where the GMSA admission webhook \
+        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the \
+        GMSA credential spec named by the GMSACredentialSpecName field.
+    :type gmsa_credential_spec: str
+    :param gmsa_credential_spec_name:GMSACredentialSpecName is the name of the GMSA \
+        credential spec to use.
+    :type gmsa_credential_spec_name: str
+    :param run_as_user_name:The UserName in Windows to run the entrypoint of the \
+        container process. Defaults to the user specified in image metadata if \
+        unspecified. May also be set in PodSecurityContext. If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence.
+    :type run_as_user_name: Optional[str]
+    """
+
+    def __init__(
+        self,
+        gmsa_credential_spec: str,
+        gmsa_credential_spec_name: str,
+        run_as_user_name: Optional[str] = None,
+    ):
+        self.gmsaCredentialSpec = gmsa_credential_spec
+        self.gmsaCredentialSpecName = gmsa_credential_spec_name
+        self.runAsUserName = run_as_user_name
+
+
+class Capabilities(HelmYaml):
+    """
+    :param add:Added capabilities
+    :type add: List[str]
+    :param drop:Removed capabilities
+    :type drop: List[str]
+    """
+
+    def __init__(self, add: List[str], drop: List[str]):
+        self.add = add
+        self.drop = drop
+
+
+class SecurityContext(HelmYaml):
+    """
+    :param allow_privilege_escalation:AllowPrivilegeEscalation controls whether a \
+        process can gain more privileges than its parent process. This bool directly \
+        controls if the no_new_privs flag will be set on the container process. \
+        AllowPrivilegeEscalation is true always when the container is: 1) run as \
+        Privileged 2) has CAP_SYS_ADMIN
+    :type allow_privilege_escalation: bool
+    :param run_as_group:The GID to run the entrypoint of the container process. Uses \
+        runtime default if unset. May also be set in PodSecurityContext.  If set in \
+        both SecurityContext and PodSecurityContext, the value specified in \
+        SecurityContext takes precedence.
+    :type run_as_group: int
+    :param run_as_non_root:Indicates that the container must run as a non-root user. \
+        If true, the Kubelet will validate the image at runtime to ensure that it does \
+        not run as UID 0 (root) and fail to start the container if it does. If unset \
+        or false, no such validation will be performed. May also be set in \
+        PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, \
+        the value specified in SecurityContext takes precedence.
+    :type run_as_non_root: bool
+    :param se_linux_options:The SELinux context to be applied to the container. If \
+        unspecified, the container runtime will allocate a random SELinux context for \
+        each container.  May also be set in PodSecurityContext.  If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence.
+    :type se_linux_options: SELinuxOptions
+    :param windows_options:The Windows specific settings applied to all containers. If \
+        unspecified, the options from the PodSecurityContext will be used. If set in \
+        both SecurityContext and PodSecurityContext, the value specified in \
+        SecurityContext takes precedence.
+    :type windows_options: WindowsSecurityContextOptions
+    :param capabilities:The capabilities to add/drop when running containers. Defaults \
+        to the default set of capabilities granted by the container runtime.
+    :type capabilities: Optional[Capabilities]
+    :param privileged:Run container in privileged mode. Processes in privileged \
+        containers are essentially equivalent to root on the host. Defaults to false.
+    :type privileged: Optional[bool]
+    :param proc_mount:procMount denotes the type of proc mount to use for the \
+        containers. The default is DefaultProcMount which uses the container runtime \
+        defaults for readonly paths and masked paths. This requires the ProcMountType \
+        feature flag to be enabled.
+    :type proc_mount: Optional[str]
+    :param read_only_root_filesystem:Whether this container has a read-only root \
+        filesystem. Default is false.
+    :type read_only_root_filesystem: Optional[bool]
+    :param run_as_user:The UID to run the entrypoint of the container process. \
+        Defaults to user specified in image metadata if unspecified. May also be set \
+        in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, \
+        the value specified in SecurityContext takes precedence.
+    :type run_as_user: Optional[int]
+    """
+
+    def __init__(
+        self,
+        allow_privilege_escalation: bool,
+        run_as_group: int,
+        run_as_non_root: bool,
+        se_linux_options: SELinuxOptions,
+        windows_options: WindowsSecurityContextOptions,
+        capabilities: Optional[Capabilities] = None,
+        privileged: Optional[bool] = None,
+        proc_mount: Optional[str] = None,
+        read_only_root_filesystem: Optional[bool] = None,
+        run_as_user: Optional[int] = None,
+    ):
+        self.allowPrivilegeEscalation = allow_privilege_escalation
+        self.runAsGroup = run_as_group
+        self.runAsNonRoot = run_as_non_root
+        self.seLinuxOptions = se_linux_options
+        self.windowsOptions = windows_options
+        self.capabilities = capabilities
+        self.privileged = privileged
+        self.procMount = proc_mount
+        self.readOnlyRootFilesystem = read_only_root_filesystem
+        self.runAsUser = run_as_user
+
+
+class SecretEnvSource(HelmYaml):
+    """
+    :param name:Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+    :type name: str
+    :param optional:Specify whether the Secret must be defined
+    :type optional: bool
+    """
+
+    def __init__(self, name: str, optional: bool):
+        self.name = name
+        self.optional = optional
+
+
+class ConfigMapEnvSource(HelmYaml):
+    """
+    :param name:Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+    :type name: str
+    :param optional:Specify whether the ConfigMap must be defined
+    :type optional: bool
+    """
+
+    def __init__(self, name: str, optional: bool):
+        self.name = name
+        self.optional = optional
+
+
+class EnvFromSource(HelmYaml):
+    """
+    :param config_map_ref:The ConfigMap to select from
+    :type config_map_ref: ConfigMapEnvSource
+    :param prefix:An optional identifier to prepend to each key in the ConfigMap. Must \
+        be a C_IDENTIFIER.
+    :type prefix: str
+    :param secret_ref:The Secret to select from
+    :type secret_ref: SecretEnvSource
+    """
+
+    def __init__(
+        self,
+        config_map_ref: ConfigMapEnvSource,
+        prefix: str,
+        secret_ref: SecretEnvSource,
+    ):
+        self.configMapRef = config_map_ref
+        self.prefix = prefix
+        self.secretRef = secret_ref
 
 
 class TCPSocketAction(HelmYaml):
@@ -537,208 +707,6 @@ class Lifecycle(HelmYaml):
         self.preStop = pre_stop
 
 
-class Probe(HelmYaml):
-    """
-    :param exec:One and only one of the following should be specified. Exec specifies \
-        the action to take.
-    :type exec: ExecAction
-    :param http_get:HTTPGet specifies the http request to perform.
-    :type http_get: HTTPGetAction
-    :param initial_delay_seconds:Number of seconds after the container has started \
-        before liveness probes are initiated. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
-    :type initial_delay_seconds: int
-    :param period_seconds:How often (in seconds) to perform the probe. Default to 10 \
-        seconds. Minimum value is 1.
-    :type period_seconds: int
-    :param tcp_socket:TCPSocket specifies an action involving a TCP port. TCP hooks \
-        not yet supported
-    :type tcp_socket: TCPSocketAction
-    :param failure_threshold:Minimum consecutive failures for the probe to be \
-        considered failed after having succeeded. Defaults to 3. Minimum value is 1.
-    :type failure_threshold: Optional[int]
-    :param success_threshold:Minimum consecutive successes for the probe to be \
-        considered successful after having failed. Defaults to 1. Must be 1 for \
-        liveness and startup. Minimum value is 1.
-    :type success_threshold: Optional[int]
-    :param timeout_seconds:Number of seconds after which the probe times out. Defaults \
-        to 1 second. Minimum value is 1. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
-    :type timeout_seconds: Optional[int]
-    """
-
-    def __init__(
-        self,
-        exec: ExecAction,
-        http_get: HTTPGetAction,
-        initial_delay_seconds: int,
-        period_seconds: int,
-        tcp_socket: TCPSocketAction,
-        failure_threshold: Optional[int] = None,
-        success_threshold: Optional[int] = None,
-        timeout_seconds: Optional[int] = None,
-    ):
-        self.exec = exec
-        self.httpGet = http_get
-        self.initialDelaySeconds = initial_delay_seconds
-        self.periodSeconds = period_seconds
-        self.tcpSocket = tcp_socket
-        self.failureThreshold = failure_threshold
-        self.successThreshold = success_threshold
-        self.timeoutSeconds = timeout_seconds
-
-
-class Capabilities(HelmYaml):
-    """
-    :param add:Added capabilities
-    :type add: List[str]
-    :param drop:Removed capabilities
-    :type drop: List[str]
-    """
-
-    def __init__(self, add: List[str], drop: List[str]):
-        self.add = add
-        self.drop = drop
-
-
-class SELinuxOptions(HelmYaml):
-    """
-    :param level:Level is SELinux level label that applies to the container.
-    :type level: str
-    :param role:Role is a SELinux role label that applies to the container.
-    :type role: str
-    :param type:Type is a SELinux type label that applies to the container.
-    :type type: str
-    :param user:User is a SELinux user label that applies to the container.
-    :type user: str
-    """
-
-    def __init__(self, level: str, role: str, type: str, user: str):
-        self.level = level
-        self.role = role
-        self.type = type
-        self.user = user
-
-
-class WindowsSecurityContextOptions(HelmYaml):
-    """
-    :param gmsa_credential_spec:GMSACredentialSpec is where the GMSA admission webhook \
-        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the \
-        GMSA credential spec named by the GMSACredentialSpecName field.
-    :type gmsa_credential_spec: str
-    :param gmsa_credential_spec_name:GMSACredentialSpecName is the name of the GMSA \
-        credential spec to use.
-    :type gmsa_credential_spec_name: str
-    :param run_as_user_name:The UserName in Windows to run the entrypoint of the \
-        container process. Defaults to the user specified in image metadata if \
-        unspecified. May also be set in PodSecurityContext. If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence.
-    :type run_as_user_name: Optional[str]
-    """
-
-    def __init__(
-        self,
-        gmsa_credential_spec: str,
-        gmsa_credential_spec_name: str,
-        run_as_user_name: Optional[str] = None,
-    ):
-        self.gmsaCredentialSpec = gmsa_credential_spec
-        self.gmsaCredentialSpecName = gmsa_credential_spec_name
-        self.runAsUserName = run_as_user_name
-
-
-class SecurityContext(HelmYaml):
-    """
-    :param allow_privilege_escalation:AllowPrivilegeEscalation controls whether a \
-        process can gain more privileges than its parent process. This bool directly \
-        controls if the no_new_privs flag will be set on the container process. \
-        AllowPrivilegeEscalation is true always when the container is: 1) run as \
-        Privileged 2) has CAP_SYS_ADMIN
-    :type allow_privilege_escalation: bool
-    :param run_as_group:The GID to run the entrypoint of the container process. Uses \
-        runtime default if unset. May also be set in PodSecurityContext.  If set in \
-        both SecurityContext and PodSecurityContext, the value specified in \
-        SecurityContext takes precedence.
-    :type run_as_group: int
-    :param run_as_non_root:Indicates that the container must run as a non-root user. \
-        If true, the Kubelet will validate the image at runtime to ensure that it does \
-        not run as UID 0 (root) and fail to start the container if it does. If unset \
-        or false, no such validation will be performed. May also be set in \
-        PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, \
-        the value specified in SecurityContext takes precedence.
-    :type run_as_non_root: bool
-    :param se_linux_options:The SELinux context to be applied to the container. If \
-        unspecified, the container runtime will allocate a random SELinux context for \
-        each container.  May also be set in PodSecurityContext.  If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence.
-    :type se_linux_options: SELinuxOptions
-    :param windows_options:The Windows specific settings applied to all containers. If \
-        unspecified, the options from the PodSecurityContext will be used. If set in \
-        both SecurityContext and PodSecurityContext, the value specified in \
-        SecurityContext takes precedence.
-    :type windows_options: WindowsSecurityContextOptions
-    :param capabilities:The capabilities to add/drop when running containers. Defaults \
-        to the default set of capabilities granted by the container runtime.
-    :type capabilities: Optional[Capabilities]
-    :param privileged:Run container in privileged mode. Processes in privileged \
-        containers are essentially equivalent to root on the host. Defaults to false.
-    :type privileged: Optional[bool]
-    :param proc_mount:procMount denotes the type of proc mount to use for the \
-        containers. The default is DefaultProcMount which uses the container runtime \
-        defaults for readonly paths and masked paths. This requires the ProcMountType \
-        feature flag to be enabled.
-    :type proc_mount: Optional[str]
-    :param read_only_root_filesystem:Whether this container has a read-only root \
-        filesystem. Default is false.
-    :type read_only_root_filesystem: Optional[bool]
-    :param run_as_user:The UID to run the entrypoint of the container process. \
-        Defaults to user specified in image metadata if unspecified. May also be set \
-        in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, \
-        the value specified in SecurityContext takes precedence.
-    :type run_as_user: Optional[int]
-    """
-
-    def __init__(
-        self,
-        allow_privilege_escalation: bool,
-        run_as_group: int,
-        run_as_non_root: bool,
-        se_linux_options: SELinuxOptions,
-        windows_options: WindowsSecurityContextOptions,
-        capabilities: Optional[Capabilities] = None,
-        privileged: Optional[bool] = None,
-        proc_mount: Optional[str] = None,
-        read_only_root_filesystem: Optional[bool] = None,
-        run_as_user: Optional[int] = None,
-    ):
-        self.allowPrivilegeEscalation = allow_privilege_escalation
-        self.runAsGroup = run_as_group
-        self.runAsNonRoot = run_as_non_root
-        self.seLinuxOptions = se_linux_options
-        self.windowsOptions = windows_options
-        self.capabilities = capabilities
-        self.privileged = privileged
-        self.procMount = proc_mount
-        self.readOnlyRootFilesystem = read_only_root_filesystem
-        self.runAsUser = run_as_user
-
-
-class VolumeDevice(HelmYaml):
-    """
-    :param name:name must match the name of a persistentVolumeClaim in the pod
-    :type name: str
-    :param device_path:devicePath is the path inside of the container that the device \
-        will be mapped to.
-    :type device_path: str
-    """
-
-    def __init__(self, name: str, device_path: str):
-        self.name = name
-        self.devicePath = device_path
-
-
 class ContainerPort(HelmYaml):
     """
     :param container_port:Number of port to expose on the pod's IP address. This must \
@@ -815,23 +783,55 @@ class VolumeMount(HelmYaml):
         self.subPathExpr = sub_path_expr
 
 
-class ResourceRequirements(HelmYaml):
+class Probe(HelmYaml):
     """
-    :param limits:Limits describes the maximum amount of compute resources allowed. \
-        More info: \
-        https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/  # noqa
-    :type limits: Optional[dict]
-    :param requests:Requests describes the minimum amount of compute resources \
-        required. If Requests is omitted for a container, it defaults to Limits if \
-        that is explicitly specified, otherwise to an implementation-defined value. \
-        More info: \
-        https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/  # noqa
-    :type requests: Optional[dict]
+    :param exec:One and only one of the following should be specified. Exec specifies \
+        the action to take.
+    :type exec: ExecAction
+    :param http_get:HTTPGet specifies the http request to perform.
+    :type http_get: HTTPGetAction
+    :param initial_delay_seconds:Number of seconds after the container has started \
+        before liveness probes are initiated. More info: \
+        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
+    :type initial_delay_seconds: int
+    :param period_seconds:How often (in seconds) to perform the probe. Default to 10 \
+        seconds. Minimum value is 1.
+    :type period_seconds: int
+    :param tcp_socket:TCPSocket specifies an action involving a TCP port. TCP hooks \
+        not yet supported
+    :type tcp_socket: TCPSocketAction
+    :param failure_threshold:Minimum consecutive failures for the probe to be \
+        considered failed after having succeeded. Defaults to 3. Minimum value is 1.
+    :type failure_threshold: Optional[int]
+    :param success_threshold:Minimum consecutive successes for the probe to be \
+        considered successful after having failed. Defaults to 1. Must be 1 for \
+        liveness and startup. Minimum value is 1.
+    :type success_threshold: Optional[int]
+    :param timeout_seconds:Number of seconds after which the probe times out. Defaults \
+        to 1 second. Minimum value is 1. More info: \
+        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
+    :type timeout_seconds: Optional[int]
     """
 
-    def __init__(self, limits: Optional[dict] = None, requests: Optional[dict] = None):
-        self.limits = limits
-        self.requests = requests
+    def __init__(
+        self,
+        exec: ExecAction,
+        http_get: HTTPGetAction,
+        initial_delay_seconds: int,
+        period_seconds: int,
+        tcp_socket: TCPSocketAction,
+        failure_threshold: Optional[int] = None,
+        success_threshold: Optional[int] = None,
+        timeout_seconds: Optional[int] = None,
+    ):
+        self.exec = exec
+        self.httpGet = http_get
+        self.initialDelaySeconds = initial_delay_seconds
+        self.periodSeconds = period_seconds
+        self.tcpSocket = tcp_socket
+        self.failureThreshold = failure_threshold
+        self.successThreshold = success_threshold
+        self.timeoutSeconds = timeout_seconds
 
 
 class Container(HelmYaml):
@@ -1019,6 +1019,185 @@ class HostAlias(HelmYaml):
         self.ip = ip
 
 
+class Sysctl(HelmYaml):
+    """
+    :param name:Name of a property to set
+    :type name: str
+    :param value:Value of a property to set
+    :type value: str
+    """
+
+    def __init__(self, name: str, value: str):
+        self.name = name
+        self.value = value
+
+
+class PodSecurityContext(HelmYaml):
+    """
+    :param fs_group:A special supplemental group that applies to all containers in a \
+        pod. Some volume types allow the Kubelet to change the ownership of that \
+        volume to be owned by the pod:  1. The owning GID will be the FSGroup 2. The \
+        setgid bit is set (new files created in the volume will be owned by FSGroup) \
+        3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not \
+        modify the ownership and permissions of any volume.
+    :type fs_group: int
+    :param run_as_group:The GID to run the entrypoint of the container process. Uses \
+        runtime default if unset. May also be set in SecurityContext.  If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence for that container.
+    :type run_as_group: int
+    :param run_as_non_root:Indicates that the container must run as a non-root user. \
+        If true, the Kubelet will validate the image at runtime to ensure that it does \
+        not run as UID 0 (root) and fail to start the container if it does. If unset \
+        or false, no such validation will be performed. May also be set in \
+        SecurityContext.  If set in both SecurityContext and PodSecurityContext, the \
+        value specified in SecurityContext takes precedence.
+    :type run_as_non_root: bool
+    :param se_linux_options:The SELinux context to be applied to all containers. If \
+        unspecified, the container runtime will allocate a random SELinux context for \
+        each container.  May also be set in SecurityContext.  If set in both \
+        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
+        takes precedence for that container.
+    :type se_linux_options: SELinuxOptions
+    :param supplemental_groups:A list of groups applied to the first process run in \
+        each container, in addition to the container's primary GID.  If unspecified, \
+        no groups will be added to any container.
+    :type supplemental_groups: List[int]
+    :param sysctls:Sysctls hold a list of namespaced sysctls used for the pod. Pods \
+        with unsupported sysctls (by the container runtime) might fail to launch.
+    :type sysctls: List[Sysctl]
+    :param windows_options:The Windows specific settings applied to all containers. If \
+        unspecified, the options within a container's SecurityContext will be used. If \
+        set in both SecurityContext and PodSecurityContext, the value specified in \
+        SecurityContext takes precedence.
+    :type windows_options: WindowsSecurityContextOptions
+    :param fs_group_change_policy:fsGroupChangePolicy defines behavior of changing \
+        ownership and permission of the volume before being exposed inside Pod. This \
+        field will only apply to volume types which support fsGroup based \
+        ownership(and permissions). It will have no effect on ephemeral volume types \
+        such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" \
+        and "Always". If not specified defaults to "Always".
+    :type fs_group_change_policy: Optional[str]
+    :param run_as_user:The UID to run the entrypoint of the container process. \
+        Defaults to user specified in image metadata if unspecified. May also be set \
+        in SecurityContext.  If set in both SecurityContext and PodSecurityContext, \
+        the value specified in SecurityContext takes precedence for that container.
+    :type run_as_user: Optional[int]
+    """
+
+    def __init__(
+        self,
+        fs_group: int,
+        run_as_group: int,
+        run_as_non_root: bool,
+        se_linux_options: SELinuxOptions,
+        supplemental_groups: List[int],
+        sysctls: List[Sysctl],
+        windows_options: WindowsSecurityContextOptions,
+        fs_group_change_policy: Optional[str] = None,
+        run_as_user: Optional[int] = None,
+    ):
+        self.fsGroup = fs_group
+        self.runAsGroup = run_as_group
+        self.runAsNonRoot = run_as_non_root
+        self.seLinuxOptions = se_linux_options
+        self.supplementalGroups = supplemental_groups
+        self.sysctls = sysctls
+        self.windowsOptions = windows_options
+        self.fsGroupChangePolicy = fs_group_change_policy
+        self.runAsUser = run_as_user
+
+
+class TopologySpreadConstraint(HelmYaml):
+    """
+    :param label_selector:LabelSelector is used to find matching pods. Pods that match \
+        this label selector are counted to determine the number of pods in their \
+        corresponding topology domain.
+    :type label_selector: LabelSelector
+    :param max_skew:MaxSkew describes the degree to which pods may be unevenly \
+        distributed. It's the maximum permitted difference between the number of \
+        matching pods in any two topology domains of a given topology type. For \
+        example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same \
+        labelSelector spread as 1/1/0: | zone1 | zone2 | zone3 | |   P   |   P   |     \
+          | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become \
+        1/1/1; scheduling it onto zone1(zone2) would make the ActualSkew(2-0) on \
+        zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be \
+        scheduled onto any zone. It's a required field. Default value is 1 and 0 is \
+        not allowed.
+    :type max_skew: int
+    :param topology_key:TopologyKey is the key of node labels. Nodes that have a label \
+        with this key and identical values are considered to be in the same topology. \
+        We consider each <key, value> as a "bucket", and try to put balanced number of \
+        pods into each bucket. It's a required field.
+    :type topology_key: str
+    :param when_unsatisfiable:WhenUnsatisfiable indicates how to deal with a pod if it \
+        doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the \
+        scheduler not to schedule it - ScheduleAnyway tells the scheduler to still \
+        schedule it It's considered as "Unsatisfiable" if and only if placing incoming \
+        pod on any topology violates "MaxSkew". For example, in a 3-zone cluster, \
+        MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | \
+        zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set \
+        to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become \
+        3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other \
+        words, the cluster can still be imbalanced, but scheduler won't make it *more* \
+        imbalanced. It's a required field.
+    :type when_unsatisfiable: str
+    """
+
+    def __init__(
+        self,
+        label_selector: LabelSelector,
+        max_skew: int,
+        topology_key: str,
+        when_unsatisfiable: str,
+    ):
+        self.labelSelector = label_selector
+        self.maxSkew = max_skew
+        self.topologyKey = topology_key
+        self.whenUnsatisfiable = when_unsatisfiable
+
+
+class PodDNSConfigOption(HelmYaml):
+    """
+    :param name:Required.
+    :type name: str
+    :param value:None
+    :type value: str
+    """
+
+    def __init__(self, name: str, value: str):
+        self.name = name
+        self.value = value
+
+
+class PodDNSConfig(HelmYaml):
+    """
+    :param nameservers:A list of DNS name server IP addresses. This will be appended \
+        to the base nameservers generated from DNSPolicy. Duplicated nameservers will \
+        be removed.
+    :type nameservers: List[str]
+    :param options:A list of DNS resolver options. This will be merged with the base \
+        options generated from DNSPolicy. Duplicated entries will be removed. \
+        Resolution options given in Options will override those that appear in the \
+        base DNSPolicy.
+    :type options: List[PodDNSConfigOption]
+    :param searches:A list of DNS search domains for host-name lookup. This will be \
+        appended to the base search paths generated from DNSPolicy. Duplicated search \
+        paths will be removed.
+    :type searches: List[str]
+    """
+
+    def __init__(
+        self,
+        nameservers: List[str],
+        options: List[PodDNSConfigOption],
+        searches: List[str],
+    ):
+        self.nameservers = nameservers
+        self.options = options
+        self.searches = searches
+
+
 class EphemeralContainer(HelmYaml):
     """
     :param name:Name of the ephemeral container specified as a DNS_LABEL. This name \
@@ -1175,345 +1354,6 @@ class EphemeralContainer(HelmYaml):
         self.workingDir = working_dir
 
 
-class PodReadinessGate(HelmYaml):
-    """
-    :param condition_type:ConditionType refers to a condition in the pod's condition \
-        list with matching type.
-    :type condition_type: str
-    """
-
-    def __init__(self, condition_type: str):
-        self.conditionType = condition_type
-
-
-class PodAffinityTerm(HelmYaml):
-    """
-    :param label_selector:A label query over a set of resources, in this case pods.
-    :type label_selector: LabelSelector
-    :param namespaces:namespaces specifies which namespaces the labelSelector applies \
-        to (matches against); null or empty list means "this pod's namespace"
-    :type namespaces: List[str]
-    :param topology_key:This pod should be co-located (affinity) or not co-located \
-        (anti-affinity) with the pods matching the labelSelector in the specified \
-        namespaces, where co-located is defined as running on a node whose value of \
-        the label with key topologyKey matches that of any node on which any of the \
-        selected pods is running. Empty topologyKey is not allowed.
-    :type topology_key: str
-    """
-
-    def __init__(
-        self, label_selector: LabelSelector, namespaces: List[str], topology_key: str
-    ):
-        self.labelSelector = label_selector
-        self.namespaces = namespaces
-        self.topologyKey = topology_key
-
-
-class WeightedPodAffinityTerm(HelmYaml):
-    """
-    :param pod_affinity_term:Required. A pod affinity term, associated with the \
-        corresponding weight.
-    :type pod_affinity_term: PodAffinityTerm
-    :param weight:weight associated with matching the corresponding podAffinityTerm, \
-        in the range 1-100.
-    :type weight: int
-    """
-
-    def __init__(self, pod_affinity_term: PodAffinityTerm, weight: int):
-        self.podAffinityTerm = pod_affinity_term
-        self.weight = weight
-
-
-class PodAntiAffinity(HelmYaml):
-    """
-    :param preferred_during_scheduling_ignored_during_execution:The scheduler will \
-        prefer to schedule pods to nodes that satisfy the anti-affinity expressions \
-        specified by this field, but it may choose a node that violates one or more of \
-        the expressions. The node that is most preferred is the one with the greatest \
-        sum of weights, i.e. for each node that meets all of the scheduling \
-        requirements (resource request, requiredDuringScheduling anti-affinity \
-        expressions, etc.), compute a sum by iterating through the elements of this \
-        field and adding "weight" to the sum if the node has pods which matches the \
-        corresponding podAffinityTerm; the node(s) with the highest sum are the most \
-        preferred.
-    :type preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
-    :param required_during_scheduling_ignored_during_execution:If the anti-affinity \
-        requirements specified by this field are not met at scheduling time, the pod \
-        will not be scheduled onto the node. If the anti-affinity requirements \
-        specified by this field cease to be met at some point during pod execution \
-        (e.g. due to a pod label update), the system may or may not try to eventually \
-        evict the pod from its node. When there are multiple elements, the lists of \
-        nodes corresponding to each podAffinityTerm are intersected, i.e. all terms \
-        must be satisfied.
-    :type required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
-    """
-
-    def __init__(
-        self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ],
-        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
-    ):
-        self.preferredDuringSchedulingIgnoredDuringExecution = (
-            preferred_during_scheduling_ignored_during_execution
-        )
-        self.requiredDuringSchedulingIgnoredDuringExecution = (
-            required_during_scheduling_ignored_during_execution
-        )
-
-
-class PodAffinity(HelmYaml):
-    """
-    :param preferred_during_scheduling_ignored_during_execution:The scheduler will \
-        prefer to schedule pods to nodes that satisfy the affinity expressions \
-        specified by this field, but it may choose a node that violates one or more of \
-        the expressions. The node that is most preferred is the one with the greatest \
-        sum of weights, i.e. for each node that meets all of the scheduling \
-        requirements (resource request, requiredDuringScheduling affinity expressions, \
-        etc.), compute a sum by iterating through the elements of this field and \
-        adding "weight" to the sum if the node has pods which matches the \
-        corresponding podAffinityTerm; the node(s) with the highest sum are the most \
-        preferred.
-    :type preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
-    :param required_during_scheduling_ignored_during_execution:If the affinity \
-        requirements specified by this field are not met at scheduling time, the pod \
-        will not be scheduled onto the node. If the affinity requirements specified by \
-        this field cease to be met at some point during pod execution (e.g. due to a \
-        pod label update), the system may or may not try to eventually evict the pod \
-        from its node. When there are multiple elements, the lists of nodes \
-        corresponding to each podAffinityTerm are intersected, i.e. all terms must be \
-        satisfied.
-    :type required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
-    """
-
-    def __init__(
-        self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ],
-        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
-    ):
-        self.preferredDuringSchedulingIgnoredDuringExecution = (
-            preferred_during_scheduling_ignored_during_execution
-        )
-        self.requiredDuringSchedulingIgnoredDuringExecution = (
-            required_during_scheduling_ignored_during_execution
-        )
-
-
-class NodeSelectorRequirement(HelmYaml):
-    """
-    :param key:The label key that the selector applies to.
-    :type key: str
-    :param operator:Represents a key's relationship to a set of values. Valid \
-        operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
-    :type operator: str
-    :param values:An array of string values. If the operator is In or NotIn, the \
-        values array must be non-empty. If the operator is Exists or DoesNotExist, the \
-        values array must be empty. If the operator is Gt or Lt, the values array must \
-        have a single element, which will be interpreted as an integer. This array is \
-        replaced during a strategic merge patch.
-    :type values: List[str]
-    """
-
-    def __init__(self, key: str, operator: str, values: List[str]):
-        self.key = key
-        self.operator = operator
-        self.values = values
-
-
-class NodeSelectorTerm(HelmYaml):
-    """
-    :param match_fields:A list of node selector requirements by node's fields.
-    :type match_fields: List[NodeSelectorRequirement]
-    :param match_expressions:A list of node selector requirements by node's labels.
-    :type match_expressions: Optional[List[NodeSelectorRequirement]]
-    """
-
-    def __init__(
-        self,
-        match_fields: List[NodeSelectorRequirement],
-        match_expressions: Optional[List[NodeSelectorRequirement]] = None,
-    ):
-        self.matchFields = match_fields
-        self.matchExpressions = match_expressions
-
-
-class PreferredSchedulingTerm(HelmYaml):
-    """
-    :param preference:A node selector term, associated with the corresponding weight.
-    :type preference: NodeSelectorTerm
-    :param weight:Weight associated with matching the corresponding nodeSelectorTerm, \
-        in the range 1-100.
-    :type weight: int
-    """
-
-    def __init__(self, preference: NodeSelectorTerm, weight: int):
-        self.preference = preference
-        self.weight = weight
-
-
-class NodeSelector(HelmYaml):
-    """
-    :param node_selector_terms:Required. A list of node selector terms. The terms are \
-        ORed.
-    :type node_selector_terms: List[NodeSelectorTerm]
-    """
-
-    def __init__(self, node_selector_terms: List[NodeSelectorTerm]):
-        self.nodeSelectorTerms = node_selector_terms
-
-
-class NodeAffinity(HelmYaml):
-    """
-    :param preferred_during_scheduling_ignored_during_execution:The scheduler will \
-        prefer to schedule pods to nodes that satisfy the affinity expressions \
-        specified by this field, but it may choose a node that violates one or more of \
-        the expressions. The node that is most preferred is the one with the greatest \
-        sum of weights, i.e. for each node that meets all of the scheduling \
-        requirements (resource request, requiredDuringScheduling affinity expressions, \
-        etc.), compute a sum by iterating through the elements of this field and \
-        adding "weight" to the sum if the node matches the corresponding \
-        matchExpressions; the node(s) with the highest sum are the most preferred.
-    :type preferred_during_scheduling_ignored_during_execution: List[PreferredSchedulingTerm]
-    :param required_during_scheduling_ignored_during_execution:If the affinity \
-        requirements specified by this field are not met at scheduling time, the pod \
-        will not be scheduled onto the node. If the affinity requirements specified by \
-        this field cease to be met at some point during pod execution (e.g. due to an \
-        update), the system may or may not try to eventually evict the pod from its \
-        node.
-    :type required_during_scheduling_ignored_during_execution: NodeSelector
-    """
-
-    def __init__(
-        self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            PreferredSchedulingTerm
-        ],
-        required_during_scheduling_ignored_during_execution: NodeSelector,
-    ):
-        self.preferredDuringSchedulingIgnoredDuringExecution = (
-            preferred_during_scheduling_ignored_during_execution
-        )
-        self.requiredDuringSchedulingIgnoredDuringExecution = (
-            required_during_scheduling_ignored_during_execution
-        )
-
-
-class Affinity(HelmYaml):
-    """
-    :param pod_affinity:Describes pod affinity scheduling rules (e.g. co-locate this \
-        pod in the same node, zone, etc. as some other pod(s)).
-    :type pod_affinity: PodAffinity
-    :param pod_anti_affinity:Describes pod anti-affinity scheduling rules (e.g. avoid \
-        putting this pod in the same node, zone, etc. as some other pod(s)).
-    :type pod_anti_affinity: PodAntiAffinity
-    :param node_affinity:Describes node affinity scheduling rules for the pod.
-    :type node_affinity: Optional[NodeAffinity]
-    """
-
-    def __init__(
-        self,
-        pod_affinity: PodAffinity,
-        pod_anti_affinity: PodAntiAffinity,
-        node_affinity: Optional[NodeAffinity] = None,
-    ):
-        self.podAffinity = pod_affinity
-        self.podAntiAffinity = pod_anti_affinity
-        self.nodeAffinity = node_affinity
-
-
-class Toleration(HelmYaml):
-    """
-    :param effect:Effect indicates the taint effect to match. Empty means match all \
-        taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule \
-        and NoExecute.
-    :type effect: str
-    :param key:Key is the taint key that the toleration applies to. Empty means match \
-        all taint keys. If the key is empty, operator must be Exists; this combination \
-        means to match all values and all keys.
-    :type key: str
-    :param toleration_seconds:TolerationSeconds represents the period of time the \
-        toleration (which must be of effect NoExecute, otherwise this field is \
-        ignored) tolerates the taint. By default, it is not set, which means tolerate \
-        the taint forever (do not evict). Zero and negative values will be treated as \
-        0 (evict immediately) by the system.
-    :type toleration_seconds: int
-    :param value:Value is the taint value the toleration matches to. If the operator \
-        is Exists, the value should be empty, otherwise just a regular string.
-    :type value: str
-    :param operator:Operator represents a key's relationship to the value. Valid \
-        operators are Exists and Equal. Defaults to Equal. Exists is equivalent to \
-        wildcard for value, so that a pod can tolerate all taints of a particular \
-        category.
-    :type operator: Optional[str]
-    """
-
-    def __init__(
-        self,
-        effect: str,
-        key: str,
-        toleration_seconds: int,
-        value: str,
-        operator: Optional[str] = None,
-    ):
-        self.effect = effect
-        self.key = key
-        self.tolerationSeconds = toleration_seconds
-        self.value = value
-        self.operator = operator
-
-
-class TopologySpreadConstraint(HelmYaml):
-    """
-    :param label_selector:LabelSelector is used to find matching pods. Pods that match \
-        this label selector are counted to determine the number of pods in their \
-        corresponding topology domain.
-    :type label_selector: LabelSelector
-    :param max_skew:MaxSkew describes the degree to which pods may be unevenly \
-        distributed. It's the maximum permitted difference between the number of \
-        matching pods in any two topology domains of a given topology type. For \
-        example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same \
-        labelSelector spread as 1/1/0: | zone1 | zone2 | zone3 | |   P   |   P   |     \
-          | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become \
-        1/1/1; scheduling it onto zone1(zone2) would make the ActualSkew(2-0) on \
-        zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be \
-        scheduled onto any zone. It's a required field. Default value is 1 and 0 is \
-        not allowed.
-    :type max_skew: int
-    :param topology_key:TopologyKey is the key of node labels. Nodes that have a label \
-        with this key and identical values are considered to be in the same topology. \
-        We consider each <key, value> as a "bucket", and try to put balanced number of \
-        pods into each bucket. It's a required field.
-    :type topology_key: str
-    :param when_unsatisfiable:WhenUnsatisfiable indicates how to deal with a pod if it \
-        doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the \
-        scheduler not to schedule it - ScheduleAnyway tells the scheduler to still \
-        schedule it It's considered as "Unsatisfiable" if and only if placing incoming \
-        pod on any topology violates "MaxSkew". For example, in a 3-zone cluster, \
-        MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | \
-        zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set \
-        to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become \
-        3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other \
-        words, the cluster can still be imbalanced, but scheduler won't make it *more* \
-        imbalanced. It's a required field.
-    :type when_unsatisfiable: str
-    """
-
-    def __init__(
-        self,
-        label_selector: LabelSelector,
-        max_skew: int,
-        topology_key: str,
-        when_unsatisfiable: str,
-    ):
-        self.labelSelector = label_selector
-        self.maxSkew = max_skew
-        self.topologyKey = topology_key
-        self.whenUnsatisfiable = when_unsatisfiable
-
-
 class LocalObjectReference(HelmYaml):
     """
     :param name:Name of the referent. More info: \
@@ -1525,113 +1365,80 @@ class LocalObjectReference(HelmYaml):
         self.name = name
 
 
-class Sysctl(HelmYaml):
+class DownwardAPIVolumeSource(HelmYaml):
     """
-    :param name:Name of a property to set
-    :type name: str
-    :param value:Value of a property to set
-    :type value: str
+    :param items:Items is a list of downward API volume file
+    :type items: List[DownwardAPIVolumeFile]
+    :param default_mode:Optional: mode bits to use on created files by default. Must \
+        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
+        are not affected by this setting. This might be in conflict with other options \
+        that affect the file mode, like fsGroup, and the result can be other mode bits \
+        set.
+    :type default_mode: Optional[int]
     """
 
-    def __init__(self, name: str, value: str):
-        self.name = name
-        self.value = value
+    def __init__(
+        self, items: List[DownwardAPIVolumeFile], default_mode: Optional[int] = None
+    ):
+        self.items = items
+        self.defaultMode = default_mode
 
 
-class PodSecurityContext(HelmYaml):
+class ScaleIOVolumeSource(HelmYaml):
     """
-    :param fs_group:A special supplemental group that applies to all containers in a \
-        pod. Some volume types allow the Kubelet to change the ownership of that \
-        volume to be owned by the pod:  1. The owning GID will be the FSGroup 2. The \
-        setgid bit is set (new files created in the volume will be owned by FSGroup) \
-        3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not \
-        modify the ownership and permissions of any volume.
-    :type fs_group: int
-    :param run_as_group:The GID to run the entrypoint of the container process. Uses \
-        runtime default if unset. May also be set in SecurityContext.  If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence for that container.
-    :type run_as_group: int
-    :param run_as_non_root:Indicates that the container must run as a non-root user. \
-        If true, the Kubelet will validate the image at runtime to ensure that it does \
-        not run as UID 0 (root) and fail to start the container if it does. If unset \
-        or false, no such validation will be performed. May also be set in \
-        SecurityContext.  If set in both SecurityContext and PodSecurityContext, the \
-        value specified in SecurityContext takes precedence.
-    :type run_as_non_root: bool
-    :param se_linux_options:The SELinux context to be applied to all containers. If \
-        unspecified, the container runtime will allocate a random SELinux context for \
-        each container.  May also be set in SecurityContext.  If set in both \
-        SecurityContext and PodSecurityContext, the value specified in SecurityContext \
-        takes precedence for that container.
-    :type se_linux_options: SELinuxOptions
-    :param supplemental_groups:A list of groups applied to the first process run in \
-        each container, in addition to the container's primary GID.  If unspecified, \
-        no groups will be added to any container.
-    :type supplemental_groups: List[int]
-    :param sysctls:Sysctls hold a list of namespaced sysctls used for the pod. Pods \
-        with unsupported sysctls (by the container runtime) might fail to launch.
-    :type sysctls: List[Sysctl]
-    :param windows_options:The Windows specific settings applied to all containers. If \
-        unspecified, the options within a container's SecurityContext will be used. If \
-        set in both SecurityContext and PodSecurityContext, the value specified in \
-        SecurityContext takes precedence.
-    :type windows_options: WindowsSecurityContextOptions
-    :param fs_group_change_policy:fsGroupChangePolicy defines behavior of changing \
-        ownership and permission of the volume before being exposed inside Pod. This \
-        field will only apply to volume types which support fsGroup based \
-        ownership(and permissions). It will have no effect on ephemeral volume types \
-        such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" \
-        and "Always". If not specified defaults to "Always".
-    :type fs_group_change_policy: Optional[str]
-    :param run_as_user:The UID to run the entrypoint of the container process. \
-        Defaults to user specified in image metadata if unspecified. May also be set \
-        in SecurityContext.  If set in both SecurityContext and PodSecurityContext, \
-        the value specified in SecurityContext takes precedence for that container.
-    :type run_as_user: Optional[int]
+    :param gateway:The host address of the ScaleIO API Gateway.
+    :type gateway: str
+    :param protection_domain:The name of the ScaleIO Protection Domain for the \
+        configured storage.
+    :type protection_domain: str
+    :param ssl_enabled:Flag to enable/disable SSL communication with Gateway, default \
+        false
+    :type ssl_enabled: bool
+    :param storage_pool:The ScaleIO Storage Pool associated with the protection \
+        domain.
+    :type storage_pool: str
+    :param system:The name of the storage system as configured in ScaleIO.
+    :type system: str
+    :param volume_name:The name of a volume already created in the ScaleIO system that \
+        is associated with this volume source.
+    :type volume_name: str
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".
+    :type fs_type: Optional[str]
+    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    :type read_only: Optional[bool]
+    :param secret_ref:SecretRef references to the secret for ScaleIO user and other \
+        sensitive information. If this is not provided, Login operation will fail.
+    :type secret_ref: Optional[LocalObjectReference]
+    :param storage_mode:Indicates whether the storage for a volume should be \
+        ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.
+    :type storage_mode: Optional[str]
     """
 
     def __init__(
         self,
-        fs_group: int,
-        run_as_group: int,
-        run_as_non_root: bool,
-        se_linux_options: SELinuxOptions,
-        supplemental_groups: List[int],
-        sysctls: List[Sysctl],
-        windows_options: WindowsSecurityContextOptions,
-        fs_group_change_policy: Optional[str] = None,
-        run_as_user: Optional[int] = None,
+        gateway: str,
+        protection_domain: str,
+        ssl_enabled: bool,
+        storage_pool: str,
+        system: str,
+        volume_name: str,
+        fs_type: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+        storage_mode: Optional[str] = None,
     ):
-        self.fsGroup = fs_group
-        self.runAsGroup = run_as_group
-        self.runAsNonRoot = run_as_non_root
-        self.seLinuxOptions = se_linux_options
-        self.supplementalGroups = supplemental_groups
-        self.sysctls = sysctls
-        self.windowsOptions = windows_options
-        self.fsGroupChangePolicy = fs_group_change_policy
-        self.runAsUser = run_as_user
-
-
-class AzureFileVolumeSource(HelmYaml):
-    """
-    :param secret_name:the name of secret that contains Azure Storage Account Name and \
-        Key
-    :type secret_name: str
-    :param share_name:Share Name
-    :type share_name: str
-    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    """
-
-    def __init__(
-        self, secret_name: str, share_name: str, read_only: Optional[bool] = None
-    ):
-        self.secretName = secret_name
-        self.shareName = share_name
+        self.gateway = gateway
+        self.protectionDomain = protection_domain
+        self.sslEnabled = ssl_enabled
+        self.storagePool = storage_pool
+        self.system = system
+        self.volumeName = volume_name
+        self.fsType = fs_type
         self.readOnly = read_only
+        self.secretRef = secret_ref
+        self.storageMode = storage_mode
 
 
 class CephFSVolumeSource(HelmYaml):
@@ -1676,24 +1483,165 @@ class CephFSVolumeSource(HelmYaml):
         self.user = user
 
 
-class NFSVolumeSource(HelmYaml):
+class HostPathVolumeSource(HelmYaml):
     """
-    :param path:Path that is exported by the NFS server. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    :param path:Path of the directory on the host. If the path is a symlink, it will \
+        follow the link to the real path. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#hostpath
     :type path: str
-    :param server:Server is the hostname or IP address of the NFS server. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#nfs
-    :type server: str
-    :param read_only:ReadOnly here will force the NFS export to be mounted with \
-        read-only permissions. Defaults to false. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    :param type:Type for HostPath Volume Defaults to "" More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#hostpath
+    :type type: Optional[str]
+    """
+
+    def __init__(self, path: str, type: Optional[str] = None):
+        self.path = path
+        self.type = type
+
+
+class CinderVolumeSource(HelmYaml):
+    """
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
+        inferred to be "ext4" if unspecified. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :type fs_type: str
+    :param volume_id:volume id used to identify the volume in cinder. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :type volume_id: str
+    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :type read_only: Optional[bool]
+    :param secret_ref:Optional: points to a secret object containing parameters used \
+        to connect to OpenStack.
+    :type secret_ref: Optional[LocalObjectReference]
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        volume_id: str,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+    ):
+        self.fsType = fs_type
+        self.volumeID = volume_id
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
+class PortworxVolumeSource(HelmYaml):
+    """
+    :param fs_type:FSType represents the filesystem type to mount Must be a filesystem \
+        type supported by the host operating system. Ex. "ext4", "xfs". Implicitly \
+        inferred to be "ext4" if unspecified.
+    :type fs_type: str
+    :param volume_id:VolumeID uniquely identifies a Portworx volume
+    :type volume_id: str
+    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
     :type read_only: Optional[bool]
     """
 
-    def __init__(self, path: str, server: str, read_only: Optional[bool] = None):
-        self.path = path
-        self.server = server
+    def __init__(self, fs_type: str, volume_id: str, read_only: Optional[bool] = None):
+        self.fsType = fs_type
+        self.volumeID = volume_id
         self.readOnly = read_only
+
+
+class CSIVolumeSource(HelmYaml):
+    """
+    :param driver:Driver is the name of the CSI driver that handles this volume. \
+        Consult with your admin for the correct name as registered in the cluster.
+    :type driver: str
+    :param fs_type:Filesystem type to mount. Ex. "ext4", "xfs", "ntfs". If not \
+        provided, the empty value is passed to the associated CSI driver which will \
+        determine the default filesystem to apply.
+    :type fs_type: str
+    :param volume_attributes:VolumeAttributes stores driver-specific properties that \
+        are passed to the CSI driver. Consult your driver's documentation for \
+        supported values.
+    :type volume_attributes: dict
+    :param node_publish_secret_ref:NodePublishSecretRef is a reference to the secret \
+        object containing sensitive information to pass to the CSI driver to complete \
+        the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is \
+        optional, and  may be empty if no secret is required. If the secret object \
+        contains more than one secret, all secret references are passed.
+    :type node_publish_secret_ref: Optional[LocalObjectReference]
+    :param read_only:Specifies a read-only configuration for the volume. Defaults to \
+        false (read/write).
+    :type read_only: Optional[bool]
+    """
+
+    def __init__(
+        self,
+        driver: str,
+        fs_type: str,
+        volume_attributes: dict,
+        node_publish_secret_ref: Optional[LocalObjectReference] = None,
+        read_only: Optional[bool] = None,
+    ):
+        self.driver = driver
+        self.fsType = fs_type
+        self.volumeAttributes = volume_attributes
+        self.nodePublishSecretRef = node_publish_secret_ref
+        self.readOnly = read_only
+
+
+class StorageOSVolumeSource(HelmYaml):
+    """
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
+        be "ext4" if unspecified.
+    :type fs_type: str
+    :param volume_name:VolumeName is the human-readable name of the StorageOS volume.  \
+        Volume names are only unique within a namespace.
+    :type volume_name: str
+    :param volume_namespace:VolumeNamespace specifies the scope of the volume within \
+        StorageOS.  If no namespace is specified then the Pod's namespace will be \
+        used.  This allows the Kubernetes name scoping to be mirrored within StorageOS \
+        for tighter integration. Set VolumeName to any name to override the default \
+        behaviour. Set to "default" if you are not using namespaces within StorageOS. \
+        Namespaces that do not pre-exist within StorageOS will be created.
+    :type volume_namespace: str
+    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    :type read_only: Optional[bool]
+    :param secret_ref:SecretRef specifies the secret to use for obtaining the \
+        StorageOS API credentials.  If not specified, default values will be \
+        attempted.
+    :type secret_ref: Optional[LocalObjectReference]
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        volume_name: str,
+        volume_namespace: str,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+    ):
+        self.fsType = fs_type
+        self.volumeName = volume_name
+        self.volumeNamespace = volume_namespace
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
+class PhotonPersistentDiskVolumeSource(HelmYaml):
+    """
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
+        be "ext4" if unspecified.
+    :type fs_type: str
+    :param pd_id:ID that identifies Photon Controller persistent disk
+    :type pd_id: str
+    """
+
+    def __init__(self, fs_type: str, pd_id: str):
+        self.fsType = fs_type
+        self.pdID = pd_id
 
 
 class GlusterfsVolumeSource(HelmYaml):
@@ -1715,6 +1663,207 @@ class GlusterfsVolumeSource(HelmYaml):
         self.endpoints = endpoints
         self.path = path
         self.readOnly = read_only
+
+
+class AzureDiskVolumeSource(KubernetesBaseObject):
+    """
+    :param caching_mode:Host Caching mode: None, Read Only, Read Write.
+    :type caching_mode: str
+    :param disk_name:The Name of the data disk in the blob storage
+    :type disk_name: str
+    :param disk_uri:The URI the data disk in the blob storage
+    :type disk_uri: str
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
+        be "ext4" if unspecified.
+    :type fs_type: str
+    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    :type read_only: Optional[bool]
+    """
+
+    def __init__(
+        self,
+        caching_mode: str,
+        disk_name: str,
+        disk_uri: str,
+        fs_type: str,
+        read_only: Optional[bool] = None,
+    ):
+        self.cachingMode = caching_mode
+        self.diskName = disk_name
+        self.diskURI = disk_uri
+        self.fsType = fs_type
+        self.readOnly = read_only
+
+
+class AzureFileVolumeSource(HelmYaml):
+    """
+    :param secret_name:the name of secret that contains Azure Storage Account Name and \
+        Key
+    :type secret_name: str
+    :param share_name:Share Name
+    :type share_name: str
+    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    :type read_only: Optional[bool]
+    """
+
+    def __init__(
+        self, secret_name: str, share_name: str, read_only: Optional[bool] = None
+    ):
+        self.secretName = secret_name
+        self.shareName = share_name
+        self.readOnly = read_only
+
+
+class SecretVolumeSource(HelmYaml):
+    """
+    :param optional:Specify whether the Secret or its keys must be defined
+    :type optional: bool
+    :param secret_name:Name of the secret in the pod's namespace to use. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#secret
+    :type secret_name: str
+    :param default_mode:Optional: mode bits to use on created files by default. Must \
+        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
+        are not affected by this setting. This might be in conflict with other options \
+        that affect the file mode, like fsGroup, and the result can be other mode bits \
+        set.
+    :type default_mode: Optional[int]
+    :param items:If unspecified, each key-value pair in the Data field of the \
+        referenced Secret will be projected into the volume as a file whose name is \
+        the key and content is the value. If specified, the listed keys will be \
+        projected into the specified paths, and unlisted keys will not be present. If \
+        a key is specified which is not present in the Secret, the volume setup will \
+        error unless it is marked optional. Paths must be relative and may not contain \
+        the '..' path or start with '..'.
+    :type items: Optional[List[KeyToPath]]
+    """
+
+    def __init__(
+        self,
+        optional: bool,
+        secret_name: str,
+        default_mode: Optional[int] = None,
+        items: Optional[List[KeyToPath]] = None,
+    ):
+        self.optional = optional
+        self.secretName = secret_name
+        self.defaultMode = default_mode
+        self.items = items
+
+
+class EmptyDirVolumeSource(HelmYaml):
+    """
+    :param medium:What type of storage medium should back this directory. The default \
+        is "" which means to use the node's default medium. Must be an empty string \
+        (default) or Memory. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    :type medium: Optional[str]
+    :param size_limit:Total amount of local storage required for this EmptyDir volume. \
+        The size limit is also applicable for memory medium. The maximum usage on \
+        memory medium EmptyDir would be the minimum value between the SizeLimit \
+        specified here and the sum of memory limits of all containers in a pod. The \
+        default is nil which means that the limit is undefined. More info: \
+        http://kubernetes.io/docs/user-guide/volumes#emptydir
+    :type size_limit: Optional[str]
+    """
+
+    def __init__(self, medium: Optional[str] = None, size_limit: Optional[str] = None):
+        self.medium = medium
+        self.sizeLimit = size_limit
+
+
+class QuobyteVolumeSource(HelmYaml):
+    """
+    :param registry:Registry represents a single or multiple Quobyte Registry services \
+        specified as a string as host:port pair (multiple entries are separated with \
+        commas) which acts as the central registry for volumes
+    :type registry: str
+    :param tenant:Tenant owning the given Quobyte volume in the Backend Used with \
+        dynamically provisioned Quobyte volumes, value is set by the plugin
+    :type tenant: str
+    :param volume:Volume is a string that references an already created Quobyte volume \
+        by name.
+    :type volume: str
+    :param group:Group to map volume access to Default is no group
+    :type group: Optional[str]
+    :param read_only:ReadOnly here will force the Quobyte volume to be mounted with \
+        read-only permissions. Defaults to false.
+    :type read_only: Optional[bool]
+    :param user:User to map volume access to Defaults to serivceaccount user
+    :type user: Optional[str]
+    """
+
+    def __init__(
+        self,
+        registry: str,
+        tenant: str,
+        volume: str,
+        group: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        user: Optional[str] = None,
+    ):
+        self.registry = registry
+        self.tenant = tenant
+        self.volume = volume
+        self.group = group
+        self.readOnly = read_only
+        self.user = user
+
+
+class RBDVolumeSource(HelmYaml):
+    """
+    :param fs_type:Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
+    :type fs_type: str
+    :param image:The rados image name. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type image: str
+    :param monitors:A collection of Ceph monitors. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type monitors: List[str]
+    :param keyring:Keyring is the path to key ring for RBDUser. Default is \
+        /etc/ceph/keyring. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type keyring: Optional[str]
+    :param pool:The rados pool name. Default is rbd. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type pool: Optional[str]
+    :param read_only:ReadOnly here will force the ReadOnly setting in VolumeMounts. \
+        Defaults to false. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type read_only: Optional[bool]
+    :param secret_ref:SecretRef is name of the authentication secret for RBDUser. If \
+        provided overrides keyring. Default is nil. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type secret_ref: Optional[LocalObjectReference]
+    :param user:The rados user name. Default is admin. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type user: Optional[str]
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        image: str,
+        monitors: List[str],
+        keyring: Optional[str] = None,
+        pool: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+        user: Optional[str] = None,
+    ):
+        self.fsType = fs_type
+        self.image = image
+        self.monitors = monitors
+        self.keyring = keyring
+        self.pool = pool
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+        self.user = user
 
 
 class ServiceAccountTokenProjection(HelmYaml):
@@ -1814,318 +1963,47 @@ class ProjectedVolumeSource(HelmYaml):
         self.sources = sources
 
 
-class PersistentVolumeClaimVolumeSource(HelmYaml):
-    """
-    :param claim_name:ClaimName is the name of a PersistentVolumeClaim in the same \
-        namespace as the pod using this volume. More info: \
-        https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims  # noqa
-    :type claim_name: str
-    :param read_only:Will force the ReadOnly setting in VolumeMounts. Default false.
-    :type read_only: bool
-    """
-
-    def __init__(self, claim_name: str, read_only: bool):
-        self.claimName = claim_name
-        self.readOnly = read_only
-
-
-class CinderVolumeSource(HelmYaml):
-    """
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
-        inferred to be "ext4" if unspecified. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :type fs_type: str
-    :param volume_id:volume id used to identify the volume in cinder. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :type volume_id: str
-    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :type read_only: Optional[bool]
-    :param secret_ref:Optional: points to a secret object containing parameters used \
-        to connect to OpenStack.
-    :type secret_ref: Optional[LocalObjectReference]
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        volume_id: str,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-    ):
-        self.fsType = fs_type
-        self.volumeID = volume_id
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-
-
-class ScaleIOVolumeSource(HelmYaml):
-    """
-    :param gateway:The host address of the ScaleIO API Gateway.
-    :type gateway: str
-    :param protection_domain:The name of the ScaleIO Protection Domain for the \
-        configured storage.
-    :type protection_domain: str
-    :param ssl_enabled:Flag to enable/disable SSL communication with Gateway, default \
-        false
-    :type ssl_enabled: bool
-    :param storage_pool:The ScaleIO Storage Pool associated with the protection \
-        domain.
-    :type storage_pool: str
-    :param system:The name of the storage system as configured in ScaleIO.
-    :type system: str
-    :param volume_name:The name of a volume already created in the ScaleIO system that \
-        is associated with this volume source.
-    :type volume_name: str
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs".
-    :type fs_type: Optional[str]
-    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    :param secret_ref:SecretRef references to the secret for ScaleIO user and other \
-        sensitive information. If this is not provided, Login operation will fail.
-    :type secret_ref: Optional[LocalObjectReference]
-    :param storage_mode:Indicates whether the storage for a volume should be \
-        ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.
-    :type storage_mode: Optional[str]
-    """
-
-    def __init__(
-        self,
-        gateway: str,
-        protection_domain: str,
-        ssl_enabled: bool,
-        storage_pool: str,
-        system: str,
-        volume_name: str,
-        fs_type: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-        storage_mode: Optional[str] = None,
-    ):
-        self.gateway = gateway
-        self.protectionDomain = protection_domain
-        self.sslEnabled = ssl_enabled
-        self.storagePool = storage_pool
-        self.system = system
-        self.volumeName = volume_name
-        self.fsType = fs_type
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-        self.storageMode = storage_mode
-
-
-class SecretVolumeSource(HelmYaml):
-    """
-    :param optional:Specify whether the Secret or its keys must be defined
-    :type optional: bool
-    :param secret_name:Name of the secret in the pod's namespace to use. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#secret
-    :type secret_name: str
-    :param default_mode:Optional: mode bits to use on created files by default. Must \
-        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
-        are not affected by this setting. This might be in conflict with other options \
-        that affect the file mode, like fsGroup, and the result can be other mode bits \
-        set.
-    :type default_mode: Optional[int]
-    :param items:If unspecified, each key-value pair in the Data field of the \
-        referenced Secret will be projected into the volume as a file whose name is \
-        the key and content is the value. If specified, the listed keys will be \
-        projected into the specified paths, and unlisted keys will not be present. If \
-        a key is specified which is not present in the Secret, the volume setup will \
-        error unless it is marked optional. Paths must be relative and may not contain \
-        the '..' path or start with '..'.
-    :type items: Optional[List[KeyToPath]]
-    """
-
-    def __init__(
-        self,
-        optional: bool,
-        secret_name: str,
-        default_mode: Optional[int] = None,
-        items: Optional[List[KeyToPath]] = None,
-    ):
-        self.optional = optional
-        self.secretName = secret_name
-        self.defaultMode = default_mode
-        self.items = items
-
-
-class FCVolumeSource(HelmYaml):
+class VsphereVirtualDiskVolumeSource(HelmYaml):
     """
     :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
         the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
         be "ext4" if unspecified.
     :type fs_type: str
-    :param lun:Optional: FC target lun number
-    :type lun: Optional[int]
-    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    :param target_wwns:Optional: FC target worldwide names (WWNs)
-    :type target_wwns: Optional[List[str]]
-    :param wwids:Optional: FC volume world wide identifiers (wwids) Either wwids or \
-        combination of targetWWNs and lun must be set, but not both simultaneously.
-    :type wwids: Optional[List[str]]
+    :param storage_policy_id:Storage Policy Based Management (SPBM) profile ID \
+        associated with the StoragePolicyName.
+    :type storage_policy_id: str
+    :param storage_policy_name:Storage Policy Based Management (SPBM) profile name.
+    :type storage_policy_name: str
+    :param volume_path:Path that identifies vSphere volume vmdk
+    :type volume_path: str
     """
 
     def __init__(
         self,
         fs_type: str,
-        lun: Optional[int] = None,
-        read_only: Optional[bool] = None,
-        target_wwns: Optional[List[str]] = None,
-        wwids: Optional[List[str]] = None,
+        storage_policy_id: str,
+        storage_policy_name: str,
+        volume_path: str,
     ):
         self.fsType = fs_type
-        self.lun = lun
-        self.readOnly = read_only
-        self.targetWWNs = target_wwns
-        self.wwids = wwids
+        self.storagePolicyID = storage_policy_id
+        self.storagePolicyName = storage_policy_name
+        self.volumePath = volume_path
 
 
-class GCEPersistentDiskVolumeSource(HelmYaml):
+class FlockerVolumeSource(HelmYaml):
     """
-    :param fs_type:Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    :type fs_type: str
-    :param pd_name:Unique name of the PD resource in GCE. Used to identify the disk in \
-        GCE. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    :type pd_name: str
-    :param partition:The partition in the volume that you want to mount. If omitted, \
-        the default is to mount by volume name. Examples: For volume /dev/sda1, you \
-        specify the partition as "1". Similarly, the volume partition for /dev/sda is \
-        "0" (or you can leave the property empty). More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    :type partition: Optional[int]
-    :param read_only:ReadOnly here will force the ReadOnly setting in VolumeMounts. \
-        Defaults to false. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-    :type read_only: Optional[bool]
+    :param dataset_name:Name of the dataset stored as metadata -> name on the dataset \
+        for Flocker should be considered as deprecated
+    :type dataset_name: str
+    :param dataset_uuid:UUID of the dataset. This is unique identifier of a Flocker \
+        dataset
+    :type dataset_uuid: str
     """
 
-    def __init__(
-        self,
-        fs_type: str,
-        pd_name: str,
-        partition: Optional[int] = None,
-        read_only: Optional[bool] = None,
-    ):
-        self.fsType = fs_type
-        self.pdName = pd_name
-        self.partition = partition
-        self.readOnly = read_only
-
-
-class PortworxVolumeSource(HelmYaml):
-    """
-    :param fs_type:FSType represents the filesystem type to mount Must be a filesystem \
-        type supported by the host operating system. Ex. "ext4", "xfs". Implicitly \
-        inferred to be "ext4" if unspecified.
-    :type fs_type: str
-    :param volume_id:VolumeID uniquely identifies a Portworx volume
-    :type volume_id: str
-    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    """
-
-    def __init__(self, fs_type: str, volume_id: str, read_only: Optional[bool] = None):
-        self.fsType = fs_type
-        self.volumeID = volume_id
-        self.readOnly = read_only
-
-
-class AzureDiskVolumeSource(KubernetesBaseObject):
-    """
-    :param caching_mode:Host Caching mode: None, Read Only, Read Write.
-    :type caching_mode: str
-    :param disk_name:The Name of the data disk in the blob storage
-    :type disk_name: str
-    :param disk_uri:The URI the data disk in the blob storage
-    :type disk_uri: str
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
-        be "ext4" if unspecified.
-    :type fs_type: str
-    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    """
-
-    def __init__(
-        self,
-        caching_mode: str,
-        disk_name: str,
-        disk_uri: str,
-        fs_type: str,
-        read_only: Optional[bool] = None,
-    ):
-        self.cachingMode = caching_mode
-        self.diskName = disk_name
-        self.diskURI = disk_uri
-        self.fsType = fs_type
-        self.readOnly = read_only
-
-
-class RBDVolumeSource(HelmYaml):
-    """
-    :param fs_type:Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
-    :type fs_type: str
-    :param image:The rados image name. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type image: str
-    :param monitors:A collection of Ceph monitors. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type monitors: List[str]
-    :param keyring:Keyring is the path to key ring for RBDUser. Default is \
-        /etc/ceph/keyring. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type keyring: Optional[str]
-    :param pool:The rados pool name. Default is rbd. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type pool: Optional[str]
-    :param read_only:ReadOnly here will force the ReadOnly setting in VolumeMounts. \
-        Defaults to false. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type read_only: Optional[bool]
-    :param secret_ref:SecretRef is name of the authentication secret for RBDUser. If \
-        provided overrides keyring. Default is nil. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type secret_ref: Optional[LocalObjectReference]
-    :param user:The rados user name. Default is admin. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type user: Optional[str]
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        image: str,
-        monitors: List[str],
-        keyring: Optional[str] = None,
-        pool: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-        user: Optional[str] = None,
-    ):
-        self.fsType = fs_type
-        self.image = image
-        self.monitors = monitors
-        self.keyring = keyring
-        self.pool = pool
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-        self.user = user
+    def __init__(self, dataset_name: str, dataset_uuid: str):
+        self.datasetName = dataset_name
+        self.datasetUUID = dataset_uuid
 
 
 class AWSElasticBlockStoreVolumeSource(HelmYaml):
@@ -2163,87 +2041,72 @@ class AWSElasticBlockStoreVolumeSource(HelmYaml):
         self.readOnly = read_only
 
 
-class VsphereVirtualDiskVolumeSource(HelmYaml):
+class FlexVolumeSource(HelmYaml):
+    """
+    :param driver:Driver is the name of the driver to use for this volume.
+    :type driver: str
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem \
+        depends on FlexVolume script.
+    :type fs_type: str
+    :param options:Optional: Extra command options if any.
+    :type options: Optional[dict]
+    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts.
+    :type read_only: Optional[bool]
+    :param secret_ref:Optional: SecretRef is reference to the secret object containing \
+        sensitive information to pass to the plugin scripts. This may be empty if no \
+        secret object is specified. If the secret object contains more than one \
+        secret, all secrets are passed to the plugin scripts.
+    :type secret_ref: Optional[LocalObjectReference]
+    """
+
+    def __init__(
+        self,
+        driver: str,
+        fs_type: str,
+        options: Optional[dict] = None,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[LocalObjectReference] = None,
+    ):
+        self.driver = driver
+        self.fsType = fs_type
+        self.options = options
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
+class FCVolumeSource(HelmYaml):
     """
     :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
         the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
         be "ext4" if unspecified.
     :type fs_type: str
-    :param storage_policy_id:Storage Policy Based Management (SPBM) profile ID \
-        associated with the StoragePolicyName.
-    :type storage_policy_id: str
-    :param storage_policy_name:Storage Policy Based Management (SPBM) profile name.
-    :type storage_policy_name: str
-    :param volume_path:Path that identifies vSphere volume vmdk
-    :type volume_path: str
+    :param lun:Optional: FC target lun number
+    :type lun: Optional[int]
+    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts.
+    :type read_only: Optional[bool]
+    :param target_wwns:Optional: FC target worldwide names (WWNs)
+    :type target_wwns: Optional[List[str]]
+    :param wwids:Optional: FC volume world wide identifiers (wwids) Either wwids or \
+        combination of targetWWNs and lun must be set, but not both simultaneously.
+    :type wwids: Optional[List[str]]
     """
 
     def __init__(
         self,
         fs_type: str,
-        storage_policy_id: str,
-        storage_policy_name: str,
-        volume_path: str,
+        lun: Optional[int] = None,
+        read_only: Optional[bool] = None,
+        target_wwns: Optional[List[str]] = None,
+        wwids: Optional[List[str]] = None,
     ):
         self.fsType = fs_type
-        self.storagePolicyID = storage_policy_id
-        self.storagePolicyName = storage_policy_name
-        self.volumePath = volume_path
-
-
-class ConfigMapVolumeSource(HelmYaml):
-    """
-    :param name:Name of the referent. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
-    :type name: str
-    :param optional:Specify whether the ConfigMap or its keys must be defined
-    :type optional: bool
-    :param default_mode:Optional: mode bits to use on created files by default. Must \
-        be a value between 0 and 0777. Defaults to 0644. Directories within the path \
-        are not affected by this setting. This might be in conflict with other options \
-        that affect the file mode, like fsGroup, and the result can be other mode bits \
-        set.
-    :type default_mode: Optional[int]
-    :param items:If unspecified, each key-value pair in the Data field of the \
-        referenced ConfigMap will be projected into the volume as a file whose name is \
-        the key and content is the value. If specified, the listed keys will be \
-        projected into the specified paths, and unlisted keys will not be present. If \
-        a key is specified which is not present in the ConfigMap, the volume setup \
-        will error unless it is marked optional. Paths must be relative and may not \
-        contain the '..' path or start with '..'.
-    :type items: Optional[List[KeyToPath]]
-    """
-
-    def __init__(
-        self,
-        name: str,
-        optional: bool,
-        default_mode: Optional[int] = None,
-        items: Optional[List[KeyToPath]] = None,
-    ):
-        self.name = name
-        self.optional = optional
-        self.defaultMode = default_mode
-        self.items = items
-
-
-class GitRepoVolumeSource(HelmYaml):
-    """
-    :param repository:Repository URL
-    :type repository: str
-    :param revision:Commit hash for the specified revision.
-    :type revision: str
-    :param directory:Target directory name. Must not contain or start with '..'.  If \
-        '.' is supplied, the volume directory will be the git repository.  Otherwise, \
-        if specified, the volume will contain the git repository in the subdirectory \
-        with the given name.
-    :type directory: Optional[str]
-    """
-
-    def __init__(self, repository: str, revision: str, directory: Optional[str] = None):
-        self.repository = repository
-        self.revision = revision
-        self.directory = directory
+        self.lun = lun
+        self.readOnly = read_only
+        self.targetWWNs = target_wwns
+        self.wwids = wwids
 
 
 class ISCSIVolumeSource(HelmYaml):
@@ -2310,242 +2173,130 @@ class ISCSIVolumeSource(HelmYaml):
         self.readOnly = read_only
 
 
-class DownwardAPIVolumeSource(HelmYaml):
+class GCEPersistentDiskVolumeSource(HelmYaml):
     """
-    :param items:Items is a list of downward API volume file
-    :type items: List[DownwardAPIVolumeFile]
+    :param fs_type:Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    :type fs_type: str
+    :param pd_name:Unique name of the PD resource in GCE. Used to identify the disk in \
+        GCE. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    :type pd_name: str
+    :param partition:The partition in the volume that you want to mount. If omitted, \
+        the default is to mount by volume name. Examples: For volume /dev/sda1, you \
+        specify the partition as "1". Similarly, the volume partition for /dev/sda is \
+        "0" (or you can leave the property empty). More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    :type partition: Optional[int]
+    :param read_only:ReadOnly here will force the ReadOnly setting in VolumeMounts. \
+        Defaults to false. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    :type read_only: Optional[bool]
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        pd_name: str,
+        partition: Optional[int] = None,
+        read_only: Optional[bool] = None,
+    ):
+        self.fsType = fs_type
+        self.pdName = pd_name
+        self.partition = partition
+        self.readOnly = read_only
+
+
+class NFSVolumeSource(HelmYaml):
+    """
+    :param path:Path that is exported by the NFS server. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    :type path: str
+    :param server:Server is the hostname or IP address of the NFS server. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    :type server: str
+    :param read_only:ReadOnly here will force the NFS export to be mounted with \
+        read-only permissions. Defaults to false. More info: \
+        https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    :type read_only: Optional[bool]
+    """
+
+    def __init__(self, path: str, server: str, read_only: Optional[bool] = None):
+        self.path = path
+        self.server = server
+        self.readOnly = read_only
+
+
+class ConfigMapVolumeSource(HelmYaml):
+    """
+    :param name:Name of the referent. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+    :type name: str
+    :param optional:Specify whether the ConfigMap or its keys must be defined
+    :type optional: bool
     :param default_mode:Optional: mode bits to use on created files by default. Must \
         be a value between 0 and 0777. Defaults to 0644. Directories within the path \
         are not affected by this setting. This might be in conflict with other options \
         that affect the file mode, like fsGroup, and the result can be other mode bits \
         set.
     :type default_mode: Optional[int]
+    :param items:If unspecified, each key-value pair in the Data field of the \
+        referenced ConfigMap will be projected into the volume as a file whose name is \
+        the key and content is the value. If specified, the listed keys will be \
+        projected into the specified paths, and unlisted keys will not be present. If \
+        a key is specified which is not present in the ConfigMap, the volume setup \
+        will error unless it is marked optional. Paths must be relative and may not \
+        contain the '..' path or start with '..'.
+    :type items: Optional[List[KeyToPath]]
     """
 
     def __init__(
-        self, items: List[DownwardAPIVolumeFile], default_mode: Optional[int] = None
+        self,
+        name: str,
+        optional: bool,
+        default_mode: Optional[int] = None,
+        items: Optional[List[KeyToPath]] = None,
     ):
-        self.items = items
+        self.name = name
+        self.optional = optional
         self.defaultMode = default_mode
+        self.items = items
 
 
-class CSIVolumeSource(HelmYaml):
+class PersistentVolumeClaimVolumeSource(HelmYaml):
     """
-    :param driver:Driver is the name of the CSI driver that handles this volume. \
-        Consult with your admin for the correct name as registered in the cluster.
-    :type driver: str
-    :param fs_type:Filesystem type to mount. Ex. "ext4", "xfs", "ntfs". If not \
-        provided, the empty value is passed to the associated CSI driver which will \
-        determine the default filesystem to apply.
-    :type fs_type: str
-    :param volume_attributes:VolumeAttributes stores driver-specific properties that \
-        are passed to the CSI driver. Consult your driver's documentation for \
-        supported values.
-    :type volume_attributes: dict
-    :param node_publish_secret_ref:NodePublishSecretRef is a reference to the secret \
-        object containing sensitive information to pass to the CSI driver to complete \
-        the CSI NodePublishVolume and NodeUnpublishVolume calls. This field is \
-        optional, and  may be empty if no secret is required. If the secret object \
-        contains more than one secret, all secret references are passed.
-    :type node_publish_secret_ref: Optional[LocalObjectReference]
-    :param read_only:Specifies a read-only configuration for the volume. Defaults to \
-        false (read/write).
-    :type read_only: Optional[bool]
+    :param claim_name:ClaimName is the name of a PersistentVolumeClaim in the same \
+        namespace as the pod using this volume. More info: \
+        https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims  # noqa
+    :type claim_name: str
+    :param read_only:Will force the ReadOnly setting in VolumeMounts. Default false.
+    :type read_only: bool
     """
 
-    def __init__(
-        self,
-        driver: str,
-        fs_type: str,
-        volume_attributes: dict,
-        node_publish_secret_ref: Optional[LocalObjectReference] = None,
-        read_only: Optional[bool] = None,
-    ):
-        self.driver = driver
-        self.fsType = fs_type
-        self.volumeAttributes = volume_attributes
-        self.nodePublishSecretRef = node_publish_secret_ref
+    def __init__(self, claim_name: str, read_only: bool):
+        self.claimName = claim_name
         self.readOnly = read_only
 
 
-class PhotonPersistentDiskVolumeSource(HelmYaml):
+class GitRepoVolumeSource(HelmYaml):
     """
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
-        be "ext4" if unspecified.
-    :type fs_type: str
-    :param pd_id:ID that identifies Photon Controller persistent disk
-    :type pd_id: str
-    """
-
-    def __init__(self, fs_type: str, pd_id: str):
-        self.fsType = fs_type
-        self.pdID = pd_id
-
-
-class HostPathVolumeSource(HelmYaml):
-    """
-    :param path:Path of the directory on the host. If the path is a symlink, it will \
-        follow the link to the real path. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#hostpath
-    :type path: str
-    :param type:Type for HostPath Volume Defaults to "" More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#hostpath
-    :type type: Optional[str]
+    :param repository:Repository URL
+    :type repository: str
+    :param revision:Commit hash for the specified revision.
+    :type revision: str
+    :param directory:Target directory name. Must not contain or start with '..'.  If \
+        '.' is supplied, the volume directory will be the git repository.  Otherwise, \
+        if specified, the volume will contain the git repository in the subdirectory \
+        with the given name.
+    :type directory: Optional[str]
     """
 
-    def __init__(self, path: str, type: Optional[str] = None):
-        self.path = path
-        self.type = type
-
-
-class EmptyDirVolumeSource(HelmYaml):
-    """
-    :param medium:What type of storage medium should back this directory. The default \
-        is "" which means to use the node's default medium. Must be an empty string \
-        (default) or Memory. More info: \
-        https://kubernetes.io/docs/concepts/storage/volumes#emptydir
-    :type medium: Optional[str]
-    :param size_limit:Total amount of local storage required for this EmptyDir volume. \
-        The size limit is also applicable for memory medium. The maximum usage on \
-        memory medium EmptyDir would be the minimum value between the SizeLimit \
-        specified here and the sum of memory limits of all containers in a pod. The \
-        default is nil which means that the limit is undefined. More info: \
-        http://kubernetes.io/docs/user-guide/volumes#emptydir
-    :type size_limit: Optional[str]
-    """
-
-    def __init__(self, medium: Optional[str] = None, size_limit: Optional[str] = None):
-        self.medium = medium
-        self.sizeLimit = size_limit
-
-
-class QuobyteVolumeSource(HelmYaml):
-    """
-    :param registry:Registry represents a single or multiple Quobyte Registry services \
-        specified as a string as host:port pair (multiple entries are separated with \
-        commas) which acts as the central registry for volumes
-    :type registry: str
-    :param tenant:Tenant owning the given Quobyte volume in the Backend Used with \
-        dynamically provisioned Quobyte volumes, value is set by the plugin
-    :type tenant: str
-    :param volume:Volume is a string that references an already created Quobyte volume \
-        by name.
-    :type volume: str
-    :param group:Group to map volume access to Default is no group
-    :type group: Optional[str]
-    :param read_only:ReadOnly here will force the Quobyte volume to be mounted with \
-        read-only permissions. Defaults to false.
-    :type read_only: Optional[bool]
-    :param user:User to map volume access to Defaults to serivceaccount user
-    :type user: Optional[str]
-    """
-
-    def __init__(
-        self,
-        registry: str,
-        tenant: str,
-        volume: str,
-        group: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        user: Optional[str] = None,
-    ):
-        self.registry = registry
-        self.tenant = tenant
-        self.volume = volume
-        self.group = group
-        self.readOnly = read_only
-        self.user = user
-
-
-class FlexVolumeSource(HelmYaml):
-    """
-    :param driver:Driver is the name of the driver to use for this volume.
-    :type driver: str
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem \
-        depends on FlexVolume script.
-    :type fs_type: str
-    :param options:Optional: Extra command options if any.
-    :type options: Optional[dict]
-    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    :param secret_ref:Optional: SecretRef is reference to the secret object containing \
-        sensitive information to pass to the plugin scripts. This may be empty if no \
-        secret object is specified. If the secret object contains more than one \
-        secret, all secrets are passed to the plugin scripts.
-    :type secret_ref: Optional[LocalObjectReference]
-    """
-
-    def __init__(
-        self,
-        driver: str,
-        fs_type: str,
-        options: Optional[dict] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-    ):
-        self.driver = driver
-        self.fsType = fs_type
-        self.options = options
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-
-
-class StorageOSVolumeSource(HelmYaml):
-    """
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly inferred to \
-        be "ext4" if unspecified.
-    :type fs_type: str
-    :param volume_name:VolumeName is the human-readable name of the StorageOS volume.  \
-        Volume names are only unique within a namespace.
-    :type volume_name: str
-    :param volume_namespace:VolumeNamespace specifies the scope of the volume within \
-        StorageOS.  If no namespace is specified then the Pod's namespace will be \
-        used.  This allows the Kubernetes name scoping to be mirrored within StorageOS \
-        for tighter integration. Set VolumeName to any name to override the default \
-        behaviour. Set to "default" if you are not using namespaces within StorageOS. \
-        Namespaces that do not pre-exist within StorageOS will be created.
-    :type volume_namespace: str
-    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    :param secret_ref:SecretRef specifies the secret to use for obtaining the \
-        StorageOS API credentials.  If not specified, default values will be \
-        attempted.
-    :type secret_ref: Optional[LocalObjectReference]
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        volume_name: str,
-        volume_namespace: str,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[LocalObjectReference] = None,
-    ):
-        self.fsType = fs_type
-        self.volumeName = volume_name
-        self.volumeNamespace = volume_namespace
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-
-
-class FlockerVolumeSource(HelmYaml):
-    """
-    :param dataset_name:Name of the dataset stored as metadata -> name on the dataset \
-        for Flocker should be considered as deprecated
-    :type dataset_name: str
-    :param dataset_uuid:UUID of the dataset. This is unique identifier of a Flocker \
-        dataset
-    :type dataset_uuid: str
-    """
-
-    def __init__(self, dataset_name: str, dataset_uuid: str):
-        self.datasetName = dataset_name
-        self.datasetUUID = dataset_uuid
+    def __init__(self, repository: str, revision: str, directory: Optional[str] = None):
+        self.repository = repository
+        self.revision = revision
+        self.directory = directory
 
 
 class Volume(HelmYaml):
@@ -2714,45 +2465,294 @@ class Volume(HelmYaml):
         self.vsphereVolume = vsphere_volume
 
 
-class PodDNSConfigOption(HelmYaml):
+class Toleration(HelmYaml):
     """
-    :param name:Required.
-    :type name: str
-    :param value:None
+    :param effect:Effect indicates the taint effect to match. Empty means match all \
+        taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule \
+        and NoExecute.
+    :type effect: str
+    :param key:Key is the taint key that the toleration applies to. Empty means match \
+        all taint keys. If the key is empty, operator must be Exists; this combination \
+        means to match all values and all keys.
+    :type key: str
+    :param toleration_seconds:TolerationSeconds represents the period of time the \
+        toleration (which must be of effect NoExecute, otherwise this field is \
+        ignored) tolerates the taint. By default, it is not set, which means tolerate \
+        the taint forever (do not evict). Zero and negative values will be treated as \
+        0 (evict immediately) by the system.
+    :type toleration_seconds: int
+    :param value:Value is the taint value the toleration matches to. If the operator \
+        is Exists, the value should be empty, otherwise just a regular string.
     :type value: str
-    """
-
-    def __init__(self, name: str, value: str):
-        self.name = name
-        self.value = value
-
-
-class PodDNSConfig(HelmYaml):
-    """
-    :param nameservers:A list of DNS name server IP addresses. This will be appended \
-        to the base nameservers generated from DNSPolicy. Duplicated nameservers will \
-        be removed.
-    :type nameservers: List[str]
-    :param options:A list of DNS resolver options. This will be merged with the base \
-        options generated from DNSPolicy. Duplicated entries will be removed. \
-        Resolution options given in Options will override those that appear in the \
-        base DNSPolicy.
-    :type options: List[PodDNSConfigOption]
-    :param searches:A list of DNS search domains for host-name lookup. This will be \
-        appended to the base search paths generated from DNSPolicy. Duplicated search \
-        paths will be removed.
-    :type searches: List[str]
+    :param operator:Operator represents a key's relationship to the value. Valid \
+        operators are Exists and Equal. Defaults to Equal. Exists is equivalent to \
+        wildcard for value, so that a pod can tolerate all taints of a particular \
+        category.
+    :type operator: Optional[str]
     """
 
     def __init__(
         self,
-        nameservers: List[str],
-        options: List[PodDNSConfigOption],
-        searches: List[str],
+        effect: str,
+        key: str,
+        toleration_seconds: int,
+        value: str,
+        operator: Optional[str] = None,
     ):
-        self.nameservers = nameservers
-        self.options = options
-        self.searches = searches
+        self.effect = effect
+        self.key = key
+        self.tolerationSeconds = toleration_seconds
+        self.value = value
+        self.operator = operator
+
+
+class PodAffinityTerm(HelmYaml):
+    """
+    :param label_selector:A label query over a set of resources, in this case pods.
+    :type label_selector: LabelSelector
+    :param namespaces:namespaces specifies which namespaces the labelSelector applies \
+        to (matches against); null or empty list means "this pod's namespace"
+    :type namespaces: List[str]
+    :param topology_key:This pod should be co-located (affinity) or not co-located \
+        (anti-affinity) with the pods matching the labelSelector in the specified \
+        namespaces, where co-located is defined as running on a node whose value of \
+        the label with key topologyKey matches that of any node on which any of the \
+        selected pods is running. Empty topologyKey is not allowed.
+    :type topology_key: str
+    """
+
+    def __init__(
+        self, label_selector: LabelSelector, namespaces: List[str], topology_key: str
+    ):
+        self.labelSelector = label_selector
+        self.namespaces = namespaces
+        self.topologyKey = topology_key
+
+
+class WeightedPodAffinityTerm(HelmYaml):
+    """
+    :param pod_affinity_term:Required. A pod affinity term, associated with the \
+        corresponding weight.
+    :type pod_affinity_term: PodAffinityTerm
+    :param weight:weight associated with matching the corresponding podAffinityTerm, \
+        in the range 1-100.
+    :type weight: int
+    """
+
+    def __init__(self, pod_affinity_term: PodAffinityTerm, weight: int):
+        self.podAffinityTerm = pod_affinity_term
+        self.weight = weight
+
+
+class PodAffinity(HelmYaml):
+    """
+    :param preferred_during_scheduling_ignored_during_execution:The scheduler will \
+        prefer to schedule pods to nodes that satisfy the affinity expressions \
+        specified by this field, but it may choose a node that violates one or more of \
+        the expressions. The node that is most preferred is the one with the greatest \
+        sum of weights, i.e. for each node that meets all of the scheduling \
+        requirements (resource request, requiredDuringScheduling affinity expressions, \
+        etc.), compute a sum by iterating through the elements of this field and \
+        adding "weight" to the sum if the node has pods which matches the \
+        corresponding podAffinityTerm; the node(s) with the highest sum are the most \
+        preferred.
+    :type preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
+    :param required_during_scheduling_ignored_during_execution:If the affinity \
+        requirements specified by this field are not met at scheduling time, the pod \
+        will not be scheduled onto the node. If the affinity requirements specified by \
+        this field cease to be met at some point during pod execution (e.g. due to a \
+        pod label update), the system may or may not try to eventually evict the pod \
+        from its node. When there are multiple elements, the lists of nodes \
+        corresponding to each podAffinityTerm are intersected, i.e. all terms must be \
+        satisfied.
+    :type required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
+    """
+
+    def __init__(
+        self,
+        preferred_during_scheduling_ignored_during_execution: List[
+            WeightedPodAffinityTerm
+        ],
+        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
+    ):
+        self.preferredDuringSchedulingIgnoredDuringExecution = (
+            preferred_during_scheduling_ignored_during_execution
+        )
+        self.requiredDuringSchedulingIgnoredDuringExecution = (
+            required_during_scheduling_ignored_during_execution
+        )
+
+
+class PodAntiAffinity(HelmYaml):
+    """
+    :param preferred_during_scheduling_ignored_during_execution:The scheduler will \
+        prefer to schedule pods to nodes that satisfy the anti-affinity expressions \
+        specified by this field, but it may choose a node that violates one or more of \
+        the expressions. The node that is most preferred is the one with the greatest \
+        sum of weights, i.e. for each node that meets all of the scheduling \
+        requirements (resource request, requiredDuringScheduling anti-affinity \
+        expressions, etc.), compute a sum by iterating through the elements of this \
+        field and adding "weight" to the sum if the node has pods which matches the \
+        corresponding podAffinityTerm; the node(s) with the highest sum are the most \
+        preferred.
+    :type preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
+    :param required_during_scheduling_ignored_during_execution:If the anti-affinity \
+        requirements specified by this field are not met at scheduling time, the pod \
+        will not be scheduled onto the node. If the anti-affinity requirements \
+        specified by this field cease to be met at some point during pod execution \
+        (e.g. due to a pod label update), the system may or may not try to eventually \
+        evict the pod from its node. When there are multiple elements, the lists of \
+        nodes corresponding to each podAffinityTerm are intersected, i.e. all terms \
+        must be satisfied.
+    :type required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
+    """
+
+    def __init__(
+        self,
+        preferred_during_scheduling_ignored_during_execution: List[
+            WeightedPodAffinityTerm
+        ],
+        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
+    ):
+        self.preferredDuringSchedulingIgnoredDuringExecution = (
+            preferred_during_scheduling_ignored_during_execution
+        )
+        self.requiredDuringSchedulingIgnoredDuringExecution = (
+            required_during_scheduling_ignored_during_execution
+        )
+
+
+class NodeSelectorRequirement(HelmYaml):
+    """
+    :param key:The label key that the selector applies to.
+    :type key: str
+    :param operator:Represents a key's relationship to a set of values. Valid \
+        operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+    :type operator: str
+    :param values:An array of string values. If the operator is In or NotIn, the \
+        values array must be non-empty. If the operator is Exists or DoesNotExist, the \
+        values array must be empty. If the operator is Gt or Lt, the values array must \
+        have a single element, which will be interpreted as an integer. This array is \
+        replaced during a strategic merge patch.
+    :type values: List[str]
+    """
+
+    def __init__(self, key: str, operator: str, values: List[str]):
+        self.key = key
+        self.operator = operator
+        self.values = values
+
+
+class NodeSelectorTerm(HelmYaml):
+    """
+    :param match_fields:A list of node selector requirements by node's fields.
+    :type match_fields: List[NodeSelectorRequirement]
+    :param match_expressions:A list of node selector requirements by node's labels.
+    :type match_expressions: Optional[List[NodeSelectorRequirement]]
+    """
+
+    def __init__(
+        self,
+        match_fields: List[NodeSelectorRequirement],
+        match_expressions: Optional[List[NodeSelectorRequirement]] = None,
+    ):
+        self.matchFields = match_fields
+        self.matchExpressions = match_expressions
+
+
+class PreferredSchedulingTerm(HelmYaml):
+    """
+    :param preference:A node selector term, associated with the corresponding weight.
+    :type preference: NodeSelectorTerm
+    :param weight:Weight associated with matching the corresponding nodeSelectorTerm, \
+        in the range 1-100.
+    :type weight: int
+    """
+
+    def __init__(self, preference: NodeSelectorTerm, weight: int):
+        self.preference = preference
+        self.weight = weight
+
+
+class NodeSelector(HelmYaml):
+    """
+    :param node_selector_terms:Required. A list of node selector terms. The terms are \
+        ORed.
+    :type node_selector_terms: List[NodeSelectorTerm]
+    """
+
+    def __init__(self, node_selector_terms: List[NodeSelectorTerm]):
+        self.nodeSelectorTerms = node_selector_terms
+
+
+class NodeAffinity(HelmYaml):
+    """
+    :param preferred_during_scheduling_ignored_during_execution:The scheduler will \
+        prefer to schedule pods to nodes that satisfy the affinity expressions \
+        specified by this field, but it may choose a node that violates one or more of \
+        the expressions. The node that is most preferred is the one with the greatest \
+        sum of weights, i.e. for each node that meets all of the scheduling \
+        requirements (resource request, requiredDuringScheduling affinity expressions, \
+        etc.), compute a sum by iterating through the elements of this field and \
+        adding "weight" to the sum if the node matches the corresponding \
+        matchExpressions; the node(s) with the highest sum are the most preferred.
+    :type preferred_during_scheduling_ignored_during_execution: List[PreferredSchedulingTerm]
+    :param required_during_scheduling_ignored_during_execution:If the affinity \
+        requirements specified by this field are not met at scheduling time, the pod \
+        will not be scheduled onto the node. If the affinity requirements specified by \
+        this field cease to be met at some point during pod execution (e.g. due to an \
+        update), the system may or may not try to eventually evict the pod from its \
+        node.
+    :type required_during_scheduling_ignored_during_execution: NodeSelector
+    """
+
+    def __init__(
+        self,
+        preferred_during_scheduling_ignored_during_execution: List[
+            PreferredSchedulingTerm
+        ],
+        required_during_scheduling_ignored_during_execution: NodeSelector,
+    ):
+        self.preferredDuringSchedulingIgnoredDuringExecution = (
+            preferred_during_scheduling_ignored_during_execution
+        )
+        self.requiredDuringSchedulingIgnoredDuringExecution = (
+            required_during_scheduling_ignored_during_execution
+        )
+
+
+class Affinity(HelmYaml):
+    """
+    :param pod_affinity:Describes pod affinity scheduling rules (e.g. co-locate this \
+        pod in the same node, zone, etc. as some other pod(s)).
+    :type pod_affinity: PodAffinity
+    :param pod_anti_affinity:Describes pod anti-affinity scheduling rules (e.g. avoid \
+        putting this pod in the same node, zone, etc. as some other pod(s)).
+    :type pod_anti_affinity: PodAntiAffinity
+    :param node_affinity:Describes node affinity scheduling rules for the pod.
+    :type node_affinity: Optional[NodeAffinity]
+    """
+
+    def __init__(
+        self,
+        pod_affinity: PodAffinity,
+        pod_anti_affinity: PodAntiAffinity,
+        node_affinity: Optional[NodeAffinity] = None,
+    ):
+        self.podAffinity = pod_affinity
+        self.podAntiAffinity = pod_anti_affinity
+        self.nodeAffinity = node_affinity
+
+
+class PodReadinessGate(HelmYaml):
+    """
+    :param condition_type:ConditionType refers to a condition in the pod's condition \
+        list with matching type.
+    :type condition_type: str
+    """
+
+    def __init__(self, condition_type: str):
+        self.conditionType = condition_type
 
 
 class PodSpec(HelmYaml):
@@ -3375,37 +3375,224 @@ class PersistentVolumeClaim(KubernetesBaseObject):
         self.spec = spec
 
 
-class GlusterfsPersistentVolumeSource(HelmYaml):
+class FlexPersistentVolumeSource(HelmYaml):
     """
-    :param endpoints:EndpointsName is the endpoint name that details Glusterfs \
-        topology. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
-    :type endpoints: str
-    :param path:Path is the Glusterfs volume path. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
-    :type path: str
-    :param endpoints_namespace:EndpointsNamespace is the namespace that contains \
-        Glusterfs endpoint. If this field is empty, the EndpointNamespace defaults to \
-        the same namespace as the bound PVC. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
-    :type endpoints_namespace: Optional[str]
-    :param read_only:ReadOnly here will force the Glusterfs volume to be mounted with \
-        read-only permissions. Defaults to false. More info: \
-        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    :param driver:Driver is the name of the driver to use for this volume.
+    :type driver: str
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem \
+        depends on FlexVolume script.
+    :type fs_type: str
+    :param options:Optional: Extra command options if any.
+    :type options: Optional[dict]
+    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts.
     :type read_only: Optional[bool]
+    :param secret_ref:Optional: SecretRef is reference to the secret object containing \
+        sensitive information to pass to the plugin scripts. This may be empty if no \
+        secret object is specified. If the secret object contains more than one \
+        secret, all secrets are passed to the plugin scripts.
+    :type secret_ref: Optional[SecretReference]
     """
 
     def __init__(
         self,
-        endpoints: str,
-        path: str,
-        endpoints_namespace: Optional[str] = None,
+        driver: str,
+        fs_type: str,
+        options: Optional[dict] = None,
         read_only: Optional[bool] = None,
+        secret_ref: Optional[SecretReference] = None,
     ):
-        self.endpoints = endpoints
-        self.path = path
-        self.endpointsNamespace = endpoints_namespace
+        self.driver = driver
+        self.fsType = fs_type
+        self.options = options
         self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
+class CinderPersistentVolumeSource(HelmYaml):
+    """
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
+        inferred to be "ext4" if unspecified. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :type fs_type: str
+    :param volume_id:volume id used to identify the volume in cinder. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :type volume_id: str
+    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts. More info: \
+        https://examples.k8s.io/mysql-cinder-pd/README.md
+    :type read_only: Optional[bool]
+    :param secret_ref:Optional: points to a secret object containing parameters used \
+        to connect to OpenStack.
+    :type secret_ref: Optional[SecretReference]
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        volume_id: str,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[SecretReference] = None,
+    ):
+        self.fsType = fs_type
+        self.volumeID = volume_id
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+
+
+class RBDPersistentVolumeSource(HelmYaml):
+    """
+    :param fs_type:Filesystem type of the volume that you want to mount. Tip: Ensure \
+        that the filesystem type is supported by the host operating system. Examples: \
+        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
+        info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
+    :type fs_type: str
+    :param image:The rados image name. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type image: str
+    :param monitors:A collection of Ceph monitors. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type monitors: List[str]
+    :param keyring:Keyring is the path to key ring for RBDUser. Default is \
+        /etc/ceph/keyring. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type keyring: Optional[str]
+    :param pool:The rados pool name. Default is rbd. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type pool: Optional[str]
+    :param read_only:ReadOnly here will force the ReadOnly setting in VolumeMounts. \
+        Defaults to false. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type read_only: Optional[bool]
+    :param secret_ref:SecretRef is name of the authentication secret for RBDUser. If \
+        provided overrides keyring. Default is nil. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type secret_ref: Optional[SecretReference]
+    :param user:The rados user name. Default is admin. More info: \
+        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    :type user: Optional[str]
+    """
+
+    def __init__(
+        self,
+        fs_type: str,
+        image: str,
+        monitors: List[str],
+        keyring: Optional[str] = None,
+        pool: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[SecretReference] = None,
+        user: Optional[str] = None,
+    ):
+        self.fsType = fs_type
+        self.image = image
+        self.monitors = monitors
+        self.keyring = keyring
+        self.pool = pool
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+        self.user = user
+
+
+class ScaleIOPersistentVolumeSource(HelmYaml):
+    """
+    :param gateway:The host address of the ScaleIO API Gateway.
+    :type gateway: str
+    :param protection_domain:The name of the ScaleIO Protection Domain for the \
+        configured storage.
+    :type protection_domain: str
+    :param ssl_enabled:Flag to enable/disable SSL communication with Gateway, default \
+        false
+    :type ssl_enabled: bool
+    :param storage_pool:The ScaleIO Storage Pool associated with the protection \
+        domain.
+    :type storage_pool: str
+    :param system:The name of the storage system as configured in ScaleIO.
+    :type system: str
+    :param volume_name:The name of a volume already created in the ScaleIO system that \
+        is associated with this volume source.
+    :type volume_name: str
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+        the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs"
+    :type fs_type: Optional[str]
+    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
+        ReadOnly setting in VolumeMounts.
+    :type read_only: Optional[bool]
+    :param secret_ref:SecretRef references to the secret for ScaleIO user and other \
+        sensitive information. If this is not provided, Login operation will fail.
+    :type secret_ref: Optional[SecretReference]
+    :param storage_mode:Indicates whether the storage for a volume should be \
+        ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.
+    :type storage_mode: Optional[str]
+    """
+
+    def __init__(
+        self,
+        gateway: str,
+        protection_domain: str,
+        ssl_enabled: bool,
+        storage_pool: str,
+        system: str,
+        volume_name: str,
+        fs_type: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_ref: Optional[SecretReference] = None,
+        storage_mode: Optional[str] = None,
+    ):
+        self.gateway = gateway
+        self.protectionDomain = protection_domain
+        self.sslEnabled = ssl_enabled
+        self.storagePool = storage_pool
+        self.system = system
+        self.volumeName = volume_name
+        self.fsType = fs_type
+        self.readOnly = read_only
+        self.secretRef = secret_ref
+        self.storageMode = storage_mode
+
+
+class CephFSPersistentVolumeSource(HelmYaml):
+    """
+    :param monitors:Required: Monitors is a collection of Ceph monitors More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :type monitors: List[str]
+    :param path:Optional: Used as the mounted root, rather than the full Ceph tree, \
+        default is /
+    :type path: Optional[str]
+    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
+        force the ReadOnly setting in VolumeMounts. More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :type read_only: Optional[bool]
+    :param secret_file:Optional: SecretFile is the path to key ring for User, default \
+        is /etc/ceph/user.secret More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :type secret_file: Optional[str]
+    :param secret_ref:Optional: SecretRef is reference to the authentication secret \
+        for User, default is empty. More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :type secret_ref: Optional[SecretReference]
+    :param user:Optional: User is the rados user name, default is admin More info: \
+        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :type user: Optional[str]
+    """
+
+    def __init__(
+        self,
+        monitors: List[str],
+        path: Optional[str] = None,
+        read_only: Optional[bool] = None,
+        secret_file: Optional[str] = None,
+        secret_ref: Optional[SecretReference] = None,
+        user: Optional[str] = None,
+    ):
+        self.monitors = monitors
+        self.path = path
+        self.readOnly = read_only
+        self.secretFile = secret_file
+        self.secretRef = secret_ref
+        self.user = user
 
 
 class ISCSIPersistentVolumeSource(HelmYaml):
@@ -3472,113 +3659,37 @@ class ISCSIPersistentVolumeSource(HelmYaml):
         self.readOnly = read_only
 
 
-class CephFSPersistentVolumeSource(HelmYaml):
+class GlusterfsPersistentVolumeSource(HelmYaml):
     """
-    :param monitors:Required: Monitors is a collection of Ceph monitors More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :type monitors: List[str]
-    :param path:Optional: Used as the mounted root, rather than the full Ceph tree, \
-        default is /
-    :type path: Optional[str]
-    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts. More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    :param endpoints:EndpointsName is the endpoint name that details Glusterfs \
+        topology. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    :type endpoints: str
+    :param path:Path is the Glusterfs volume path. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    :type path: str
+    :param endpoints_namespace:EndpointsNamespace is the namespace that contains \
+        Glusterfs endpoint. If this field is empty, the EndpointNamespace defaults to \
+        the same namespace as the bound PVC. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+    :type endpoints_namespace: Optional[str]
+    :param read_only:ReadOnly here will force the Glusterfs volume to be mounted with \
+        read-only permissions. Defaults to false. More info: \
+        https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     :type read_only: Optional[bool]
-    :param secret_file:Optional: SecretFile is the path to key ring for User, default \
-        is /etc/ceph/user.secret More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :type secret_file: Optional[str]
-    :param secret_ref:Optional: SecretRef is reference to the authentication secret \
-        for User, default is empty. More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :type secret_ref: Optional[SecretReference]
-    :param user:Optional: User is the rados user name, default is admin More info: \
-        https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
-    :type user: Optional[str]
     """
 
     def __init__(
         self,
-        monitors: List[str],
-        path: Optional[str] = None,
+        endpoints: str,
+        path: str,
+        endpoints_namespace: Optional[str] = None,
         read_only: Optional[bool] = None,
-        secret_file: Optional[str] = None,
-        secret_ref: Optional[SecretReference] = None,
-        user: Optional[str] = None,
     ):
-        self.monitors = monitors
+        self.endpoints = endpoints
         self.path = path
+        self.endpointsNamespace = endpoints_namespace
         self.readOnly = read_only
-        self.secretFile = secret_file
-        self.secretRef = secret_ref
-        self.user = user
-
-
-class ScaleIOPersistentVolumeSource(HelmYaml):
-    """
-    :param gateway:The host address of the ScaleIO API Gateway.
-    :type gateway: str
-    :param protection_domain:The name of the ScaleIO Protection Domain for the \
-        configured storage.
-    :type protection_domain: str
-    :param ssl_enabled:Flag to enable/disable SSL communication with Gateway, default \
-        false
-    :type ssl_enabled: bool
-    :param storage_pool:The ScaleIO Storage Pool associated with the protection \
-        domain.
-    :type storage_pool: str
-    :param system:The name of the storage system as configured in ScaleIO.
-    :type system: str
-    :param volume_name:The name of a volume already created in the ScaleIO system that \
-        is associated with this volume source.
-    :type volume_name: str
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". Default is "xfs"
-    :type fs_type: Optional[str]
-    :param read_only:Defaults to false (read/write). ReadOnly here will force the \
-        ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    :param secret_ref:SecretRef references to the secret for ScaleIO user and other \
-        sensitive information. If this is not provided, Login operation will fail.
-    :type secret_ref: Optional[SecretReference]
-    :param storage_mode:Indicates whether the storage for a volume should be \
-        ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.
-    :type storage_mode: Optional[str]
-    """
-
-    def __init__(
-        self,
-        gateway: str,
-        protection_domain: str,
-        ssl_enabled: bool,
-        storage_pool: str,
-        system: str,
-        volume_name: str,
-        fs_type: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[SecretReference] = None,
-        storage_mode: Optional[str] = None,
-    ):
-        self.gateway = gateway
-        self.protectionDomain = protection_domain
-        self.sslEnabled = ssl_enabled
-        self.storagePool = storage_pool
-        self.system = system
-        self.volumeName = volume_name
-        self.fsType = fs_type
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-        self.storageMode = storage_mode
-
-
-class VolumeNodeAffinity(HelmYaml):
-    """
-    :param required:Required specifies hard node constraints that must be met.
-    :type required: NodeSelector
-    """
-
-    def __init__(self, required: NodeSelector):
-        self.required = required
 
 
 class LocalVolumeSource(HelmYaml):
@@ -3626,125 +3737,14 @@ class AzureFilePersistentVolumeSource(HelmYaml):
         self.secretNamespace = secret_namespace
 
 
-class RBDPersistentVolumeSource(HelmYaml):
+class VolumeNodeAffinity(HelmYaml):
     """
-    :param fs_type:Filesystem type of the volume that you want to mount. Tip: Ensure \
-        that the filesystem type is supported by the host operating system. Examples: \
-        "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified. More \
-        info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
-    :type fs_type: str
-    :param image:The rados image name. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type image: str
-    :param monitors:A collection of Ceph monitors. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type monitors: List[str]
-    :param keyring:Keyring is the path to key ring for RBDUser. Default is \
-        /etc/ceph/keyring. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type keyring: Optional[str]
-    :param pool:The rados pool name. Default is rbd. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type pool: Optional[str]
-    :param read_only:ReadOnly here will force the ReadOnly setting in VolumeMounts. \
-        Defaults to false. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type read_only: Optional[bool]
-    :param secret_ref:SecretRef is name of the authentication secret for RBDUser. If \
-        provided overrides keyring. Default is nil. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type secret_ref: Optional[SecretReference]
-    :param user:The rados user name. Default is admin. More info: \
-        https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
-    :type user: Optional[str]
+    :param required:Required specifies hard node constraints that must be met.
+    :type required: NodeSelector
     """
 
-    def __init__(
-        self,
-        fs_type: str,
-        image: str,
-        monitors: List[str],
-        keyring: Optional[str] = None,
-        pool: Optional[str] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[SecretReference] = None,
-        user: Optional[str] = None,
-    ):
-        self.fsType = fs_type
-        self.image = image
-        self.monitors = monitors
-        self.keyring = keyring
-        self.pool = pool
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-        self.user = user
-
-
-class CinderPersistentVolumeSource(HelmYaml):
-    """
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly \
-        inferred to be "ext4" if unspecified. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :type fs_type: str
-    :param volume_id:volume id used to identify the volume in cinder. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :type volume_id: str
-    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts. More info: \
-        https://examples.k8s.io/mysql-cinder-pd/README.md
-    :type read_only: Optional[bool]
-    :param secret_ref:Optional: points to a secret object containing parameters used \
-        to connect to OpenStack.
-    :type secret_ref: Optional[SecretReference]
-    """
-
-    def __init__(
-        self,
-        fs_type: str,
-        volume_id: str,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[SecretReference] = None,
-    ):
-        self.fsType = fs_type
-        self.volumeID = volume_id
-        self.readOnly = read_only
-        self.secretRef = secret_ref
-
-
-class FlexPersistentVolumeSource(HelmYaml):
-    """
-    :param driver:Driver is the name of the driver to use for this volume.
-    :type driver: str
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs". The default filesystem \
-        depends on FlexVolume script.
-    :type fs_type: str
-    :param options:Optional: Extra command options if any.
-    :type options: Optional[dict]
-    :param read_only:Optional: Defaults to false (read/write). ReadOnly here will \
-        force the ReadOnly setting in VolumeMounts.
-    :type read_only: Optional[bool]
-    :param secret_ref:Optional: SecretRef is reference to the secret object containing \
-        sensitive information to pass to the plugin scripts. This may be empty if no \
-        secret object is specified. If the secret object contains more than one \
-        secret, all secrets are passed to the plugin scripts.
-    :type secret_ref: Optional[SecretReference]
-    """
-
-    def __init__(
-        self,
-        driver: str,
-        fs_type: str,
-        options: Optional[dict] = None,
-        read_only: Optional[bool] = None,
-        secret_ref: Optional[SecretReference] = None,
-    ):
-        self.driver = driver
-        self.fsType = fs_type
-        self.options = options
-        self.readOnly = read_only
-        self.secretRef = secret_ref
+    def __init__(self, required: NodeSelector):
+        self.required = required
 
 
 class PersistentVolumeSpec(HelmYaml):
@@ -4195,34 +4195,6 @@ class PodTemplateList(KubernetesBaseObject):
         self.items = items
 
 
-class NodeAddress(HelmYaml):
-    """
-    :param address:The node address.
-    :type address: str
-    :param type:Node address type, one of Hostname, ExternalIP or InternalIP.
-    :type type: str
-    """
-
-    def __init__(self, address: str, type: str):
-        self.address = address
-        self.type = type
-
-
-class ContainerImage(HelmYaml):
-    """
-    :param names:Names by which this image is known. e.g. \
-        ["k8s.gcr.io/hyperkube:v1.0.7", \
-        "dockerhub.io/google_containers/hyperkube:v1.0.7"]
-    :type names: List[str]
-    :param size_bytes:The size of the image in bytes.
-    :type size_bytes: int
-    """
-
-    def __init__(self, names: List[str], size_bytes: int):
-        self.names = names
-        self.sizeBytes = size_bytes
-
-
 class DaemonEndpoint(HelmYaml):
     """
     :param port:Port number of the given endpoint.
@@ -4251,6 +4223,34 @@ class NodeConfigSource(HelmYaml):
 
     def __init__(self, config_map: ConfigMapNodeConfigSource):
         self.configMap = config_map
+
+
+class ContainerImage(HelmYaml):
+    """
+    :param names:Names by which this image is known. e.g. \
+        ["k8s.gcr.io/hyperkube:v1.0.7", \
+        "dockerhub.io/google_containers/hyperkube:v1.0.7"]
+    :type names: List[str]
+    :param size_bytes:The size of the image in bytes.
+    :type size_bytes: int
+    """
+
+    def __init__(self, names: List[str], size_bytes: int):
+        self.names = names
+        self.sizeBytes = size_bytes
+
+
+class NodeAddress(HelmYaml):
+    """
+    :param address:The node address.
+    :type address: str
+    :param type:Node address type, one of Hostname, ExternalIP or InternalIP.
+    :type type: str
+    """
+
+    def __init__(self, address: str, type: str):
+        self.address = address
+        self.type = type
 
 
 class NodeSystemInfo(HelmYaml):
@@ -4517,6 +4517,16 @@ class ReplicationControllerCondition(HelmYaml):
         self.type = type
 
 
+class ContainerStateRunning(HelmYaml):
+    """
+    :param started_at:Time at which the container was last (re-)started
+    :type started_at: time
+    """
+
+    def __init__(self, started_at: time):
+        self.startedAt = started_at
+
+
 class ContainerStateTerminated(HelmYaml):
     """
     :param container_id:Container's ID in the format 'docker://<container_id>'
@@ -4551,16 +4561,6 @@ class ContainerStateTerminated(HelmYaml):
         self.message = message
         self.reason = reason
         self.signal = signal
-        self.startedAt = started_at
-
-
-class ContainerStateRunning(HelmYaml):
-    """
-    :param started_at:Time at which the container was last (re-)started
-    :type started_at: time
-    """
-
-    def __init__(self, started_at: time):
         self.startedAt = started_at
 
 

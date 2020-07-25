@@ -499,6 +499,47 @@ class CustomResourceDefinitionVersion(HelmYaml):
         self.subresources = subresources
 
 
+class WebhookConversion(HelmYaml):
+    """
+    :param client_config:clientConfig is the instructions for how to call the webhook \
+        if strategy is `Webhook`.
+    :type client_config: WebhookClientConfig
+    :param conversion_review_versions:conversionReviewVersions is an ordered list of \
+        preferred `ConversionReview` versions the Webhook expects. The API server will \
+        use the first version in the list which it supports. If none of the versions \
+        specified in this list are supported by API server, conversion will fail for \
+        the custom resource. If a persisted Webhook configuration specifies allowed \
+        versions and does not include any versions known to the API Server, calls to \
+        the webhook will fail.
+    :type conversion_review_versions: List[str]
+    """
+
+    def __init__(
+        self, client_config: WebhookClientConfig, conversion_review_versions: List[str]
+    ):
+        self.clientConfig = client_config
+        self.conversionReviewVersions = conversion_review_versions
+
+
+class CustomResourceConversion(HelmYaml):
+    """
+    :param webhook:webhook describes how to call the conversion webhook. Required when \
+        `strategy` is set to `Webhook`.
+    :type webhook: WebhookConversion
+    :param strategy:strategy specifies how custom resources are converted between \
+        versions. Allowed values are: - `None`: The converter only change the \
+        apiVersion and would not touch any other field in the custom resource. - \
+        `Webhook`: API Server will call to an external webhook to do the conversion. \
+        Additional information   is needed for this option. This requires \
+        spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
+    :type strategy: Optional[str]
+    """
+
+    def __init__(self, webhook: WebhookConversion, strategy: Optional[str] = None):
+        self.webhook = webhook
+        self.strategy = strategy
+
+
 class CustomResourceDefinitionNames(HelmYaml):
     """
     :param categories:categories is a list of grouped resources this custom resource \
@@ -541,47 +582,6 @@ class CustomResourceDefinitionNames(HelmYaml):
         self.listKind = list_kind
         self.shortNames = short_names
         self.singular = singular
-
-
-class WebhookConversion(HelmYaml):
-    """
-    :param client_config:clientConfig is the instructions for how to call the webhook \
-        if strategy is `Webhook`.
-    :type client_config: WebhookClientConfig
-    :param conversion_review_versions:conversionReviewVersions is an ordered list of \
-        preferred `ConversionReview` versions the Webhook expects. The API server will \
-        use the first version in the list which it supports. If none of the versions \
-        specified in this list are supported by API server, conversion will fail for \
-        the custom resource. If a persisted Webhook configuration specifies allowed \
-        versions and does not include any versions known to the API Server, calls to \
-        the webhook will fail.
-    :type conversion_review_versions: List[str]
-    """
-
-    def __init__(
-        self, client_config: WebhookClientConfig, conversion_review_versions: List[str]
-    ):
-        self.clientConfig = client_config
-        self.conversionReviewVersions = conversion_review_versions
-
-
-class CustomResourceConversion(HelmYaml):
-    """
-    :param webhook:webhook describes how to call the conversion webhook. Required when \
-        `strategy` is set to `Webhook`.
-    :type webhook: WebhookConversion
-    :param strategy:strategy specifies how custom resources are converted between \
-        versions. Allowed values are: - `None`: The converter only change the \
-        apiVersion and would not touch any other field in the custom resource. - \
-        `Webhook`: API Server will call to an external webhook to do the conversion. \
-        Additional information   is needed for this option. This requires \
-        spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
-    :type strategy: Optional[str]
-    """
-
-    def __init__(self, webhook: WebhookConversion, strategy: Optional[str] = None):
-        self.webhook = webhook
-        self.strategy = strategy
 
 
 class CustomResourceDefinitionSpec(HelmYaml):

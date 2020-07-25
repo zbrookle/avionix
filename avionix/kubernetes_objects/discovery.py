@@ -93,6 +93,8 @@ class EndpointSlice(KubernetesBaseObject):
     :type api_version: Optional[str]
     """
 
+    _non_standard_version = "v1beta1"
+
     def __init__(
         self,
         metadata: ObjectMeta,
@@ -120,6 +122,8 @@ class EndpointSliceList(KubernetesBaseObject):
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :type api_version: Optional[str]
     """
+
+    _non_standard_version = "v1beta1"
 
     def __init__(
         self,

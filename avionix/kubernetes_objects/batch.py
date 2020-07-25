@@ -237,6 +237,8 @@ class CronJob(KubernetesBaseObject):
     :type api_version: Optional[str]
     """
 
+    _non_standard_version = "v1beta1"
+
     def __init__(
         self, metadata: ObjectMeta, spec: CronJobSpec, api_version: Optional[str] = None
     ):
@@ -258,6 +260,8 @@ class CronJobList(KubernetesBaseObject):
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     :type api_version: Optional[str]
     """
+
+    _non_standard_version = "v1beta1"
 
     def __init__(
         self,

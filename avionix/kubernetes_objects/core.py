@@ -713,7 +713,7 @@ class ContainerPort(HelmYaml):
         be a valid port number, 0 < x < 65536.
     :type container_port: int
     :param host_ip:What host IP to bind the external port to.
-    :type host_ip: str
+    :type host_ip: Optional[str]
     :param host_port:Number of port to expose on the host. If specified, this must be \
         a valid port number, 0 < x < 65536. If HostNetwork is specified, this must \
         match ContainerPort. Most containers do not need this.
@@ -729,7 +729,7 @@ class ContainerPort(HelmYaml):
     def __init__(
         self,
         container_port: int,
-        host_ip: str,
+        host_ip: Optional[str] = None,
         host_port: Optional[int] = None,
         name: Optional[str] = None,
         protocol: Optional[str] = None,

@@ -5,6 +5,19 @@ from avionix.kubernetes_objects.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
+class NonResourceAttributes(HelmYaml):
+    """
+    :param path:Path is the URL path of the request
+    :type path: str
+    :param verb:Verb is the standard HTTP verb
+    :type verb: str
+    """
+
+    def __init__(self, path: str, verb: str):
+        self.path = path
+        self.verb = verb
+
+
 class ResourceAttributes(HelmYaml):
     """
     :param name:Name is the name of the resource being requested for a "get" or \
@@ -47,19 +60,6 @@ class ResourceAttributes(HelmYaml):
         self.verb = verb
         self.version = version
         self.namespace = namespace
-
-
-class NonResourceAttributes(HelmYaml):
-    """
-    :param path:Path is the URL path of the request
-    :type path: str
-    :param verb:Verb is the standard HTTP verb
-    :type verb: str
-    """
-
-    def __init__(self, path: str, verb: str):
-        self.path = path
-        self.verb = verb
 
 
 class SelfSubjectAccessReviewSpec(HelmYaml):
@@ -114,16 +114,6 @@ class ResourceRule(HelmYaml):
         self.verbs = verbs
 
 
-class SelfSubjectRulesReviewSpec(HelmYaml):
-    """
-    :param namespace:Namespace to evaluate rules for. Required.
-    :type namespace: Optional[str]
-    """
-
-    def __init__(self, namespace: Optional[str] = None):
-        self.namespace = namespace
-
-
 class NonResourceRule(HelmYaml):
     """
     :param non_resource_urls:NonResourceURLs is a set of partial urls that a user \
@@ -138,6 +128,16 @@ class NonResourceRule(HelmYaml):
     def __init__(self, non_resource_urls: List[str], verbs: List[str]):
         self.nonResourceURLs = non_resource_urls
         self.verbs = verbs
+
+
+class SelfSubjectRulesReviewSpec(HelmYaml):
+    """
+    :param namespace:Namespace to evaluate rules for. Required.
+    :type namespace: Optional[str]
+    """
+
+    def __init__(self, namespace: Optional[str] = None):
+        self.namespace = namespace
 
 
 class SelfSubjectRulesReview(KubernetesBaseObject):

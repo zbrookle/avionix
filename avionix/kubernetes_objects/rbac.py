@@ -2,12 +2,9 @@ from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.kubernetes_objects.meta import ListMeta
-from avionix.kubernetes_objects.rbac_authorization import (
-    ClusterRole,
-    ClusterRoleBinding,
-    Role,
-    RoleBinding,
-)
+from avionix.kubernetes_objects.rbac_authorization import (ClusterRole,
+                                                           ClusterRoleBinding,
+                                                           Role, RoleBinding)
 
 
 class ClusterRoleBindingList(KubernetesBaseObject):

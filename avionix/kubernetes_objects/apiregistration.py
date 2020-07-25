@@ -26,6 +26,29 @@ class ServiceReference(HelmYaml):
         self.port = port
 
 
+class APIServiceCondition(HelmYaml):
+    """
+    :param last_transition_time:Last time the condition transitioned from one status \
+        to another.
+    :type last_transition_time: time
+    :param message:Human-readable message indicating details about last transition.
+    :type message: str
+    :param reason:Unique, one-word, CamelCase reason for the condition's last \
+        transition.
+    :type reason: str
+    :param type:Type is the type of the condition.
+    :type type: str
+    """
+
+    def __init__(
+        self, last_transition_time: time, message: str, reason: str, type: str
+    ):
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
+
+
 class APIServiceSpec(HelmYaml):
     """
     :param group:Group is the API group name this server hosts
@@ -88,29 +111,6 @@ class APIServiceSpec(HelmYaml):
         self.caBundle = ca_bundle
         self.insecureSkipTLSVerify = insecure_skip_tlsverify
         self.service = service
-
-
-class APIServiceCondition(HelmYaml):
-    """
-    :param last_transition_time:Last time the condition transitioned from one status \
-        to another.
-    :type last_transition_time: time
-    :param message:Human-readable message indicating details about last transition.
-    :type message: str
-    :param reason:Unique, one-word, CamelCase reason for the condition's last \
-        transition.
-    :type reason: str
-    :param type:Type is the type of the condition.
-    :type type: str
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class APIService(ApiRegistration):

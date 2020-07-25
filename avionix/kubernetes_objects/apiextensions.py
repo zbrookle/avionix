@@ -1,8 +1,9 @@
 from datetime import time
 from typing import List, Optional, Union
 
-from avionix.kubernetes_objects.admissionregistration import WebhookClientConfig
-from avionix.kubernetes_objects.base_objects import ApiExtensions, KubernetesBaseObject
+from avionix.kubernetes_objects.admissionregistration import \
+    WebhookClientConfig
+from avionix.kubernetes_objects.base_objects import ApiExtensions
 from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
@@ -51,6 +52,75 @@ class CustomResourceColumnDefinition(HelmYaml):
         self.priority = priority
 
 
+class CustomResourceDefinitionCondition(HelmYaml):
+    """
+    :param last_transition_time:lastTransitionTime last time the condition \
+        transitioned from one status to another.
+    :type last_transition_time: time
+    :param message:message is a human-readable message indicating details about last \
+        transition.
+    :type message: str
+    :param reason:reason is a unique, one-word, CamelCase reason for the condition's \
+        last transition.
+    :type reason: str
+    :param type:type is the type of the condition. Types include Established, \
+        NamesAccepted and Terminating.
+    :type type: str
+    """
+
+    def __init__(
+        self, last_transition_time: time, message: str, reason: str, type: str
+    ):
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
+
+
+class CustomResourceDefinitionNames(HelmYaml):
+    """
+    :param categories:categories is a list of grouped resources this custom resource \
+        belongs to (e.g. 'all'). This is published in API discovery documents, and \
+        used by clients to support invocations like `kubectl get all`.
+    :type categories: List[str]
+    :param kind:kind is the serialized kind of the resource. It is normally CamelCase \
+        and singular. Custom resource instances will use this value as the `kind` \
+        attribute in API calls.
+    :type kind: str
+    :param plural:plural is the plural name of the resource to serve. The custom \
+        resources are served under `/apis/<group>/<version>/.../<plural>`. Must match \
+        the name of the CustomResourceDefinition (in the form \
+        `<names.plural>.<group>`). Must be all lowercase.
+    :type plural: str
+    :param list_kind:listKind is the serialized kind of the list for this resource. \
+        Defaults to "`kind`List".
+    :type list_kind: Optional[str]
+    :param short_names:shortNames are short names for the resource, exposed in API \
+        discovery documents, and used by clients to support invocations like `kubectl \
+        get <shortname>`. It must be all lowercase.
+    :type short_names: Optional[List[str]]
+    :param singular:singular is the singular name of the resource. It must be all \
+        lowercase. Defaults to lowercased `kind`.
+    :type singular: Optional[str]
+    """
+
+    def __init__(
+        self,
+        categories: List[str],
+        kind: str,
+        plural: str,
+        list_kind: Optional[str] = None,
+        short_names: Optional[List[str]] = None,
+        singular: Optional[str] = None,
+    ):
+        self.categories = categories
+        self.kind = kind
+        self.plural = plural
+        self.listKind = list_kind
+        self.shortNames = short_names
+        self.singular = singular
+
+
 class WebhookConversion(HelmYaml):
     """
     :param client_config:clientConfig is the instructions for how to call the webhook \
@@ -92,60 +162,6 @@ class CustomResourceConversion(HelmYaml):
         self.strategy = strategy
 
 
-class CustomResourceDefinitionNames(HelmYaml):
-    """
-    :param categories:categories is a list of grouped resources this custom resource \
-        belongs to (e.g. 'all'). This is published in API discovery documents, and \
-        used by clients to support invocations like `kubectl get all`.
-    :type categories: List[str]
-    :param plural:plural is the plural name of the resource to serve. The custom \
-        resources are served under `/apis/<group>/<version>/.../<plural>`. Must match \
-        the name of the CustomResourceDefinition (in the form \
-        `<names.plural>.<group>`). Must be all lowercase.
-    :type plural: str
-    :param short_names:shortNames are short names for the resource, exposed in API \
-        discovery documents, and used by clients to support invocations like `kubectl \
-        get <shortname>`. It must be all lowercase.
-    :type short_names: List[str]
-    :param list_kind:listKind is the serialized kind of the list for this resource. \
-        Defaults to "`kind`List".
-    :type list_kind: Optional[str]
-    :param singular:singular is the singular name of the resource. It must be all \
-        lowercase. Defaults to lowercased `kind`.
-    :type singular: Optional[str]
-    """
-
-    def __init__(
-        self,
-        categories: List[str],
-        kind: str,
-        plural: str,
-        short_names: Optional[List[str]] = None,
-        list_kind: Optional[str] = None,
-        singular: Optional[str] = None,
-    ):
-        self.kind = kind
-        self.categories = categories
-        self.plural = plural
-        self.shortNames = short_names
-        self.listKind = list_kind
-        self.singular = singular
-
-
-class JSON(HelmYaml):
-    """
-    """
-
-    pass
-
-
-class JSONSchemaPropsOrBool(HelmYaml):
-    """
-    """
-
-    pass
-
-
 class ExternalDocumentation(HelmYaml):
     """
     :param url:None
@@ -159,6 +175,20 @@ class ExternalDocumentation(HelmYaml):
         self.description = description
 
 
+class JSONSchemaPropsOrBool(HelmYaml):
+    """
+    """
+
+    pass
+
+
+class JSON(HelmYaml):
+    """
+    """
+
+    pass
+
+
 class JSONSchemaPropsOrArray(HelmYaml):
     """
     """
@@ -168,10 +198,8 @@ class JSONSchemaPropsOrArray(HelmYaml):
 
 class JSONSchemaProps(HelmYaml):
     """
-    :param ref:None
-    :type ref: str
-    :param schema:None
-    :type schema: Optional[str]
+    :param type:None
+    :type type: Optional[str]
     :param additional_items:None
     :type additional_items: Optional[JSONSchemaPropsOrBool]
     :param additional_properties:None
@@ -271,8 +299,6 @@ class JSONSchemaProps(HelmYaml):
     :type required: Optional[List[str]]
     :param title:None
     :type title: Optional[str]
-    :param type:None
-    :type type: Optional[str]
     :param unique_items:None
     :type unique_items: Optional[bool]
     :param x_kubernetes_embedded_resource:x-kubernetes-embedded-resource defines that \
@@ -371,6 +397,7 @@ class JSONSchemaProps(HelmYaml):
         x_kubernetes_map_type: Optional[str] = None,
         x_kubernetes_preserve_unknown_fields: Optional[bool] = None,
     ):
+        self.type = type
         self.additionalItems = additional_items
         self.additionalProperties = additional_properties
         self.allOf = all_of
@@ -404,7 +431,6 @@ class JSONSchemaProps(HelmYaml):
         self.properties = properties
         self.required = required
         self.title = title
-        self.type = type
         self.uniqueItems = unique_items
         self["x-kubernetes-embedded-resource"] = x_kubernetes_embedded_resource
         self["x-kubernetes-int-or-string"] = x_kubernetes_int_or_string
@@ -500,7 +526,7 @@ class CustomResourceDefinitionVersion(HelmYaml):
     :type storage: bool
     :param subresources:subresources specify what subresources this version of the \
         defined custom resource have.
-    :type subresources: CustomResourceSubresources
+    :type subresources: Optional[CustomResourceSubresources]
     """
 
     def __init__(
@@ -522,23 +548,12 @@ class CustomResourceDefinitionVersion(HelmYaml):
 
 class CustomResourceDefinitionSpec(HelmYaml):
     """
-    :param conversion:conversion defines conversion settings for the CRD.
-    :type conversion: CustomResourceConversion
     :param group:group is the API group of the defined custom resource. The custom \
         resources are served under `/apis/<group>/...`. Must match the name of the \
         CustomResourceDefinition (in the form `<names.plural>.<group>`).
     :type group: str
     :param names:names specify the resource and kind names for the custom resource.
     :type names: CustomResourceDefinitionNames
-    :param preserve_unknown_fields:preserveUnknownFields indicates that object fields \
-        which are not specified in the OpenAPI schema should be preserved when \
-        persisting to storage. apiVersion, kind, metadata and known fields inside \
-        metadata are always preserved. This field is deprecated in favor of setting \
-        `x-preserve-unknown-fields` to true in \
-        `spec.versions[*].schema.openAPIV3Schema`. See \
-        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#pruning-versus-preserving-unknown-fields  # noqa \
-        for details.
-    :type preserve_unknown_fields: bool
     :param scope:scope indicates whether the defined custom resource is cluster- or \
         namespace-scoped. Allowed values are `Cluster` and `Namespaced`.
     :type scope: str
@@ -554,6 +569,17 @@ class CustomResourceDefinitionSpec(HelmYaml):
         versions: v10, v2, v1, v11beta2, v10beta3, v3beta1, v12alpha1, v11alpha2, \
         foo1, foo10.
     :type versions: List[CustomResourceDefinitionVersion]
+    :param conversion:conversion defines conversion settings for the CRD.
+    :type conversion: Optional[CustomResourceConversion]
+    :param preserve_unknown_fields:preserveUnknownFields indicates that object fields \
+        which are not specified in the OpenAPI schema should be preserved when \
+        persisting to storage. apiVersion, kind, metadata and known fields inside \
+        metadata are always preserved. This field is deprecated in favor of setting \
+        `x-preserve-unknown-fields` to true in \
+        `spec.versions[*].schema.openAPIV3Schema`. See \
+        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#pruning-versus-preserving-unknown-fields  # noqa \
+        for details.
+    :type preserve_unknown_fields: Optional[bool]
     """
 
     def __init__(
@@ -562,40 +588,15 @@ class CustomResourceDefinitionSpec(HelmYaml):
         names: CustomResourceDefinitionNames,
         scope: str,
         versions: List[CustomResourceDefinitionVersion],
-        preserve_unknown_fields: Optional[bool] = None,
         conversion: Optional[CustomResourceConversion] = None,
+        preserve_unknown_fields: Optional[bool] = None,
     ):
-        self.conversion = conversion
         self.group = group
         self.names = names
-        self.preserveUnknownFields = preserve_unknown_fields
         self.scope = scope
         self.versions = versions
-
-
-class CustomResourceDefinitionCondition(HelmYaml):
-    """
-    :param last_transition_time:lastTransitionTime last time the condition \
-        transitioned from one status to another.
-    :type last_transition_time: time
-    :param message:message is a human-readable message indicating details about last \
-        transition.
-    :type message: str
-    :param reason:reason is a unique, one-word, CamelCase reason for the condition's \
-        last transition.
-    :type reason: str
-    :param type:type is the type of the condition. Types include Established, \
-        NamesAccepted and Terminating.
-    :type type: str
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
+        self.conversion = conversion
+        self.preserveUnknownFields = preserve_unknown_fields
 
 
 class CustomResourceDefinition(ApiExtensions):
@@ -622,7 +623,7 @@ class CustomResourceDefinition(ApiExtensions):
         self.spec = spec
 
 
-class CustomResourceDefinitionList(KubernetesBaseObject):
+class CustomResourceDefinitionList(ApiExtensions):
     """
     :param metadata:None
     :type metadata: ListMeta

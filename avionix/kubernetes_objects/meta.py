@@ -5,6 +5,41 @@ from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.yaml.yaml_handling import HelmYaml
 
 
+class OwnerReference(KubernetesBaseObject):
+    """
+    :param name:Name of the referent. More info: \
+        http://kubernetes.io/docs/user-guide/identifiers#names
+    :type name: str
+    :param controller:If true, this reference points to the managing controller.
+    :type controller: bool
+    :param block_owner_deletion:If true, AND if the owner has the "foregroundDeletion" \
+        finalizer, then the owner cannot be deleted from the key-value store until \
+        this reference is removed. Defaults to false. To set this field, a user needs \
+        "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be \
+        returned.
+    :type block_owner_deletion: Optional[bool]
+    :param uid:UID of the referent. More info: \
+        http://kubernetes.io/docs/user-guide/identifiers#uids
+    :type uid: Optional[str]
+    :param api_version:API version of the referent.
+    :type api_version: Optional[str]
+    """
+
+    def __init__(
+        self,
+        name: str,
+        controller: bool,
+        block_owner_deletion: Optional[bool] = None,
+        uid: Optional[str] = None,
+        api_version: Optional[str] = None,
+    ):
+        super().__init__(api_version)
+        self.name = name
+        self.controller = controller
+        self.blockOwnerDeletion = block_owner_deletion
+        self.uid = uid
+
+
 class FieldsV1(HelmYaml):
     """
     """
@@ -51,41 +86,6 @@ class ManagedFieldsEntry(HelmYaml):
         self.operation = operation
         self.time = time
         self.apiVersion = api_version
-
-
-class OwnerReference(KubernetesBaseObject):
-    """
-    :param name:Name of the referent. More info: \
-        http://kubernetes.io/docs/user-guide/identifiers#names
-    :type name: str
-    :param controller:If true, this reference points to the managing controller.
-    :type controller: bool
-    :param block_owner_deletion:If true, AND if the owner has the "foregroundDeletion" \
-        finalizer, then the owner cannot be deleted from the key-value store until \
-        this reference is removed. Defaults to false. To set this field, a user needs \
-        "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be \
-        returned.
-    :type block_owner_deletion: Optional[bool]
-    :param uid:UID of the referent. More info: \
-        http://kubernetes.io/docs/user-guide/identifiers#uids
-    :type uid: Optional[str]
-    :param api_version:API version of the referent.
-    :type api_version: Optional[str]
-    """
-
-    def __init__(
-        self,
-        name: str,
-        controller: bool,
-        block_owner_deletion: Optional[bool] = None,
-        uid: Optional[str] = None,
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.name = name
-        self.controller = controller
-        self.blockOwnerDeletion = block_owner_deletion
-        self.uid = uid
 
 
 class ObjectMeta(HelmYaml):
@@ -253,21 +253,6 @@ class LabelSelector(HelmYaml):
         self.matchExpressions = match_expressions
 
 
-class ServerAddressByClientCIDR(HelmYaml):
-    """
-    :param client_cidr:The CIDR with which clients can match their IP to figure out \
-        the server address that they should use.
-    :type client_cidr: str
-    :param server_address:Address of this server, suitable for a client that matches \
-        the above CIDR. This can be a hostname, hostname:port, IP or IP:port.
-    :type server_address: str
-    """
-
-    def __init__(self, client_cidr: str, server_address: str):
-        self.clientCIDR = client_cidr
-        self.serverAddress = server_address
-
-
 class GroupVersionForDiscovery(HelmYaml):
     """
     :param group_version:groupVersion specifies the API group and version in the form \
@@ -281,6 +266,21 @@ class GroupVersionForDiscovery(HelmYaml):
     def __init__(self, group_version: str, version: str):
         self.groupVersion = group_version
         self.version = version
+
+
+class ServerAddressByClientCIDR(HelmYaml):
+    """
+    :param client_cidr:The CIDR with which clients can match their IP to figure out \
+        the server address that they should use.
+    :type client_cidr: str
+    :param server_address:Address of this server, suitable for a client that matches \
+        the above CIDR. This can be a hostname, hostname:port, IP or IP:port.
+    :type server_address: str
+    """
+
+    def __init__(self, client_cidr: str, server_address: str):
+        self.clientCIDR = client_cidr
+        self.serverAddress = server_address
 
 
 class APIGroup(KubernetesBaseObject):

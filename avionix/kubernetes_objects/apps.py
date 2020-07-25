@@ -2,31 +2,10 @@ from datetime import time
 from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import Apps
-from avionix.kubernetes_objects.core import PersistentVolumeClaim, PodTemplateSpec
+from avionix.kubernetes_objects.core import (PersistentVolumeClaim,
+                                             PodTemplateSpec)
 from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
-
-
-class ReplicaSetCondition(HelmYaml):
-    """
-    :param last_transition_time:The last time the condition transitioned from one \
-        status to another.
-    :type last_transition_time: time
-    :param message:A human readable message indicating details about the transition.
-    :type message: str
-    :param reason:The reason for the condition's last transition.
-    :type reason: str
-    :param type:Type of replica set condition.
-    :type type: str
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class ReplicaSetSpec(HelmYaml):
@@ -62,6 +41,28 @@ class ReplicaSetSpec(HelmYaml):
         self.selector = selector
         self.minReadySeconds = min_ready_seconds
         self.replicas = replicas
+
+
+class ReplicaSetCondition(HelmYaml):
+    """
+    :param last_transition_time:The last time the condition transitioned from one \
+        status to another.
+    :type last_transition_time: time
+    :param message:A human readable message indicating details about the transition.
+    :type message: str
+    :param reason:The reason for the condition's last transition.
+    :type reason: str
+    :param type:Type of replica set condition.
+    :type type: str
+    """
+
+    def __init__(
+        self, last_transition_time: time, message: str, reason: str, type: str
+    ):
+        self.lastTransitionTime = last_transition_time
+        self.message = message
+        self.reason = reason
+        self.type = type
 
 
 class ReplicaSet(Apps):

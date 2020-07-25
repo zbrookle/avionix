@@ -5,19 +5,6 @@ from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class RoleRef(KubernetesBaseObject):
-    """
-    :param name:Name is the name of resource being referenced
-    :type name: str
-    :param api_group:APIGroup is the group for the resource being referenced
-    :type api_group: str
-    """
-
-    def __init__(self, name: str, api_group: str):
-        self.name = name
-        self.apiGroup = api_group
-
-
 class Subject(KubernetesBaseObject):
     """
     :param name:Name of the object being referenced.
@@ -41,6 +28,19 @@ class Subject(KubernetesBaseObject):
         self.name = name
         self.apiGroup = api_group
         self.namespace = namespace
+
+
+class RoleRef(KubernetesBaseObject):
+    """
+    :param name:Name is the name of resource being referenced
+    :type name: str
+    :param api_group:APIGroup is the group for the resource being referenced
+    :type api_group: str
+    """
+
+    def __init__(self, name: str, api_group: str):
+        self.name = name
+        self.apiGroup = api_group
 
 
 class ClusterRoleBinding(KubernetesBaseObject):

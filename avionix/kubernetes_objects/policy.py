@@ -2,12 +2,8 @@ from typing import List, Optional
 
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 from avionix.kubernetes_objects.core import SELinuxOptions
-from avionix.kubernetes_objects.meta import (
-    DeleteOptions,
-    LabelSelector,
-    ListMeta,
-    ObjectMeta,
-)
+from avionix.kubernetes_objects.meta import (DeleteOptions, LabelSelector,
+                                             ListMeta, ObjectMeta)
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -23,14 +19,14 @@ class PodDisruptionBudgetSpec(HelmYaml):
         selected by "selector" will still be available after the eviction, i.e. even \
         in the absence of the evicted pod.  So for example you can prevent all \
         voluntary evictions by specifying "100%".
-    :type min_available: LabelSelector
+    :type min_available: str
     :param selector:Label query over pods whose evictions are managed by the \
         disruption budget.
-    :type selector: str
+    :type selector: LabelSelector
     """
 
     def __init__(
-        self, max_unavailable: str, min_available: LabelSelector, selector: str
+        self, max_unavailable: str, min_available: str, selector: LabelSelector
     ):
         self.maxUnavailable = max_unavailable
         self.minAvailable = min_available
@@ -115,6 +111,36 @@ class HostPortRange(HelmYaml):
         self.min = min
 
 
+class RuntimeClassStrategyOptions(HelmYaml):
+    """
+    :param allowed_runtime_class_names:allowedRuntimeClassNames is a whitelist of \
+        RuntimeClass names that may be specified on a pod. A value of "*" means that \
+        any RuntimeClass name is allowed, and must be the only item in the list. An \
+        empty list requires the RuntimeClassName field to be unset.
+    :type allowed_runtime_class_names: List[str]
+    :param default_runtime_class_name:defaultRuntimeClassName is the default \
+        RuntimeClassName to set on the pod. The default MUST be allowed by the \
+        allowedRuntimeClassNames list. A value of nil does not mutate the Pod.
+    :type default_runtime_class_name: str
+    """
+
+    def __init__(
+        self, allowed_runtime_class_names: List[str], default_runtime_class_name: str
+    ):
+        self.allowedRuntimeClassNames = allowed_runtime_class_names
+        self.defaultRuntimeClassName = default_runtime_class_name
+
+
+class AllowedFlexVolume(HelmYaml):
+    """
+    :param driver:driver is the name of the Flexvolume driver.
+    :type driver: str
+    """
+
+    def __init__(self, driver: str):
+        self.driver = driver
+
+
 class IDRange(HelmYaml):
     """
     :param max:max is the end of the range, inclusive.
@@ -184,36 +210,6 @@ class FSGroupStrategyOptions(HelmYaml):
     def __init__(self, ranges: List[IDRange], rule: str):
         self.ranges = ranges
         self.rule = rule
-
-
-class RuntimeClassStrategyOptions(HelmYaml):
-    """
-    :param allowed_runtime_class_names:allowedRuntimeClassNames is a whitelist of \
-        RuntimeClass names that may be specified on a pod. A value of "*" means that \
-        any RuntimeClass name is allowed, and must be the only item in the list. An \
-        empty list requires the RuntimeClassName field to be unset.
-    :type allowed_runtime_class_names: List[str]
-    :param default_runtime_class_name:defaultRuntimeClassName is the default \
-        RuntimeClassName to set on the pod. The default MUST be allowed by the \
-        allowedRuntimeClassNames list. A value of nil does not mutate the Pod.
-    :type default_runtime_class_name: str
-    """
-
-    def __init__(
-        self, allowed_runtime_class_names: List[str], default_runtime_class_name: str
-    ):
-        self.allowedRuntimeClassNames = allowed_runtime_class_names
-        self.defaultRuntimeClassName = default_runtime_class_name
-
-
-class AllowedFlexVolume(HelmYaml):
-    """
-    :param driver:driver is the name of the Flexvolume driver.
-    :type driver: str
-    """
-
-    def __init__(self, driver: str):
-        self.driver = driver
 
 
 class SupplementalGroupsStrategyOptions(HelmYaml):

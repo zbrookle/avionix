@@ -28,18 +28,21 @@ class IngressTLS(HelmYaml):
 
 class IngressBackend(HelmYaml):
     """
-    :param resource:Resource is an ObjectRef to another Kubernetes resource in the \
-        namespace of the Ingress object. If resource is specified, serviceName and \
-        servicePort must not be specified.
-    :type resource: TypedLocalObjectReference
     :param service_name:Specifies the name of the referenced service.
     :type service_name: str
     :param service_port:Specifies the port of the referenced service.
-    :type service_port: str
+    :type service_port: int
+    :param resource:Resource is an ObjectRef to another Kubernetes resource in the \
+        namespace of the Ingress object. If resource is specified, serviceName and \
+        servicePort must not be specified.
+    :type resource: Optional[TypedLocalObjectReference]
     """
 
     def __init__(
-        self, resource: TypedLocalObjectReference, service_name: str, service_port: str
+        self,
+        service_name: str,
+        service_port: int,
+        resource: Optional[TypedLocalObjectReference] = None,
     ):
         self.resource = resource
         self.serviceName = service_name
@@ -55,7 +58,7 @@ class HTTPIngressPath(HelmYaml):
         can contain characters disallowed from the conventional "path" part of a URL \
         as defined by RFC 3986. Paths must begin with a '/'. When unspecified, all \
         paths from incoming requests are matched.
-    :type path: str
+    :type path: Optional[str]
     :param path_type:PathType determines the interpretation of the Path matching. \
         PathType can be one of the following values: * Exact: Matches the URL path \
         exactly. * Prefix: Matches based on a URL path prefix split by '/'. Matching \
@@ -73,7 +76,10 @@ class HTTPIngressPath(HelmYaml):
     """
 
     def __init__(
-        self, backend: IngressBackend, path: str, path_type: Optional[str] = None
+        self,
+        backend: IngressBackend,
+        path: Optional[str] = None,
+        path_type: Optional[str] = None,
     ):
         self.backend = backend
         self.path = path

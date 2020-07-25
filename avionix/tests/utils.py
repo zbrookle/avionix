@@ -5,7 +5,7 @@ import re
 import shutil
 from subprocess import check_output
 import time
-from typing import List, Optional, Tuple, Any
+from typing import Any, List, Optional, Tuple
 
 from pandas import DataFrame, Series
 

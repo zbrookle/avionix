@@ -2,6 +2,7 @@
 <details>
 <summary>0% implemented</summary>
 
+#### v1
 - [ ] Binding
 - [X] ConfigMap
 - [X] Endpoints
@@ -55,6 +56,18 @@
 - [ ] CSINode
 - [ ] StorageClass
 - [ ] VolumeAttachment
+
+#### v1beta1
+
+- [ ] Ingress
+- [ ] PodDisruptionBudget
+- [ ] Eviction
+- [ ] IngressClass
+- [ ] RuntimeClass
+- [ ] CertificateSigningRequest
+- [ ] EndpointSlice
+- [ ] CronJob
+- [ ] PodSecurityPolicy
 
 </details>
 

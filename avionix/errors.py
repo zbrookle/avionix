@@ -36,6 +36,10 @@ class ChartAlreadyInstalledError(AvionixError):
     pass
 
 
+class ChartNotInstalledError(AvionixError):
+    pass
+
+
 class HelmError(AvionixError):
     pass
 

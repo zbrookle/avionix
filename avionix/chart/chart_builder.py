@@ -7,7 +7,11 @@ from typing import Dict, List, Optional
 
 from avionix.chart.chart_info import ChartInfo
 from avionix.chart.utils import get_helm_installations
-from avionix.errors import ErrorFactory, post_uninstall_handle_error
+from avionix.errors import (
+    ChartNotInstalledError,
+    ErrorFactory,
+    post_uninstall_handle_error,
+)
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 
 
@@ -75,7 +79,8 @@ class ChartBuilder:
             error = ErrorFactory(decoded).get_error()
             if error is not None:
                 raise error
-            self.uninstall_chart()
+            if self.is_installed:
+                self.uninstall_chart()
             raise post_uninstall_handle_error(decoded)
 
     def install_chart(self):
@@ -86,6 +91,10 @@ class ChartBuilder:
 
     def uninstall_chart(self):
         info(f"Uninstalling helm chart {self.chart_info.name}")
+        if not self.is_installed:
+            raise ChartNotInstalledError(
+                f'Error: chart "{self.chart_info.name}" is not installed'
+            )
         subprocess.check_call(
             f"helm uninstall {self.chart_info.name}".split(" "),
             stderr=subprocess.STDOUT,

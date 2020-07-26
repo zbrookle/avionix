@@ -1,5 +1,3 @@
-from subprocess import check_output
-
 from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.core import (
     Container,
@@ -11,7 +9,7 @@ from avionix.kubernetes_objects.core import (
     Volume,
 )
 from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
-from avionix.testing.helpers import kubectl_get, parse_binary_output_to_dataframe
+from avionix.testing.helpers import kubectl_get
 
 
 def get_test_container(number: int):

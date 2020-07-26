@@ -9,7 +9,8 @@ from avionix.kubernetes_objects.extensions import (
     IngressRule,
     IngressSpec,
 )
-from avionix.testing import ChartInstallationContext, kubectl_get
+from avionix.testing import kubectl_get
+from avionix.testing.installation_context import ChartInstallationContext
 
 
 @pytest.fixture

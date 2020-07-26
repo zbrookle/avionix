@@ -10,7 +10,8 @@ from avionix.kubernetes_objects.apiextensions import (
     CustomResourceValidation,
     JSONSchemaProps,
 )
-from avionix.testing import ChartInstallationContext, kubectl_get
+from avionix.testing import kubectl_get
+from avionix.testing.installation_context import ChartInstallationContext
 
 
 @pytest.fixture

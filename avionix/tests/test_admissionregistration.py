@@ -9,7 +9,8 @@ from avionix.kubernetes_objects.admissionregistration import (
     WebhookClientConfig,
 )
 from avionix.kubernetes_objects.apiregistration import ServiceReference
-from avionix.testing import ChartInstallationContext, kubectl_get
+from avionix.testing import kubectl_get
+from avionix.testing.installation_context import ChartInstallationContext
 
 
 @pytest.fixture

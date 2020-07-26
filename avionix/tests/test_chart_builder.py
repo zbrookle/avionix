@@ -4,9 +4,10 @@ import re
 import shutil
 
 from avionix import ChartBuilder, ChartInfo
+from avionix.chart.chart_builder import get_helm_installations
 from avionix.kubernetes_objects.apps import Deployment
-from avionix.testing import ChartInstallationContext, kubectl_get
-from avionix.tests.utils import get_helm_installations
+from avionix.testing import kubectl_get
+from avionix.testing.installation_context import ChartInstallationContext
 
 
 def test_chart_folder_building(test_deployment1: Deployment):
@@ -39,6 +40,8 @@ def test_chart_installation(test_deployment1: Deployment):
         assert helm_installation["NAME"][0] == "test"
         assert helm_installation["REVISION"][0] == "1"
         assert helm_installation["STATUS"][0] == "deployed"
+
+        assert builder.is_installed
 
         deployments = kubectl_get("deployments")
         assert deployments["NAME"][0] == "test-deployment-1"

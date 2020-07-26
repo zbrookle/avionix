@@ -39,11 +39,6 @@ def get_test_deployment(number: int):
     )
 
 
-def get_helm_installations():
-    output = check_output(["helm", "list"])
-    return parse_binary_output_to_dataframe(output)
-
-
 def get_event_info():
     info = kubectl_get("events")
     return info[(info["TYPE"] != "Normal") & (info["TYPE"] != "Warning")].reset_index(

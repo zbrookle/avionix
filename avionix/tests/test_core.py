@@ -35,7 +35,8 @@ from avionix.kubernetes_objects.core import (
     Volume,
 )
 from avionix.kubernetes_objects.reference import ObjectReference
-from avionix.testing import ChartInstallationContext, kubectl_get
+from avionix.testing import kubectl_get
+from avionix.testing.installation_context import ChartInstallationContext
 from avionix.tests.utils import get_event_info, get_pod_with_volume
 
 

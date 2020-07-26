@@ -6,6 +6,7 @@ import subprocess
 from typing import Dict, List, Optional
 
 from avionix.chart.chart_info import ChartInfo
+from avionix.chart.utils import get_helm_installations
 from avionix.errors import ErrorFactory, post_uninstall_handle_error
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 
@@ -89,3 +90,9 @@ class ChartBuilder:
             f"helm uninstall {self.chart_info.name}".split(" "),
             stderr=subprocess.STDOUT,
         )
+
+    @property
+    def is_installed(self):
+        installations = get_helm_installations()
+        filtered = installations[installations["NAME"] == self.chart_info.name]
+        return not filtered.empty

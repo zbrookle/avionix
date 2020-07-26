@@ -61,10 +61,12 @@ def parse_binary_output_to_dataframe(output: bytes):
     return df
 
 
-def kubectl_get(resource: str, namespace: Optional[str] = None):
+def kubectl_get(resource: str, namespace: Optional[str] = None, wide: bool = False):
     command = f"kubectl get {resource}"
     if namespace:
         command += f" -n {namespace}"
+    if wide:
+        command += " -o wide"
     return parse_binary_output_to_dataframe(check_output(command.split(" ")))
 
 

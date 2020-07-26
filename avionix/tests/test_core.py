@@ -18,6 +18,7 @@ from avionix.kubernetes_objects.core import (
     PersistentVolume,
     PersistentVolumeClaim,
     PersistentVolumeClaimSpec,
+    PersistentVolumeClaimVolumeSource,
     PersistentVolumeSpec,
     Pod,
     PodTemplate,
@@ -31,10 +32,11 @@ from avionix.kubernetes_objects.core import (
     ServiceAccount,
     ServicePort,
     ServiceSpec,
+    Volume,
 )
 from avionix.kubernetes_objects.reference import ObjectReference
 from avionix.testing import ChartInstallationContext, kubectl_get
-from avionix.tests.utils import get_event_info
+from avionix.tests.utils import get_event_info, get_pod_with_volume
 
 
 @pytest.fixture
@@ -184,10 +186,10 @@ def test_create_non_empty_node(chart_info, node):
 
 @pytest.fixture
 def access_modes():
-    return ["ReadOnlyMany", "ReadWriteMany"]
+    return ["ReadWriteMany"]
 
 
-modes_expected_value = "ROX,RWX"
+modes_expected_value = "RWX"
 
 
 @pytest.fixture
@@ -198,6 +200,7 @@ def persistent_volume(access_modes):
             access_modes,
             capacity={"storage": 1},
             host_path=HostPathVolumeSource("/home/test/tmp"),
+            storage_class_name="standard",
         ),
     )
 
@@ -404,4 +407,56 @@ def test_create_binding(chart_info: ChartInfo, binding: Binding, pod: Pod):
     builder = ChartBuilder(chart_info, [binding, pod])
     with ChartInstallationContext(builder):
         kubectl_get("bindings")
-    builder.uninstall_chart()
+
+
+@pytest.fixture
+def persistent_volume_claim(persistent_volume):
+    return PersistentVolumeClaim(
+        ObjectMeta(name="test-pv-claim"),
+        PersistentVolumeClaimSpec(
+            persistent_volume.spec.accessModes,
+            resources=ResourceRequirements(
+                requests={"storage": persistent_volume.spec.capacity["storage"]}
+            ),
+        ),
+    )
+
+
+@pytest.fixture
+def pod_w_persistent_volume(persistent_volume_claim):
+    volume = Volume(
+        "test-volume",
+        persistent_volume_claim=PersistentVolumeClaimVolumeSource(
+            persistent_volume_claim.metadata.name, read_only=True
+        ),
+    )
+    return get_pod_with_volume(volume)
+
+
+def test_pod_w_persistent_volume(
+    chart_info, pod_w_persistent_volume, persistent_volume, persistent_volume_claim
+):
+    builder = ChartBuilder(
+        chart_info,
+        [persistent_volume, pod_w_persistent_volume, persistent_volume_claim],
+    )
+    with ChartInstallationContext(builder):
+        # Check pod ready
+        pod_info = kubectl_get("pods", wide=True)
+        assert pod_info["NAME"][0] == "test-pod"
+        assert pod_info["READY"][0] == "1/1"
+
+        # Check volume bound
+        volume_info = kubectl_get("persistentvolume")
+        assert volume_info["NAME"][0] == "test-persistent-volume"
+        assert volume_info["CAPACITY"][0] == "1"
+        assert volume_info["ACCESS MODES"][0] == "RWX"
+        assert volume_info["RECLAIM POLICY"][0] == "Retain"
+        assert volume_info["STATUS"][0] == "Bound"
+        assert volume_info["CLAIM"][0] == "default/test-pv-claim"
+
+        claim_info = kubectl_get("persistentvolumeclaims")
+        assert claim_info["NAME"][0] == "test-pv-claim"
+        assert claim_info["STATUS"][0] == "Bound"
+        assert claim_info["CAPACITY"][0] == "1"
+        assert claim_info["ACCESS MODES"][0] == "RWX"

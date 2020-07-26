@@ -2307,35 +2307,35 @@ class Volume(HelmYaml):
     :type name: str
     :param config_map:ConfigMap represents a configMap that should populate this \
         volume
-    :type config_map: ConfigMapVolumeSource
+    :type config_map: Optional[ConfigMapVolumeSource]
     :param downward_api:DownwardAPI represents downward API about the pod that should \
         populate this volume
-    :type downward_api: DownwardAPIVolumeSource
+    :type downward_api: Optional[DownwardAPIVolumeSource]
     :param empty_dir:EmptyDir represents a temporary directory that shares a pod's \
         lifetime. More info: \
         https://kubernetes.io/docs/concepts/storage/volumes#emptydir
-    :type empty_dir: EmptyDirVolumeSource
+    :type empty_dir: Optional[EmptyDirVolumeSource]
     :param git_repo:GitRepo represents a git repository at a particular revision. \
         DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, \
         mount an EmptyDir into an InitContainer that clones the repo using git, then \
         mount the EmptyDir into the Pod's container.
-    :type git_repo: GitRepoVolumeSource
+    :type git_repo: Optional[GitRepoVolumeSource]
     :param host_path:HostPath represents a pre-existing file or directory on the host \
         machine that is directly exposed to the container. This is generally used for \
         system agents or other privileged things that are allowed to see the host \
         machine. Most containers will NOT need this. More info: \
         https://kubernetes.io/docs/concepts/storage/volumes#hostpath
-    :type host_path: HostPathVolumeSource
+    :type host_path: Optional[HostPathVolumeSource]
     :param persistent_volume_claim:PersistentVolumeClaimVolumeSource represents a \
         reference to a PersistentVolumeClaim in the same namespace. More info: \
         https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims  # noqa
     :type persistent_volume_claim: PersistentVolumeClaimVolumeSource
     :param projected:Items for all in one resources secrets, configmaps, and downward \
         API
-    :type projected: ProjectedVolumeSource
+    :type projected: Optional[ProjectedVolumeSource]
     :param secret:Secret represents a secret that should populate this volume. More \
         info: https://kubernetes.io/docs/concepts/storage/volumes#secret
-    :type secret: SecretVolumeSource
+    :type secret: Optional[SecretVolumeSource]
     :param aws_elastic_block_store:AWSElasticBlockStore represents an AWS Disk \
         resource that is attached to a kubelet's host machine and then exposed to the \
         pod. More info: \
@@ -2405,14 +2405,14 @@ class Volume(HelmYaml):
     def __init__(
         self,
         name: str,
-        config_map: ConfigMapVolumeSource,
-        downward_api: DownwardAPIVolumeSource,
-        empty_dir: EmptyDirVolumeSource,
-        git_repo: GitRepoVolumeSource,
-        host_path: HostPathVolumeSource,
-        persistent_volume_claim: PersistentVolumeClaimVolumeSource,
-        projected: ProjectedVolumeSource,
-        secret: SecretVolumeSource,
+        config_map: Optional[ConfigMapVolumeSource] = None,
+        downward_api: Optional[DownwardAPIVolumeSource] = None,
+        empty_dir: Optional[EmptyDirVolumeSource] = None,
+        git_repo: Optional[GitRepoVolumeSource] = None,
+        host_path: Optional[HostPathVolumeSource] = None,
+        persistent_volume_claim: Optional[PersistentVolumeClaimVolumeSource] = None,
+        projected: Optional[ProjectedVolumeSource] = None,
+        secret: Optional[SecretVolumeSource] = None,
         aws_elastic_block_store: Optional[AWSElasticBlockStoreVolumeSource] = None,
         azure_disk: Optional[AzureDiskVolumeSource] = None,
         azure_file: Optional[AzureFileVolumeSource] = None,

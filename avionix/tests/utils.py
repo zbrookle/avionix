@@ -5,8 +5,10 @@ from avionix.kubernetes_objects.core import (
     Container,
     ContainerPort,
     EnvVar,
+    Pod,
     PodSpec,
     PodTemplateSpec,
+    Volume,
 )
 from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
 from avionix.testing.helpers import kubectl_get, parse_binary_output_to_dataframe
@@ -46,4 +48,10 @@ def get_event_info():
     info = kubectl_get("events")
     return info[(info["TYPE"] != "Normal") & (info["TYPE"] != "Warning")].reset_index(
         drop=True
+    )
+
+
+def get_pod_with_volume(volume: Volume):
+    return Pod(
+        ObjectMeta(name="test-pod"), PodSpec([get_test_container(0)], volumes=[volume])
     )

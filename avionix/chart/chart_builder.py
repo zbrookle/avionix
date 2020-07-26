@@ -6,7 +6,7 @@ import subprocess
 from typing import Dict, List, Optional
 
 from avionix.chart.chart_info import ChartInfo
-from avionix.errors import post_uninstall_handle_error, pre_uninstall_handle_error
+from avionix.errors import post_uninstall_handle_error, ErrorFactory
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 
 
@@ -69,9 +69,11 @@ class ChartBuilder:
             )
         except subprocess.CalledProcessError as err:
             decoded = err.output.decode("utf-8")
-            pre_uninstall_handle_error(decoded)
+            error = ErrorFactory(decoded).get_error()
+            if error is not None:
+                raise error
             self.uninstall_chart()
-            post_uninstall_handle_error(decoded)
+            raise post_uninstall_handle_error(decoded)
 
     def install_chart(self):
         self.generate_chart()

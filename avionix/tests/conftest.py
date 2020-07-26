@@ -6,6 +6,7 @@ import pytest
 from avionix import ChartInfo, ObjectMeta
 from avionix.kubernetes_objects.core import Pod, PodSpec, PodTemplateSpec
 from avionix.kubernetes_objects.meta import LabelSelector
+from avionix.kubernetes_objects.reference import ObjectReference
 from avionix.tests.utils import get_test_container, get_test_deployment
 
 logging.basicConfig(format="[%(filename)s: %(lineno)s] %(message)s", level=logging.INFO)
@@ -53,3 +54,13 @@ def pod_template_spec(pod_spec, test_labels):
 @pytest.fixture
 def selector(test_labels):
     return LabelSelector(match_labels=test_labels)
+
+
+@pytest.fixture
+def object_meta_event():
+    return ObjectMeta(name="test-event")
+
+
+@pytest.fixture
+def event_obj_ref():
+    return ObjectReference("test-pod", name="test-ref")

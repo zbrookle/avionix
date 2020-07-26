@@ -96,16 +96,6 @@ def test_endpoints_with_subset(chart_info: ChartInfo, endpoints_with_subset: End
 
 
 @pytest.fixture
-def object_meta_event():
-    return ObjectMeta(name="test-event")
-
-
-@pytest.fixture
-def event_obj_ref():
-    return ObjectReference("test-pod", name="test-ref")
-
-
-@pytest.fixture
 def empty_event(object_meta_event, event_obj_ref):
     return Event(object_meta_event, event_obj_ref)
 

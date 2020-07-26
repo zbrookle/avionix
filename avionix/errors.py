@@ -6,6 +6,12 @@ def pre_uninstall_handle_error(message):
         raise ClusterUnavailableError(message)
     if re.match(r"Error: cannot re-use a name that is still in use", message):
         raise ChartAlreadyInstalledError(message)
+    if re.match(
+        r"Error:.*unable to create new content in namespace \w+ because "
+        r"it is being terminated",
+        message,
+    ):
+        raise NamespaceBeingTerminatedError(message)
     raise HelmError(message)
 
 
@@ -27,4 +33,8 @@ class ChartAlreadyInstalledError(AvionixError):
 
 
 class HelmError(AvionixError):
+    pass
+
+
+class NamespaceBeingTerminatedError(AvionixError):
     pass

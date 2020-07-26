@@ -37,16 +37,16 @@ def validating_webhook_config(webhook_params):
     )
 
 
-def test_mutating_webhook_config(chart_info, mutating_webhook_config, test_folder):
-    builder = ChartBuilder(chart_info, [mutating_webhook_config], test_folder)
+def test_mutating_webhook_config(chart_info, mutating_webhook_config):
+    builder = ChartBuilder(chart_info, [mutating_webhook_config])
     with ChartInstallationContext(builder):
         hook_info = kubectl_get("mutatingwebhookconfigurations")
         assert hook_info["NAME"][0] == "test-mutating-webhook"
         assert hook_info["WEBHOOKS"][0] == "1"
 
 
-def test_validating_webhook_config(chart_info, validating_webhook_config, test_folder):
-    builder = ChartBuilder(chart_info, [validating_webhook_config], test_folder)
+def test_validating_webhook_config(chart_info, validating_webhook_config):
+    builder = ChartBuilder(chart_info, [validating_webhook_config])
     with ChartInstallationContext(builder):
         hook_info = kubectl_get("validatingwebhookconfigurations")
         assert hook_info["NAME"][0] == "test-validating-webhook"

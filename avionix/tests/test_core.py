@@ -34,6 +34,7 @@ from avionix.kubernetes_objects.core import (
 )
 from avionix.kubernetes_objects.reference import ObjectReference
 from avionix.testing import ChartInstallationContext, kubectl_get
+from avionix.tests.utils import get_event_info
 
 
 @pytest.fixture
@@ -41,8 +42,8 @@ def config_map():
     return ConfigMap(ObjectMeta(name="test-config-map"), data={"my_test_value": "yes"})
 
 
-def test_config_map(chart_info: ChartInfo, test_folder, config_map: ConfigMap):
-    builder = ChartBuilder(chart_info, [config_map], test_folder)
+def test_config_map(chart_info: ChartInfo, config_map: ConfigMap):
+    builder = ChartBuilder(chart_info, [config_map])
     with ChartInstallationContext(builder):
         config_maps = kubectl_get("configmaps")
         assert config_maps["NAME"][0] == "test-config-map"
@@ -78,20 +79,16 @@ def get_endpoints_info():
     return info[info["NAME"] != "kubernetes"].reset_index(drop=True)
 
 
-def test_endpoints_no_subset(
-    chart_info: ChartInfo, test_folder, endpoints_no_subset: Endpoints
-):
-    builder = ChartBuilder(chart_info, [endpoints_no_subset], test_folder)
+def test_endpoints_no_subset(chart_info: ChartInfo, endpoints_no_subset: Endpoints):
+    builder = ChartBuilder(chart_info, [endpoints_no_subset])
     with ChartInstallationContext(builder):
         endpoints_info = get_endpoints_info()
         assert endpoints_info["NAME"][0] == "test-endpoints"
         assert endpoints_info["ENDPOINTS"][0] == "<none>"
 
 
-def test_endpoints_with_subset(
-    chart_info: ChartInfo, test_folder, endpoints_with_subset: Endpoints
-):
-    builder = ChartBuilder(chart_info, [endpoints_with_subset], test_folder)
+def test_endpoints_with_subset(chart_info: ChartInfo, endpoints_with_subset: Endpoints):
+    builder = ChartBuilder(chart_info, [endpoints_with_subset])
     with ChartInstallationContext(builder):
         endpoints_info = get_endpoints_info()
         assert endpoints_info["NAME"][0] == "test-endpoints"
@@ -124,15 +121,8 @@ def non_empty_event(object_meta_event, event_obj_ref):
     )
 
 
-def get_event_info():
-    info = kubectl_get("events")
-    return info[(info["TYPE"] != "Normal") & (info["TYPE"] != "Warning")].reset_index(
-        drop=True
-    )
-
-
-def test_create_empty_event(chart_info: ChartInfo, test_folder, empty_event: Event):
-    builder = ChartBuilder(chart_info, [empty_event], test_folder)
+def test_create_empty_event(chart_info: ChartInfo, empty_event: Event):
+    builder = ChartBuilder(chart_info, [empty_event])
     with ChartInstallationContext(builder):
         event_info = get_event_info()
         assert event_info["TYPE"][0] == ""
@@ -141,10 +131,8 @@ def test_create_empty_event(chart_info: ChartInfo, test_folder, empty_event: Eve
         assert event_info["MESSAGE"][0] == ""
 
 
-def test_create_nonempty_event(
-    chart_info: ChartInfo, test_folder, non_empty_event: Event
-):
-    builder = ChartBuilder(chart_info, [non_empty_event], test_folder)
+def test_create_nonempty_event(chart_info: ChartInfo, non_empty_event: Event):
+    builder = ChartBuilder(chart_info, [non_empty_event])
     with ChartInstallationContext(builder):
         event_info = get_event_info()
         assert event_info["TYPE"][0] == "test-type"
@@ -161,8 +149,8 @@ def limit_range():
     )
 
 
-def test_create_limitrange(test_folder, chart_info, limit_range):
-    builder = ChartBuilder(chart_info, [limit_range], test_folder)
+def test_create_limitrange(chart_info, limit_range):
+    builder = ChartBuilder(chart_info, [limit_range])
     with ChartInstallationContext(builder):
         namespace_info = kubectl_get("limitranges")
         assert namespace_info["NAME"][0] == "test-range"
@@ -173,8 +161,8 @@ def namespace():
     return Namespace(ObjectMeta(name="test-namespace"))
 
 
-def test_create_namespace(test_folder, chart_info, namespace):
-    builder = ChartBuilder(chart_info, [namespace], test_folder)
+def test_create_namespace(chart_info, namespace):
+    builder = ChartBuilder(chart_info, [namespace])
     with ChartInstallationContext(builder):
         namespace_info = kubectl_get("namespaces")
         assert "test-namespace" in namespace_info["NAME"].values
@@ -195,8 +183,8 @@ def get_node_info():
     return node_info[node_info["NAME"] != "minikube"].reset_index(drop=True)
 
 
-def test_create_non_empty_node(test_folder, chart_info, node):
-    builder = ChartBuilder(chart_info, [node], test_folder)
+def test_create_non_empty_node(chart_info, node):
+    builder = ChartBuilder(chart_info, [node])
     with ChartInstallationContext(builder):
         node_info = get_node_info()
         assert node_info["NAME"][0] == "test-node"
@@ -224,8 +212,8 @@ def persistent_volume(access_modes):
     )
 
 
-def test_persistent_volume(test_folder, chart_info, persistent_volume):
-    builder = ChartBuilder(chart_info, [persistent_volume], test_folder)
+def test_persistent_volume(chart_info, persistent_volume):
+    builder = ChartBuilder(chart_info, [persistent_volume])
     with ChartInstallationContext(builder):
         volume_info = kubectl_get("persistentvolumes")
         assert volume_info["NAME"][0] == "test-persistent-volume"
@@ -243,10 +231,8 @@ def empty_persistent_volume_claim(access_modes):
     )
 
 
-def test_empty_persistent_volume_claim(
-    test_folder, chart_info, empty_persistent_volume_claim
-):
-    builder = ChartBuilder(chart_info, [empty_persistent_volume_claim], test_folder)
+def test_empty_persistent_volume_claim(chart_info, empty_persistent_volume_claim):
+    builder = ChartBuilder(chart_info, [empty_persistent_volume_claim])
     with ChartInstallationContext(builder):
         volume_info = kubectl_get("persistentvolumeclaims")
         assert volume_info["NAME"][0] == "test-persistent-volume-claim"
@@ -254,8 +240,8 @@ def test_empty_persistent_volume_claim(
         assert volume_info["ACCESS MODES"][0] == modes_expected_value
 
 
-def test_create_pod(chart_info: ChartInfo, test_folder, pod: Pod):
-    builder = ChartBuilder(chart_info, [pod], test_folder)
+def test_create_pod(chart_info: ChartInfo, pod: Pod):
+    builder = ChartBuilder(chart_info, [pod])
     with ChartInstallationContext(builder):
         pods_info = kubectl_get("pods")
         assert pods_info["NAME"][0] == "test-pod"
@@ -268,10 +254,8 @@ def pod_template(pod_template_spec):
     return PodTemplate(ObjectMeta(name="test-pod-template"), pod_template_spec)
 
 
-def test_create_pod_template(
-    chart_info: ChartInfo, test_folder, pod_template: PodTemplate
-):
-    builder = ChartBuilder(chart_info, [pod_template], test_folder)
+def test_create_pod_template(chart_info: ChartInfo, pod_template: PodTemplate):
+    builder = ChartBuilder(chart_info, [pod_template])
     with ChartInstallationContext(builder):
         template_info = kubectl_get("podtemplates")
         assert template_info["NAME"][0] == "test-pod-template"
@@ -287,7 +271,7 @@ def replication_controller(pod_template_spec):
     )
 
 
-def test_replication_controller(chart_info, test_folder, replication_controller):
+def test_replication_controller(chart_info, replication_controller):
     builder = ChartBuilder(chart_info, [replication_controller])
     with ChartInstallationContext(builder):
         replication_info = kubectl_get("replicationcontrollers")
@@ -303,8 +287,8 @@ def resource_quota():
     )
 
 
-def test_resource_quota(chart_info, test_folder, resource_quota):
-    builder = ChartBuilder(chart_info, [resource_quota], test_folder)
+def test_resource_quota(chart_info, resource_quota):
+    builder = ChartBuilder(chart_info, [resource_quota])
     with ChartInstallationContext(builder):
         quota_info = kubectl_get("resourcequotas")
         assert quota_info["NAME"][0] == "test-resource-quota"
@@ -326,16 +310,16 @@ def get_secret_info():
     return info[info["NAME"] == "test-secret"].reset_index(drop=True)
 
 
-def test_empty_secret(chart_info, test_folder, empty_secret):
-    builder = ChartBuilder(chart_info, [empty_secret], test_folder)
+def test_empty_secret(chart_info, empty_secret):
+    builder = ChartBuilder(chart_info, [empty_secret])
     with ChartInstallationContext(builder):
         secret_info = get_secret_info()
         assert secret_info["NAME"][0] == "test-secret"
         assert secret_info["DATA"][0] == "0"
 
 
-def test_non_empty_secret(chart_info, test_folder, non_empty_secret):
-    builder = ChartBuilder(chart_info, [non_empty_secret], test_folder)
+def test_non_empty_secret(chart_info, non_empty_secret):
+    builder = ChartBuilder(chart_info, [non_empty_secret])
     with ChartInstallationContext(builder):
         secret_info = get_secret_info()
         assert secret_info["NAME"][0] == "test-secret"
@@ -366,16 +350,16 @@ def get_service_info():
     return info[info["NAME"] != "kubernetes"].reset_index(drop=True)
 
 
-def test_empty_service(chart_info, test_folder, empty_service):
-    builder = ChartBuilder(chart_info, [empty_service], test_folder)
+def test_empty_service(chart_info, empty_service):
+    builder = ChartBuilder(chart_info, [empty_service])
     with ChartInstallationContext(builder):
         service_info = get_service_info()
         assert service_info["NAME"][0] == "test-service"
         assert service_info["PORT(S)"][0] == "80/TCP"
 
 
-def test_nonempty_service(chart_info, test_folder, nonempty_service):
-    builder = ChartBuilder(chart_info, [nonempty_service], test_folder)
+def test_nonempty_service(chart_info, nonempty_service):
+    builder = ChartBuilder(chart_info, [nonempty_service])
     with ChartInstallationContext(builder):
         service_info = get_service_info()
         assert service_info["NAME"][0] == "test-service"
@@ -401,15 +385,15 @@ def get_service_account_info():
     return info[info["NAME"] != "default"].reset_index(drop=True)
 
 
-def test_empty_service_account(chart_info, test_folder, empty_service_account):
-    builder = ChartBuilder(chart_info, [empty_service_account], test_folder)
+def test_empty_service_account(chart_info, empty_service_account):
+    builder = ChartBuilder(chart_info, [empty_service_account])
     with ChartInstallationContext(builder):
         service_account_info = get_service_account_info()
         assert service_account_info["NAME"][0] == "test-service-account"
 
 
-def test_nonempty_service_account(chart_info, test_folder, nonempty_service_account):
-    builder = ChartBuilder(chart_info, [nonempty_service_account], test_folder)
+def test_nonempty_service_account(chart_info, nonempty_service_account):
+    builder = ChartBuilder(chart_info, [nonempty_service_account])
     with ChartInstallationContext(builder):
         service_account_info = get_service_account_info()
         assert service_account_info["NAME"][0] == "test-service-account"
@@ -426,8 +410,8 @@ def binding():
 
 
 @pytest.mark.xfail(reason="Still need to figure out this test")
-def test_create_binding(chart_info: ChartInfo, binding: Binding, pod: Pod, test_folder):
-    builder = ChartBuilder(chart_info, [binding, pod], str(test_folder))
+def test_create_binding(chart_info: ChartInfo, binding: Binding, pod: Pod):
+    builder = ChartBuilder(chart_info, [binding, pod])
     with ChartInstallationContext(builder):
         kubectl_get("bindings")
     builder.uninstall_chart()

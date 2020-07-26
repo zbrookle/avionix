@@ -40,8 +40,8 @@ def ingress_w_backend(ingress_backend):
     )
 
 
-def test_ingress_w_rules(chart_info, ingress_w_rules, test_folder):
-    builder = ChartBuilder(chart_info, [ingress_w_rules], test_folder)
+def test_ingress_w_rules(chart_info, ingress_w_rules):
+    builder = ChartBuilder(chart_info, [ingress_w_rules])
     with ChartInstallationContext(builder):
         ingress_info = kubectl_get("ingress")
         assert ingress_info["NAME"][0] == "test-ingress"
@@ -50,8 +50,8 @@ def test_ingress_w_rules(chart_info, ingress_w_rules, test_folder):
         assert ingress_info["PORTS"][0] == "80"
 
 
-def test_ingress_w_backend(chart_info, ingress_w_backend, test_folder):
-    builder = ChartBuilder(chart_info, [ingress_w_backend], test_folder)
+def test_ingress_w_backend(chart_info, ingress_w_backend):
+    builder = ChartBuilder(chart_info, [ingress_w_backend])
     with ChartInstallationContext(builder):
         ingress_info = kubectl_get("ingress")
         assert ingress_info["NAME"][0] == "test-ingress"

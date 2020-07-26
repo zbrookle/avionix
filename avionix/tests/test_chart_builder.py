@@ -9,7 +9,8 @@ from avionix.testing import ChartInstallationContext, kubectl_get
 from avionix.tests.utils import get_helm_installations
 
 
-def test_chart_folder_building(test_deployment1: Deployment, test_folder):
+def test_chart_folder_building(test_deployment1: Deployment):
+    test_folder = Path("tmp")
     os.makedirs(test_folder, exist_ok=True)
     builder = ChartBuilder(
         ChartInfo(api_version="3.2.4", name="test", version="0.1.0"),
@@ -27,11 +28,10 @@ def test_chart_folder_building(test_deployment1: Deployment, test_folder):
     shutil.rmtree(test_folder)
 
 
-def test_chart_installation(test_deployment1: Deployment, test_folder):
+def test_chart_installation(test_deployment1: Deployment):
     builder = ChartBuilder(
         ChartInfo(api_version="3.2.4", name="test", version="0.1.0", app_version="v1"),
         [test_deployment1],
-        test_folder,
     )
     with ChartInstallationContext(builder):
         # Check helm release
@@ -50,14 +50,9 @@ def test_chart_installation(test_deployment1: Deployment, test_folder):
 
 
 def test_intalling_two_components(
-    test_folder,
-    test_deployment1: Deployment,
-    test_deployment2: Deployment,
-    chart_info: ChartInfo,
+    test_deployment1: Deployment, test_deployment2: Deployment, chart_info: ChartInfo,
 ):
-    builder = ChartBuilder(
-        chart_info, [test_deployment1, test_deployment2], test_folder,
-    )
+    builder = ChartBuilder(chart_info, [test_deployment1, test_deployment2],)
     with ChartInstallationContext(builder):
         # Check helm release
         helm_installation = get_helm_installations()

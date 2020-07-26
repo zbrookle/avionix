@@ -20,8 +20,8 @@ def controller_revision():
     )
 
 
-def test_controller_revision(chart_info, test_folder, controller_revision):
-    builder = ChartBuilder(chart_info, [controller_revision], test_folder)
+def test_controller_revision(chart_info, controller_revision):
+    builder = ChartBuilder(chart_info, [controller_revision])
     with ChartInstallationContext(builder):
         controller_revision_info = kubectl_get("controllerrevisions")
         assert controller_revision_info["NAME"][0] == "test-controller-revision"
@@ -35,8 +35,8 @@ def daemon_set(pod_template_spec, selector):
     )
 
 
-def test_daemon_set(chart_info, test_folder, daemon_set):
-    builder = ChartBuilder(chart_info, [daemon_set], test_folder)
+def test_daemon_set(chart_info, daemon_set):
+    builder = ChartBuilder(chart_info, [daemon_set])
     with ChartInstallationContext(builder):
         daemon_set_info = kubectl_get("daemonsets")
         assert daemon_set_info["NAME"][0] == "test-daemon-set"
@@ -52,8 +52,8 @@ def deployment(test_labels, pod_template_spec, selector):
     )
 
 
-def test_deployment(chart_info, test_folder, deployment):
-    builder = ChartBuilder(chart_info, [deployment], test_folder)
+def test_deployment(chart_info, deployment):
+    builder = ChartBuilder(chart_info, [deployment])
     with ChartInstallationContext(builder):
         deployment_info = kubectl_get("deployments")
         assert deployment_info["NAME"][0] == "test-deployment"
@@ -68,8 +68,8 @@ def replica_set(pod_template_spec, selector):
     )
 
 
-def test_replica_set(chart_info, test_folder, replica_set):
-    builder = ChartBuilder(chart_info, [replica_set], test_folder)
+def test_replica_set(chart_info, replica_set):
+    builder = ChartBuilder(chart_info, [replica_set])
     with ChartInstallationContext(builder):
         replica_set_info = kubectl_get("replicasets")
         assert replica_set_info["NAME"][0] == "test-replica-set"

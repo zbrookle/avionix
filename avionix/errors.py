@@ -6,7 +6,6 @@ def post_uninstall_handle_error(message):
 
 
 class ErrorFactory:
-
     def __init__(self, message: str):
         self._message = message
 
@@ -16,9 +15,9 @@ class ErrorFactory:
         if re.match(r"Error: cannot re-use a name that is still in use", self._message):
             return ChartAlreadyInstalledError(self._message)
         if re.match(
-                r"Error:.*unable to create new content in namespace \w+ because "
-                r"it is being terminated",
-                self._message,
+            r"Error:.*unable to create new content in namespace \w+ because "
+            r"it is being terminated",
+            self._message,
         ):
             return NamespaceBeingTerminatedError(self._message)
         return None

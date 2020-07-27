@@ -21,6 +21,7 @@ from avionix.kubernetes_objects.core import (
     PersistentVolumeClaimVolumeSource,
     PersistentVolumeSpec,
     Pod,
+    PodSecurityContext,
     PodTemplate,
     ReplicationController,
     ReplicationControllerSpec,
@@ -37,7 +38,7 @@ from avionix.kubernetes_objects.core import (
 from avionix.kubernetes_objects.reference import ObjectReference
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
-from avionix.tests.utils import get_event_info, get_pod_with_volume
+from avionix.tests.utils import get_event_info, get_pod_with_options
 
 
 @pytest.fixture
@@ -431,7 +432,7 @@ def pod_w_persistent_volume(persistent_volume_claim):
             persistent_volume_claim.metadata.name, read_only=True
         ),
     )
-    return get_pod_with_volume(volume)
+    return get_pod_with_options(volume)
 
 
 def test_pod_w_persistent_volume(
@@ -461,3 +462,18 @@ def test_pod_w_persistent_volume(
         assert claim_info["STATUS"][0] == "Bound"
         assert claim_info["CAPACITY"][0] == "1"
         assert claim_info["ACCESS MODES"][0] == "RWX"
+
+
+@pytest.fixture
+def pod_w_security_context():
+    security_context = PodSecurityContext(1000)
+    return get_pod_with_options(security_context=security_context)
+
+
+def test_pod_security_context(pod_w_security_context, chart_info):
+    builder = ChartBuilder(chart_info, [pod_w_security_context])
+    with ChartInstallationContext(builder):
+        pod_info = kubectl_get("pods")
+        assert pod_info["NAME"][0] == "test-pod"
+        assert pod_info["READY"][0] == "1/1"
+        assert pod_info["STATUS"][0] == "Running"

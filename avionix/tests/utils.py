@@ -1,9 +1,12 @@
+from typing import Optional
+
 from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.core import (
     Container,
     ContainerPort,
     EnvVar,
     Pod,
+    PodSecurityContext,
     PodSpec,
     PodTemplateSpec,
     Volume,
@@ -44,7 +47,13 @@ def get_event_info():
     )
 
 
-def get_pod_with_volume(volume: Volume):
+def get_pod_with_options(
+    volume: Optional[Volume] = None,
+    security_context: Optional[PodSecurityContext] = None,
+):
     return Pod(
-        ObjectMeta(name="test-pod"), PodSpec([get_test_container(0)], volumes=[volume])
+        ObjectMeta(name="test-pod"),
+        PodSpec(
+            [get_test_container(0)], volumes=[volume], security_context=security_context
+        ),
     )

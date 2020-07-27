@@ -1040,37 +1040,37 @@ class PodSecurityContext(HelmYaml):
         setgid bit is set (new files created in the volume will be owned by FSGroup) \
         3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not \
         modify the ownership and permissions of any volume.
-    :type fs_group: int
+    :type fs_group: Optional[int]
     :param run_as_group:The GID to run the entrypoint of the container process. Uses \
         runtime default if unset. May also be set in SecurityContext.  If set in both \
         SecurityContext and PodSecurityContext, the value specified in SecurityContext \
         takes precedence for that container.
-    :type run_as_group: int
+    :type run_as_group: Optional[int]
     :param run_as_non_root:Indicates that the container must run as a non-root user. \
         If true, the Kubelet will validate the image at runtime to ensure that it does \
         not run as UID 0 (root) and fail to start the container if it does. If unset \
         or false, no such validation will be performed. May also be set in \
         SecurityContext.  If set in both SecurityContext and PodSecurityContext, the \
         value specified in SecurityContext takes precedence.
-    :type run_as_non_root: bool
+    :type run_as_non_root: Optional[bool]
     :param se_linux_options:The SELinux context to be applied to all containers. If \
         unspecified, the container runtime will allocate a random SELinux context for \
         each container.  May also be set in SecurityContext.  If set in both \
         SecurityContext and PodSecurityContext, the value specified in SecurityContext \
         takes precedence for that container.
-    :type se_linux_options: SELinuxOptions
+    :type se_linux_options: Optional[SELinuxOptions]
     :param supplemental_groups:A list of groups applied to the first process run in \
         each container, in addition to the container's primary GID.  If unspecified, \
         no groups will be added to any container.
-    :type supplemental_groups: List[int]
+    :type supplemental_groups: Optional[List[int]]
     :param sysctls:Sysctls hold a list of namespaced sysctls used for the pod. Pods \
         with unsupported sysctls (by the container runtime) might fail to launch.
-    :type sysctls: List[Sysctl]
+    :type sysctls: Optional[List[Sysctl]]
     :param windows_options:The Windows specific settings applied to all containers. If \
         unspecified, the options within a container's SecurityContext will be used. If \
         set in both SecurityContext and PodSecurityContext, the value specified in \
         SecurityContext takes precedence.
-    :type windows_options: WindowsSecurityContextOptions
+    :type windows_options: Optional[WindowsSecurityContextOptions]
     :param fs_group_change_policy:fsGroupChangePolicy defines behavior of changing \
         ownership and permission of the volume before being exposed inside Pod. This \
         field will only apply to volume types which support fsGroup based \
@@ -1087,13 +1087,13 @@ class PodSecurityContext(HelmYaml):
 
     def __init__(
         self,
-        fs_group: int,
-        run_as_group: int,
-        run_as_non_root: bool,
-        se_linux_options: SELinuxOptions,
-        supplemental_groups: List[int],
-        sysctls: List[Sysctl],
-        windows_options: WindowsSecurityContextOptions,
+        fs_group: Optional[int] = None,
+        run_as_group: Optional[int] = None,
+        run_as_non_root: Optional[bool] = None,
+        se_linux_options: Optional[SELinuxOptions] = None,
+        supplemental_groups: Optional[List[int]] = None,
+        sysctls: Optional[List[Sysctl]] = None,
+        windows_options: Optional[WindowsSecurityContextOptions] = None,
         fs_group_change_policy: Optional[str] = None,
         run_as_user: Optional[int] = None,
     ):

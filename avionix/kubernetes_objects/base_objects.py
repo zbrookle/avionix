@@ -91,5 +91,14 @@ class Extensions(KubernetesBaseObject):
     _base_object_name = "Extensions"
 
 
+class Batch(KubernetesBaseObject):
+    """
+    Base class for api registration
+    """
+
+    _version_prefix = "batch/"
+    _base_object_name = "Batch"
+
+
 class BaseSpec(HelmYaml):
     pass

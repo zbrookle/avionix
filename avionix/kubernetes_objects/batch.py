@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, Batch
 from avionix.kubernetes_objects.core import PodTemplateSpec
 from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
@@ -19,7 +19,7 @@ class JobSpec(HelmYaml):
         value.  Setting to 1 means that parallelism is limited to 1 and the success of \
         that pod signals the success of the job. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
-    :type completions: int
+    :type completions: Optional[int]
     :param manual_selector:manualSelector controls generation of pod labels and pod \
         selectors. Leave `manualSelector` unset unless you are certain what you are \
         doing. When false or unset, the system pick labels unique to this job and \
@@ -29,18 +29,18 @@ class JobSpec(HelmYaml):
         However, You may see `manualSelector=true` in jobs that were created with the \
         old `extensions/v1beta1` API. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/#specifying-your-own-pod-selector  # noqa
-    :type manual_selector: bool
+    :type manual_selector: Optional[bool]
     :param parallelism:Specifies the maximum desired number of pods the job should run \
         at any given time. The actual number of pods running in steady state will be \
         less than this number when ((.spec.completions - .status.successful) < \
         .spec.parallelism), i.e. when the work left to do is less than max \
         parallelism. More info: \
         https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
-    :type parallelism: int
+    :type parallelism: Optional[int]
     :param selector:A label query over pods that should match the pod count. Normally, \
         the system sets this field for you. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :type selector: LabelSelector
+    :type selector: Optional[LabelSelector]
     :param ttl_seconds_after_finished:ttlSecondsAfterFinished limits the lifetime of a \
         Job that has finished execution (either Complete or Failed). If this field is \
         set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be \
@@ -49,7 +49,7 @@ class JobSpec(HelmYaml):
         automatically deleted. If this field is set to zero, the Job becomes eligible \
         to be deleted immediately after it finishes. This field is alpha-level and is \
         only honored by servers that enable the TTLAfterFinished feature.
-    :type ttl_seconds_after_finished: int
+    :type ttl_seconds_after_finished: Optional[int]
     :param active_deadline_seconds:Specifies the duration in seconds relative to the \
         startTime that the job may be active before the system tries to terminate it; \
         value must be positive integer
@@ -62,11 +62,11 @@ class JobSpec(HelmYaml):
     def __init__(
         self,
         template: PodTemplateSpec,
-        completions: int,
-        manual_selector: bool,
-        parallelism: int,
-        selector: LabelSelector,
-        ttl_seconds_after_finished: int,
+        completions: Optional[int] = None,
+        manual_selector: Optional[bool] = None,
+        parallelism: Optional[int] = None,
+        selector: Optional[LabelSelector] = None,
+        ttl_seconds_after_finished: Optional[int] = None,
         active_deadline_seconds: Optional[int] = None,
         backoff_limit: Optional[int] = None,
     ):
@@ -157,28 +157,24 @@ class JobList(KubernetesBaseObject):
 
 class JobTemplateSpec(HelmYaml):
     """
-    :param metadata:Standard object's metadata of the jobs created from this template. \
-        More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ObjectMeta
     :param spec:Specification of the desired behavior of the job. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
     :type spec: JobSpec
+    :param metadata:Standard object's metadata of the jobs created from this template. \
+        More info: \
+        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :type metadata: Optional[ObjectMeta]
     """
 
-    def __init__(self, metadata: ObjectMeta, spec: JobSpec):
+    def __init__(
+        self, spec: JobSpec, metadata: Optional[ObjectMeta] = None,
+    ):
         self.metadata = metadata
         self.spec = spec
 
 
 class CronJobSpec(HelmYaml):
     """
-    :param concurrency_policy:Specifies how to treat concurrent executions of a Job. \
-        Valid values are: - "Allow" (default): allows CronJobs to run concurrently; - \
-        "Forbid": forbids concurrent runs, skipping next run if previous run hasn't \
-        finished yet; - "Replace": cancels currently running job and replaces it with \
-        a new one
-    :type concurrency_policy: str
     :param job_template:Specifies the job that will be created when executing a \
         CronJob.
     :type job_template: JobTemplateSpec
@@ -188,7 +184,13 @@ class CronJobSpec(HelmYaml):
     :param starting_deadline_seconds:Optional deadline in seconds for starting the job \
         if it misses scheduled time for any reason.  Missed jobs executions will be \
         counted as failed ones.
-    :type starting_deadline_seconds: int
+    :type starting_deadline_seconds: Optional[int]
+    :param concurrency_policy:Specifies how to treat concurrent executions of a Job. \
+        Valid values are: - "Allow" (default): allows CronJobs to run concurrently; - \
+        "Forbid": forbids concurrent runs, skipping next run if previous run hasn't \
+        finished yet; - "Replace": cancels currently running job and replaces it with \
+        a new one
+    :type concurrency_policy: str
     :param failed_jobs_history_limit:The number of failed finished jobs to retain. \
         This is a pointer to distinguish between explicit zero and not specified. \
         Defaults to 1.
@@ -204,10 +206,10 @@ class CronJobSpec(HelmYaml):
 
     def __init__(
         self,
-        concurrency_policy: str,
         job_template: JobTemplateSpec,
         schedule: str,
-        starting_deadline_seconds: int,
+        starting_deadline_seconds: Optional[int] = None,
+        concurrency_policy: Optional[str] = None,
         failed_jobs_history_limit: Optional[int] = None,
         successful_jobs_history_limit: Optional[int] = None,
         suspend: Optional[bool] = None,
@@ -221,7 +223,7 @@ class CronJobSpec(HelmYaml):
         self.suspend = suspend
 
 
-class CronJob(KubernetesBaseObject):
+class CronJob(Batch):
     """
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -247,7 +249,7 @@ class CronJob(KubernetesBaseObject):
         self.spec = spec
 
 
-class CronJobList(KubernetesBaseObject):
+class CronJobList(Batch):
     """
     :param metadata:Standard list metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

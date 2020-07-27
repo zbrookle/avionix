@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, Batch
+from avionix.kubernetes_objects.base_objects import Batch, KubernetesBaseObject
 from avionix.kubernetes_objects.core import PodTemplateSpec
 from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml

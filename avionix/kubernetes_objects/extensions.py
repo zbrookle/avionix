@@ -98,6 +98,8 @@ class HTTPIngressRuleValue(HelmYaml):
 
 class IngressRule(HelmYaml):
     """
+    :param http:None
+    :type http: HTTPIngressRuleValue
     :param host:Host is the fully qualified domain name of a network host, as defined \
         by RFC 3986. Note the following deviations from the "host" part of the URI as \
         defined in RFC 3986: 1. IPs are not allowed. Currently an IngressRuleValue can \
@@ -116,12 +118,10 @@ class IngressRule(HelmYaml):
         request matches this rule if the http host header is equal to Host. 2. If Host \
         is a wildcard, then the request matches this rule if the http host header is \
         to equal to the suffix (removing the first label) of the wildcard rule.
-    :type host: str
-    :param http:None
-    :type http: HTTPIngressRuleValue
+    :type host: Optional[str]
     """
 
-    def __init__(self, host: str, http: HTTPIngressRuleValue):
+    def __init__(self, http: HTTPIngressRuleValue, host: Optional[str]):
         self.host = host
         self.http = http
 

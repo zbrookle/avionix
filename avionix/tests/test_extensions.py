@@ -24,9 +24,7 @@ def ingress_w_rules(ingress_backend):
         ObjectMeta(name="test-ingress"),
         IngressSpec(
             rules=[
-                IngressRule(
-                    HTTPIngressRuleValue([HTTPIngressPath(ingress_backend)]),
-                )
+                IngressRule(HTTPIngressRuleValue([HTTPIngressPath(ingress_backend)]),)
             ],
         ),
     )

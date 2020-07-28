@@ -121,7 +121,7 @@ class IngressRule(HelmYaml):
     :type host: Optional[str]
     """
 
-    def __init__(self, http: HTTPIngressRuleValue, host: Optional[str]):
+    def __init__(self, http: HTTPIngressRuleValue, host: Optional[str] = None):
         self.host = host
         self.http = http
 

@@ -156,7 +156,7 @@ class IngressSpec(HelmYaml):
 
     def __init__(
         self,
-        ingress_class_name: str,
+        ingress_class_name: Optional[str] = None,
         backend: Optional[IngressBackend] = None,
         rules: Optional[List[IngressRule]] = None,
         tls: Optional[List[IngressTLS]] = None,

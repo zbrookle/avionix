@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.core import (
@@ -9,6 +9,7 @@ from avionix.kubernetes_objects.core import (
     PodSecurityContext,
     PodSpec,
     PodTemplateSpec,
+    Probe,
     Volume,
     VolumeMount,
 )
@@ -51,10 +52,15 @@ def get_event_info():
 def get_pod_with_options(
     volume: Optional[Volume] = None,
     security_context: Optional[PodSecurityContext] = None,
+    readiness_probe: Optional[Probe] = None,
 ):
     container = get_test_container(0)
     if volume is not None:
         container.volumeMounts = [VolumeMount(volume.name, "~/tmp")]
+    if readiness_probe is not None:
+        container.readinessProbe = readiness_probe
+        container.livenessProbe = readiness_probe
+        container.startupProbe = readiness_probe
     return Pod(
         ObjectMeta(name="test-pod"),
         PodSpec([container], volumes=[volume], security_context=security_context),

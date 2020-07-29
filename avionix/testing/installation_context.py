@@ -23,6 +23,7 @@ class ChartInstallationContext:
         status_resource: str = "pods",
         timeout: int = 20,
         expected_status: Optional[set] = None,
+        status_field: str = "STATUS",
     ):
         self.chart_builder = chart_builder
         self.status_resource = status_resource
@@ -32,11 +33,12 @@ class ChartInstallationContext:
         else:
             self.expected_status = expected_status
         self.__temp_dir = Path.cwd() / "tmp"
+        self.__status_field = status_field
 
     def get_status_resources(self) -> Series:
         resources = kubectl_get(self.status_resource)
-        if "STATUS" in resources:
-            return resources["STATUS"]
+        if self.__status_field in resources:
+            return resources[self.__status_field]
         return Series([], dtype="object")
 
     def wait_for_ready(self):

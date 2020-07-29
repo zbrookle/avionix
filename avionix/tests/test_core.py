@@ -8,7 +8,9 @@ from avionix.kubernetes_objects.core import (
     Endpoints,
     EndpointSubset,
     Event,
+    ExecAction,
     HostPathVolumeSource,
+    HTTPGetAction,
     LimitRange,
     LimitRangeItem,
     LimitRangeSpec,
@@ -23,6 +25,7 @@ from avionix.kubernetes_objects.core import (
     Pod,
     PodSecurityContext,
     PodTemplate,
+    Probe,
     ReplicationController,
     ReplicationControllerSpec,
     ResourceQuota,
@@ -33,6 +36,7 @@ from avionix.kubernetes_objects.core import (
     ServiceAccount,
     ServicePort,
     ServiceSpec,
+    TCPSocketAction,
     Volume,
 )
 from avionix.kubernetes_objects.reference import ObjectReference
@@ -473,6 +477,30 @@ def pod_w_security_context():
 def test_pod_security_context(pod_w_security_context, chart_info):
     builder = ChartBuilder(chart_info, [pod_w_security_context])
     with ChartInstallationContext(builder):
+        pod_info = kubectl_get("pods")
+        assert pod_info["NAME"][0] == "test-pod"
+        assert pod_info["READY"][0] == "1/1"
+        assert pod_info["STATUS"][0] == "Running"
+
+
+@pytest.mark.parametrize(
+    "probe",
+    [
+        Probe(
+            http_get=HTTPGetAction("/", 8080), period_seconds=1, failure_threshold=10
+        ),
+        Probe(
+            exec=ExecAction(["echo", "good"]), period_seconds=1, failure_threshold=10
+        ),
+        Probe(tcp_socket=TCPSocketAction(8080), period_seconds=1, failure_threshold=10),
+    ],
+)
+def test_readiness_probes(chart_info, probe: Probe):
+    pod = get_pod_with_options(readiness_probe=probe)
+    builder = ChartBuilder(chart_info, [pod])
+    with ChartInstallationContext(
+        builder, expected_status={"1/1"}, status_field="READY"
+    ):
         pod_info = kubectl_get("pods")
         assert pod_info["NAME"][0] == "test-pod"
         assert pod_info["READY"][0] == "1/1"

@@ -631,14 +631,14 @@ class HTTPHeader(HelmYaml):
 
 class HTTPGetAction(HelmYaml):
     """
-    :param http_headers:Custom headers to set in the request. HTTP allows repeated \
-        headers.
-    :type http_headers: List[HTTPHeader]
     :param path:Path to access on the HTTP server.
     :type path: str
     :param port:Name or number of the port to access on the container. Number must be \
         in the range 1 to 65535. Name must be an IANA_SVC_NAME.
     :type port: int
+    :param http_headers:Custom headers to set in the request. HTTP allows repeated \
+        headers.
+    :type http_headers: Optional[List[HTTPHeader]]
     :param host:Host name to connect to, defaults to the pod IP. You probably want to \
         set "Host" in httpHeaders instead.
     :type host: Optional[str]
@@ -648,9 +648,9 @@ class HTTPGetAction(HelmYaml):
 
     def __init__(
         self,
-        http_headers: List[HTTPHeader],
         path: str,
         port: int,
+        http_headers: Optional[List[HTTPHeader]] = None,
         host: Optional[str] = None,
         scheme: Optional[str] = None,
     ):
@@ -787,19 +787,19 @@ class Probe(HelmYaml):
     """
     :param exec:One and only one of the following should be specified. Exec specifies \
         the action to take.
-    :type exec: ExecAction
+    :type exec: Optional[ExecAction]
     :param http_get:HTTPGet specifies the http request to perform.
-    :type http_get: HTTPGetAction
+    :type http_get: Optional[HTTPGetAction]
     :param initial_delay_seconds:Number of seconds after the container has started \
         before liveness probes are initiated. More info: \
         https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes  # noqa
-    :type initial_delay_seconds: int
+    :type initial_delay_seconds: Optional[int]
     :param period_seconds:How often (in seconds) to perform the probe. Default to 10 \
         seconds. Minimum value is 1.
-    :type period_seconds: int
+    :type period_seconds: Optional[int]
     :param tcp_socket:TCPSocket specifies an action involving a TCP port. TCP hooks \
         not yet supported
-    :type tcp_socket: TCPSocketAction
+    :type tcp_socket: Optional[TCPSocketAction]
     :param failure_threshold:Minimum consecutive failures for the probe to be \
         considered failed after having succeeded. Defaults to 3. Minimum value is 1.
     :type failure_threshold: Optional[int]
@@ -815,11 +815,11 @@ class Probe(HelmYaml):
 
     def __init__(
         self,
-        exec: ExecAction,
-        http_get: HTTPGetAction,
-        initial_delay_seconds: int,
-        period_seconds: int,
-        tcp_socket: TCPSocketAction,
+        exec: Optional[ExecAction] = None,
+        http_get: Optional[HTTPGetAction] = None,
+        initial_delay_seconds: Optional[int] = None,
+        period_seconds: Optional[int] = None,
+        tcp_socket: Optional[TCPSocketAction] = None,
         failure_threshold: Optional[int] = None,
         success_threshold: Optional[int] = None,
         timeout_seconds: Optional[int] = None,

@@ -10,6 +10,7 @@ from avionix.kubernetes_objects.core import (
     PodSpec,
     PodTemplateSpec,
     Volume,
+VolumeMount
 )
 from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
 from avionix.testing.helpers import kubectl_get
@@ -51,9 +52,12 @@ def get_pod_with_options(
     volume: Optional[Volume] = None,
     security_context: Optional[PodSecurityContext] = None,
 ):
+    container = get_test_container(0)
+    if volume is not None:
+        container.volumeMounts = [VolumeMount(volume.name, "~/tmp")]
     return Pod(
         ObjectMeta(name="test-pod"),
         PodSpec(
-            [get_test_container(0)], volumes=[volume], security_context=security_context
+            [container], volumes=[volume], security_context=security_context
         ),
     )

@@ -751,7 +751,7 @@ class VolumeMount(HelmYaml):
     :param mount_propagation:mountPropagation determines how mounts are propagated \
         from the host to container and the other way around. When not set, \
         MountPropagationNone is used. This field is beta in 1.10.
-    :type mount_propagation: str
+    :type mount_propagation: Optional[str]
     :param read_only:Mounted read-only if true, read-write otherwise (false or \
         unspecified). Defaults to false.
     :type read_only: Optional[bool]
@@ -770,7 +770,7 @@ class VolumeMount(HelmYaml):
         self,
         name: str,
         mount_path: str,
-        mount_propagation: str,
+        mount_propagation: Optional[str] = None,
         read_only: Optional[bool] = None,
         sub_path: Optional[str] = None,
         sub_path_expr: Optional[str] = None,

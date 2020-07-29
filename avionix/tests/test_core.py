@@ -495,7 +495,7 @@ def test_pod_security_context(pod_w_security_context, chart_info):
         Probe(tcp_socket=TCPSocketAction(8080), period_seconds=1, failure_threshold=10),
     ],
 )
-def test_readiness_probes(chart_info, probe: Probe):
+def test_container_probes(chart_info, probe: Probe):
     pod = get_pod_with_options(readiness_probe=probe)
     builder = ChartBuilder(chart_info, [pod])
     with ChartInstallationContext(

@@ -9,7 +9,7 @@ from avionix.testing.installation_context import ChartInstallationContext
 @pytest.fixture
 def role():
     return Role(
-        ObjectMeta(name="test-role"), [PolicyRule(None, None, None, None, None)]
+        ObjectMeta(name="test-role"), [PolicyRule()]
     )
 
 

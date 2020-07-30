@@ -13,32 +13,32 @@ class PolicyRule(HelmYaml):
     :param api_groups:APIGroups is the name of the APIGroup that contains the \
         resources.  If multiple API groups are specified, any action requested against \
         one of the enumerated resources in any API group will be allowed.
-    :type api_groups: List[str]
+    :type api_groups: Optional[List[str]]
     :param non_resource_urls:NonResourceURLs is a set of partial urls that a user \
         should have access to.  *s are allowed, but only as the full, final step in \
         the path Since non-resource URLs are not namespaced, this field is only \
         applicable for ClusterRoles referenced from a ClusterRoleBinding. Rules can \
         either apply to API resources (such as "pods" or "secrets") or non-resource \
         URL paths (such as "/api"),  but not both.
-    :type non_resource_urls: List[str]
+    :type non_resource_urls: Optional[List[str]]
     :param resource_names:ResourceNames is an optional white list of names that the \
         rule applies to.  An empty set means that everything is allowed.
-    :type resource_names: List[str]
+    :type resource_names: Optional[List[str]]
     :param resources:Resources is a list of resources this rule applies to.  \
         ResourceAll represents all resources.
-    :type resources: List[str]
+    :type resources: Optional[List[str]]
     :param verbs:Verbs is a list of Verbs that apply to ALL the ResourceKinds and \
         AttributeRestrictions contained in this rule.  VerbAll represents all kinds.
-    :type verbs: List[str]
+    :type verbs: Optional[List[str]]
     """
 
     def __init__(
         self,
-        api_groups: Optional[List[str]],
-        non_resource_urls: Optional[List[str]],
-        resource_names: Optional[List[str]],
-        resources: Optional[List[str]],
-        verbs: Optional[List[str]],
+        api_groups: Optional[List[str]] = None,
+        non_resource_urls: Optional[List[str]] = None,
+        resource_names: Optional[List[str]] = None,
+        resources: Optional[List[str]] = None,
+        verbs: Optional[List[str]] = None,
     ):
         self.apiGroups = api_groups
         self.nonResourceURLs = non_resource_urls

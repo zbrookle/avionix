@@ -1,6 +1,9 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import (
+    KubernetesBaseObject,
+    RbacAuthorization,
+)
 from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
@@ -31,11 +34,11 @@ class PolicyRule(HelmYaml):
 
     def __init__(
         self,
-        api_groups: List[str],
-        non_resource_urls: List[str],
-        resource_names: List[str],
-        resources: List[str],
-        verbs: List[str],
+        api_groups: Optional[List[str]],
+        non_resource_urls: Optional[List[str]],
+        resource_names: Optional[List[str]],
+        resources: Optional[List[str]],
+        verbs: Optional[List[str]],
     ):
         self.apiGroups = api_groups
         self.nonResourceURLs = non_resource_urls
@@ -44,7 +47,7 @@ class PolicyRule(HelmYaml):
         self.verbs = verbs
 
 
-class Role(KubernetesBaseObject):
+class Role(RbacAuthorization):
     """
     :param metadata:Standard object's metadata.
     :type metadata: ObjectMeta

@@ -100,5 +100,14 @@ class Batch(KubernetesBaseObject):
     _base_object_name = "Batch"
 
 
+class RbacAuthorization(KubernetesBaseObject):
+    """
+    Base class for rbac authorization
+    """
+
+    _version_prefix = "rbac.authorization.k8s.io/"
+    _base_object_name = "RbacAuthorization"
+
+
 class BaseSpec(HelmYaml):
     pass

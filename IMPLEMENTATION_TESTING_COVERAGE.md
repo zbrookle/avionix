@@ -34,15 +34,9 @@
 - [ ] SelfSubjectRulesReview
 - [ ] SubjectAccessReview
 - [ ] HorizontalPodAutoscaler
-- [ ] CronJob
 - [ ] Job
 - [ ] CertificateSigningRequest
 - [ ] Lease
-- [ ] EndpointSlice
-- [ ] Event
-- [ ] Ingress
-- [ ] IngressClass
-- [ ] Ingress
 - [ ] NetworkPolicy
 - [ ] RuntimeClass
 - [ ] PodDisruptionBudget
@@ -50,7 +44,7 @@
 - [ ] ClusterRoleBinding
 - [ ] ClusterRole
 - [ ] RoleBinding
-- [ ] Role
+- [X] Role
 - [ ] PriorityClass
 - [ ] CSIDriver
 - [ ] CSINode
@@ -66,7 +60,7 @@
 - [ ] RuntimeClass
 - [ ] CertificateSigningRequest
 - [ ] EndpointSlice
-- [ ] CronJob
+- [X] CronJob
 - [ ] PodSecurityPolicy
 
 </details>

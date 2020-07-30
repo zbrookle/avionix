@@ -446,8 +446,6 @@ def test_pod_w_persistent_volume(
         chart_info,
         [persistent_volume, pod_w_persistent_volume, persistent_volume_claim],
     )
-    pod_info = kubectl_get("pods", wide=True)
-    print(pod_info)
     with ChartInstallationContext(builder):
         # Check pod ready
         pod_info = kubectl_get("pods", wide=True)

@@ -143,7 +143,7 @@ def test_create_nonempty_event(chart_info: ChartInfo, non_empty_event: Event):
 def limit_range():
     return LimitRange(
         ObjectMeta(name="test-range"),
-        LimitRangeSpec(limits=[LimitRangeItem({}, {}, {}, {}, "")]),
+        LimitRangeSpec(limits=[LimitRangeItem({}, {}, {}, {})]),
     )
 
 

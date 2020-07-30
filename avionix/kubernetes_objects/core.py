@@ -130,7 +130,7 @@ class LimitRangeItem(HelmYaml):
     :param min:Min usage constraints on this kind by resource name.
     :type min: dict
     :param type:Type of resource that this limit applies to.
-    :type type: str
+    :type type: Optional[str]
     :param max_limit_request_ratio:MaxLimitRequestRatio if specified, the named \
         resource must have a request and limit that are both non-zero where limit \
         divided by request is less than or equal to the enumerated value; this \
@@ -144,7 +144,7 @@ class LimitRangeItem(HelmYaml):
         default_request: dict,
         max: dict,
         min: dict,
-        type: str,
+        type: Optional[str] = None,
         max_limit_request_ratio: Optional[dict] = None,
     ):
         self.default = default

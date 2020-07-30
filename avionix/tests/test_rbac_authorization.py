@@ -12,9 +12,11 @@ from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
 
 
-@pytest.fixture
-def role():
-    return Role(ObjectMeta(name="test-role"), [PolicyRule()])
+@pytest.fixture(
+    params=[{}, {"resources": ["pods"], "verbs": ["get"], "api_groups": [""]}]
+)
+def role(request):
+    return Role(ObjectMeta(name="test-role"), [PolicyRule(**request.param)])
 
 
 def test_role(chart_info, role):

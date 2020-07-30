@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import shutil
 import time
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 from pandas import Series
 
@@ -24,7 +24,7 @@ class ChartInstallationContext:
         timeout: int = 20,
         expected_status: Optional[set] = None,
         status_field: str = "STATUS",
-        uninstall_func: Callable = None
+        uninstall_func: Optional[Callable] = None,
     ):
         self.chart_builder = chart_builder
         self.status_resource = status_resource

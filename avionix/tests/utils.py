@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
 from avionix.kubernetes_objects.core import (

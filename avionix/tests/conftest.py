@@ -4,7 +4,12 @@ import pandas
 import pytest
 
 from avionix import ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.core import Pod, PodSpec, PodTemplateSpec
+from avionix.kubernetes_objects.core import (
+    Pod,
+    PodSpec,
+    PodTemplateSpec,
+    ServiceAccount,
+)
 from avionix.kubernetes_objects.meta import LabelSelector
 from avionix.kubernetes_objects.reference import ObjectReference
 from avionix.tests.utils import get_test_container, get_test_deployment
@@ -64,3 +69,8 @@ def object_meta_event():
 @pytest.fixture
 def event_obj_ref():
     return ObjectReference("test-pod", name="test-ref")
+
+
+@pytest.fixture
+def empty_service_account():
+    return ServiceAccount(ObjectMeta(name="test-service-account"))

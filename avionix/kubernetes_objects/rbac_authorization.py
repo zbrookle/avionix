@@ -71,23 +71,30 @@ class Role(RbacAuthorization):
         self.rules = rules
 
 
-class RoleRef(KubernetesBaseObject):
+class RoleRef(HelmYaml):
     """
     :param name:Name is the name of resource being referenced
     :type name: str
     :param api_group:APIGroup is the group for the resource being referenced
     :type api_group: str
+    :param kind: Kind is the type of resource being referenced
+    :type kind: str
     """
 
-    def __init__(self, name: str, api_group: str):
+    def __init__(self, name: str, api_group: str, kind: str):
         self.name = name
         self.apiGroup = api_group
+        self.kind = kind
 
 
-class Subject(KubernetesBaseObject):
+class Subject(HelmYaml):
     """
     :param name:Name of the object being referenced.
     :type name: str
+    :param kind: Kind of object being referenced. Values defined by this API group are \
+        "User", "Group", and "ServiceAccount". If the Authorizer does not recognized \
+        the kind value, the Authorizer should report an error.
+    :type kind: str
     :param api_group:APIGroup holds the API group of the referenced subject. Defaults \
         to "" for ServiceAccount subjects. Defaults to "rbac.authorization.k8s.io" for \
         User and Group subjects.
@@ -101,15 +108,17 @@ class Subject(KubernetesBaseObject):
     def __init__(
         self,
         name: str,
+        kind: str,
         api_group: Optional[str] = None,
         namespace: Optional[str] = None,
     ):
         self.name = name
+        self.kind = kind
         self.apiGroup = api_group
         self.namespace = namespace
 
 
-class RoleBinding(KubernetesBaseObject):
+class RoleBinding(RbacAuthorization):
     """
     :param metadata:Standard object's metadata.
     :type metadata: ObjectMeta
@@ -118,7 +127,7 @@ class RoleBinding(KubernetesBaseObject):
         Authorizer must return an error.
     :type role_ref: RoleRef
     :param subjects:Subjects holds references to the objects the role applies to.
-    :type subjects: List[Subject]
+    :type subjects: Optional[List[Subject]]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
@@ -130,7 +139,7 @@ class RoleBinding(KubernetesBaseObject):
         self,
         metadata: ObjectMeta,
         role_ref: RoleRef,
-        subjects: List[Subject],
+        subjects: Optional[List[Subject]] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)

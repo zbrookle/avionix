@@ -367,11 +367,6 @@ def test_nonempty_service(chart_info, nonempty_service):
 
 
 @pytest.fixture
-def empty_service_account():
-    return ServiceAccount(ObjectMeta(name="test-service-account"))
-
-
-@pytest.fixture
 def nonempty_service_account():
     return ServiceAccount(
         ObjectMeta(name="test-service-account"),

@@ -151,10 +151,17 @@ class ChartBuilder:
         return self.__handle_namespace(command)
 
     def __handle_upgrade(self):
-        self.__check_if_installed()
-        self.update_dependencies()
-        self.generate_chart()
-        self.run_helm_upgrade()
+        try:
+            self.__check_if_installed()
+            self.update_dependencies()
+            self.generate_chart()
+            self.run_helm_upgrade()
+        except subprocess.CalledProcessError as err:
+            decoded = err.output.decode("utf-8")
+            error = ErrorFactory(decoded).get_error()
+            if error is not None:
+                raise error
+            raise post_uninstall_handle_error(decoded)
 
     def run_helm_upgrade(self):
         info(f"Upgrading helm chart {self.chart_info.name}")

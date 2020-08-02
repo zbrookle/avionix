@@ -41,7 +41,7 @@ def _split_using_locations(locations: List[Tuple[int, int]], values_string: str)
     return vals
 
 
-def parse_binary_output_to_dataframe(output: str):
+def parse_output_to_dataframe(output: str):
     output_lines = output.split("\n")
     names = _space_split(output_lines[0])
     value_locations = _get_name_locations(names, output_lines[0])
@@ -51,7 +51,6 @@ def parse_binary_output_to_dataframe(output: str):
             values = _split_using_locations(value_locations, line)
             value_rows.append(values)
     df = DataFrame(data=value_rows, columns=names)
-    info("\n" + str(df))
     return df
 
 
@@ -61,4 +60,4 @@ def kubectl_get(resource: str, namespace: Optional[str] = None, wide: bool = Fal
         command += f" -n {namespace}"
     if wide:
         command += " -o wide"
-    return parse_binary_output_to_dataframe(custom_check_output(command))
+    return parse_output_to_dataframe(custom_check_output(command))

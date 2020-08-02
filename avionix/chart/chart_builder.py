@@ -29,6 +29,7 @@ class ChartBuilder:
         output_directory: Optional[str] = None,
         keep_chart: bool = False,
         namespace: Optional[str] = None,
+        create_namespace: bool = False
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
@@ -37,6 +38,7 @@ class ChartBuilder:
         self.__chart_yaml = self.chart_folder_path / "Chart.yaml"
         self.__keep_chart = keep_chart
         self.__namespace = namespace
+        self.__create_namespace = create_namespace
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
                 self.__templates_directory
@@ -76,10 +78,8 @@ class ChartBuilder:
     def update_dependencies(self):
         for dependency in self.chart_info.dependencies:
             dependency.add_repo()
-        info(
-            custom_check_output(
-                f"helm dependencies update {self.chart_folder_path.resolve()}"
-            )
+        custom_check_output(
+            f"helm dependencies update {self.chart_folder_path.resolve()}"
         )
 
     def __get_values_yaml(self):
@@ -97,10 +97,12 @@ class ChartBuilder:
         command = (
             f"helm install {self.chart_info.name} {self.chart_folder_path.resolve()}"
         )
+        if self.__create_namespace:
+            command += " --create-namespace"
         return self.__handle_namespace(command)
 
     def run_helm_install(self):
-        info(custom_check_output(self.__get_helm_install_command()))
+        custom_check_output(self.__get_helm_install_command())
 
     def __handle_installation(self):
         try:
@@ -111,7 +113,6 @@ class ChartBuilder:
             error = ErrorFactory(decoded).get_error()
             if error is not None:
                 raise error
-            print(self.is_installed)
             if self.is_installed:
                 self.uninstall_chart()
             raise post_uninstall_handle_error(decoded)
@@ -128,10 +129,11 @@ class ChartBuilder:
         return self.__handle_namespace(command)
 
     def run_helm_uninstall(self):
-        info(custom_check_output(self.__get_helm_uninstall_command()))
+        info(f"Uninstalling chart {self.chart_info.name}")
+        custom_check_output(self.__get_helm_uninstall_command())
 
     def __handle_uninstallation(self):
-        info("here")
+        info(f"Checking if helm chart {self.chart_info.name} is installed")
         if not self.is_installed:
             raise ChartNotInstalledError(
                 f'Error: chart "{self.chart_info.name}" is not installed'
@@ -139,11 +141,10 @@ class ChartBuilder:
         self.run_helm_uninstall()
 
     def uninstall_chart(self):
-        info(f"Uninstalling helm chart {self.chart_info.name}")
         self.__handle_uninstallation()
 
     @property
     def is_installed(self):
-        installations = get_helm_installations()
+        installations = get_helm_installations(self.__namespace)
         filtered = installations[installations["NAME"] == self.chart_info.name]
         return not filtered.empty

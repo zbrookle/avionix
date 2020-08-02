@@ -6,7 +6,12 @@ import subprocess
 from typing import Dict, List, Optional
 
 from avionix.chart.chart_info import ChartInfo
-from avionix.errors import post_uninstall_handle_error, pre_uninstall_handle_error
+from avionix.chart.utils import get_helm_installations
+from avionix.errors import (
+    ChartNotInstalledError,
+    ErrorFactory,
+    post_uninstall_handle_error,
+)
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
 
 
@@ -21,12 +26,14 @@ class ChartBuilder:
         chart_info: ChartInfo,
         kubernetes_objects: List[KubernetesBaseObject],
         output_directory: Optional[str] = None,
+        keep_chart: bool = False,
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
         self.chart_folder_path = Path(self.chart_info.name)
         self.__templates_directory = self.chart_folder_path / "templates"
         self.__chart_yaml = self.chart_folder_path / "Chart.yaml"
+        self.__keep_chart = keep_chart
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
                 self.__templates_directory
@@ -37,7 +44,7 @@ class ChartBuilder:
             )
 
     def __delete_chart_directory(self):
-        if os.path.exists(self.chart_info.name) and os.path.isdir:
+        if os.path.exists(self.chart_info.name):
             shutil.rmtree(self.chart_info.name)
 
     def generate_chart(self):
@@ -69,17 +76,32 @@ class ChartBuilder:
             )
         except subprocess.CalledProcessError as err:
             decoded = err.output.decode("utf-8")
-            pre_uninstall_handle_error(decoded)
-            self.uninstall_chart()
-            post_uninstall_handle_error(decoded)
+            error = ErrorFactory(decoded).get_error()
+            if error is not None:
+                raise error
+            if self.is_installed:
+                self.uninstall_chart()
+            raise post_uninstall_handle_error(decoded)
 
     def install_chart(self):
         self.generate_chart()
         self.__run_helm_install()
+        if not self.__keep_chart:
+            self.__delete_chart_directory()
 
     def uninstall_chart(self):
         info(f"Uninstalling helm chart {self.chart_info.name}")
+        if not self.is_installed:
+            raise ChartNotInstalledError(
+                f'Error: chart "{self.chart_info.name}" is not installed'
+            )
         subprocess.check_call(
             f"helm uninstall {self.chart_info.name}".split(" "),
             stderr=subprocess.STDOUT,
         )
+
+    @property
+    def is_installed(self):
+        installations = get_helm_installations()
+        filtered = installations[installations["NAME"] == self.chart_info.name]
+        return not filtered.empty

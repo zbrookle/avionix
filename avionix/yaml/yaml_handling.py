@@ -1,7 +1,19 @@
 from copy import deepcopy
+import re
 from typing import Union
 
 from yaml import dump
+
+
+def is_empty_yaml(value):
+    # If value is None, [], {} do not include value
+    return not value and not isinstance(value, (bool, str))
+
+
+def is_private_var(key: str):
+    if re.match(r"_+.*", key):
+        return True
+    return False
 
 
 class HelmYaml:
@@ -9,8 +21,7 @@ class HelmYaml:
         if isinstance(dictionary_or_list, list):
             cleaned_list = []
             for value in dictionary_or_list:
-                # If value is None, [], {}, '' do not include value
-                if not value:
+                if is_empty_yaml(value):
                     continue
 
                 if isinstance(value, (dict, list)):
@@ -32,8 +43,10 @@ class HelmYaml:
         elif isinstance(dictionary_or_list, dict):
             cleaned_dict = {}
             for key, value in dictionary_or_list.items():
-                # If value is None, [] or {}, '' do not include key
-                if not value:
+                if is_private_var(key):
+                    continue
+
+                if is_empty_yaml(value):
                     continue
 
                 elif isinstance(value, (dict, list)):

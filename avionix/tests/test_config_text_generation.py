@@ -1,8 +1,8 @@
 import pytest
 
+from avionix.kubernetes_objects.apps import Deployment
 from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.deployment import Deployment
-from avionix.kubernetes_objects.metadata import ObjectMeta
+from avionix.kubernetes_objects.meta import ObjectMeta
 from avionix.options import DEFAULTS
 from avionix.tests.utils import get_test_deployment
 
@@ -99,8 +99,13 @@ spec:
         container_type: master
     spec:
       containers:
-      - image: k8s.gcr.io/echoserver:1.4
-        name: test-container
+      - env:
+        - name: test
+          value: test-value
+        image: k8s.gcr.io/echoserver:1.4
+        name: test-container-1
+        ports:
+        - containerPort: 8080
 """
     )
 
@@ -111,4 +116,7 @@ def test_default_version_option():
 
     DEFAULTS["default_api_version"] = "v2"
     changed_default_version = get_test_deployment(1)
-    assert changed_default_version.apiVersion == "v2"
+    assert changed_default_version.apiVersion == "apps/v2"
+
+    # Restore option state
+    DEFAULTS["default_api_version"] = "v1"

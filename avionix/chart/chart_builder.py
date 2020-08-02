@@ -76,6 +76,7 @@ class ChartBuilder:
             values_file.write(self.__get_values_yaml())
 
     def update_dependencies(self):
+        info("Adding dependencies...")
         for dependency in self.chart_info.dependencies:
             dependency.add_repo()
         custom_check_output(
@@ -152,9 +153,6 @@ class ChartBuilder:
 
     def __handle_upgrade(self):
         try:
-            self.__check_if_installed()
-            self.update_dependencies()
-            self.generate_chart()
             self.run_helm_upgrade()
         except subprocess.CalledProcessError as err:
             decoded = err.output.decode("utf-8")
@@ -168,7 +166,9 @@ class ChartBuilder:
         custom_check_output(self.__get_helm_upgrade_command())
 
     def upgrade_chart(self):
+        self.__check_if_installed()
         self.generate_chart()
+        self.update_dependencies()
         self.__handle_upgrade()
 
     @property

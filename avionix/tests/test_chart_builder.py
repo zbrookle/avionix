@@ -48,22 +48,14 @@ def test_chart_installation(config_map):
         assert config_maps["DATA"][0] == "1"
 
 
-def test_chart_w_dependencies():
+def test_chart_w_dependencies(dependency):
     builder = ChartBuilder(
         ChartInfo(
             api_version="3.2.4",
             name="test",
             version="0.1.0",
             app_version="v1",
-            dependencies=[
-                ChartDependency(
-                    name="kubernetes-dashboard",
-                    version="2.3.0",
-                    repository="https://kubernetes.github.io/dashboard",
-                    local_repo_name="k8s-dashboard",
-                    values={"rbac": {"clusterReadOnlyRole": True}},
-                )
-            ],
+            dependencies=[dependency],
         ),
         [],
         keep_chart=True,
@@ -93,14 +85,27 @@ def test_helm_upgrade(chart_info):
     builder = ChartBuilder(chart_info, [])
     with ChartInstallationContext(builder):
         # Check helm release
+        builder.upgrade_chart()
         helm_installation = get_helm_installations()
         assert helm_installation["NAME"][0] == "test"
-        assert helm_installation["REVISION"][0] == "1"
+        assert helm_installation["REVISION"][0] == "2"
         assert helm_installation["STATUS"][0] == "deployed"
         assert helm_installation["NAMESPACE"][0] == "default"
 
-        builder.upgrade_chart()
 
+def test_helm_upgrade_w_dependencies(chart_info, dependency):
+    builder = ChartBuilder(
+        ChartInfo(
+            api_version="3.2.4",
+            name="test",
+            version="0.1.0",
+            app_version="v1",
+            dependencies=[dependency],
+        ),
+        [],
+    )
+    with ChartInstallationContext(builder):
+        builder.upgrade_chart()
         helm_installation = get_helm_installations()
         assert helm_installation["NAME"][0] == "test"
         assert helm_installation["REVISION"][0] == "2"

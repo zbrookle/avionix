@@ -5,6 +5,7 @@ import shutil
 import subprocess
 from typing import Dict, List, Optional
 
+from avionix._process_utils import custom_check_output
 from avionix.chart.chart_info import ChartInfo
 from avionix.chart.utils import get_helm_installations
 from avionix.errors import (
@@ -65,14 +66,32 @@ class ChartBuilder:
                 "w",
             ) as template:
                 template.write(str(kubernetes_object))
+        with open(
+            self.__templates_directory.parent / "values.yaml", "w"
+        ) as values_file:
+            values_file.write(self.__get_values_yaml())
+
+    def update_dependencies(self):
+        for dependency in self.chart_info.dependencies:
+            dependency.add_repo()
+        info(
+            custom_check_output(
+                f"helm dependencies update {self.chart_folder_path.resolve()}"
+            )
+        )
+
+    def __get_values_yaml(self):
+        values_text = ""
+        for dependency in self.chart_info.dependencies:
+            values_text += dependency.get_values_yaml() + "\n"
+        return values_text
 
     def __run_helm_install(self):
         try:
             info(f"Installing helm chart {self.chart_info.name}...")
-            subprocess.check_output(
+            custom_check_output(
                 f"helm install {self.chart_info.name} "
-                f"{self.chart_folder_path.resolve()}".split(" "),
-                stderr=subprocess.STDOUT,
+                f"{self.chart_folder_path.resolve()}",
             )
         except subprocess.CalledProcessError as err:
             decoded = err.output.decode("utf-8")
@@ -85,6 +104,7 @@ class ChartBuilder:
 
     def install_chart(self):
         self.generate_chart()
+        self.update_dependencies()
         self.__run_helm_install()
         if not self.__keep_chart:
             self.__delete_chart_directory()

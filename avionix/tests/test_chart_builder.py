@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import shutil
 
-from avionix import ChartBuilder, ChartInfo
+from avionix import ChartBuilder, ChartDependency, ChartInfo
 from avionix.chart.chart_builder import get_helm_installations
 from avionix.kubernetes_objects.apps import Deployment
 from avionix.testing import kubectl_get
@@ -50,6 +50,36 @@ def test_chart_installation(test_deployment1: Deployment):
         pods = kubectl_get("pods")
         assert pods["READY"][0] == "1/1"
         assert pods["STATUS"][0] == "Running"
+
+
+def test_chart_w_dependencies():
+    builder = ChartBuilder(
+        ChartInfo(
+            api_version="3.2.4",
+            name="test",
+            version="0.1.0",
+            app_version="v1",
+            dependencies=[
+                ChartDependency(
+                    name="kubernetes-dashboard",
+                    version="2.3.0",
+                    repository="https://kubernetes.github.io/dashboard",
+                    local_repo_name="k8s-dashboard",
+                    values={"rbac": {"clusterReadOnlyRole": True}},
+                )
+            ],
+        ),
+        [],
+        keep_chart=True,
+    )
+    with ChartInstallationContext(builder):
+        # Check helm release
+        helm_installation = get_helm_installations()
+        assert helm_installation["NAME"][0] == "test"
+        assert helm_installation["REVISION"][0] == "1"
+        assert helm_installation["STATUS"][0] == "deployed"
+
+        assert builder.is_installed
 
 
 def test_intalling_two_components(

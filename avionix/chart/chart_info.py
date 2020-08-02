@@ -19,9 +19,8 @@ class ChartInfo(HelmYaml):
     :param dependencies: A list of the chart requirements (optional)
     :param maintainers: A list of maintainers
     :param icon: A URL to an SVG or PNG image to be used as an icon (optional).
-    :param appVersion: The version of the app that this contains (optional). This
-    needn't
-    be SemVer.
+    :param app_version: The version of the app that this contains (optional). This \
+        needn't be SemVer.
     :param deprecated: Whether this chart is deprecated (optional, boolean)
     :param annotations: A list of annotations keyed by name (optional).
     """
@@ -53,7 +52,7 @@ class ChartInfo(HelmYaml):
         self.keywords = key_words
         self.home = home
         self.sources = sources
-        self.dependencies = dependencies
+        self.dependencies = dependencies if dependencies is not None else []
         self.maintainers = maintainers
         self.icon = icon
         self.appVersion = app_version

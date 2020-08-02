@@ -1,4 +1,3 @@
-from logging import info
 from typing import Optional
 
 from yaml import dump
@@ -46,4 +45,3 @@ class ChartDependency(HelmYaml):
         custom_check_output(
             f"helm repo add {self.__local_repo_name} " f"{self.repository}"
         )
-

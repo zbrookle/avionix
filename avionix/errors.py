@@ -20,7 +20,7 @@ class ErrorFactory:
             self._message,
         ):
             return NamespaceBeingTerminatedError(self._message)
-        if re.match(f".*namespaces.*not found.*", self._message):
+        if re.match(".*namespaces.*not found.*", self._message):
             return NamespaceDoesNotExist(self._message)
         return None
 

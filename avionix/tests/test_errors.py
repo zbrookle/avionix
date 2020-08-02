@@ -1,6 +1,7 @@
 import pytest
-from avionix.errors import ChartAlreadyInstalledError, NamespaceDoesNotExist
+
 from avionix import ChartBuilder
+from avionix.errors import ChartAlreadyInstalledError, NamespaceDoesNotExist
 
 
 def test_already_installed_error(chart_info, config_map):

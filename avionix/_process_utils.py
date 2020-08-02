@@ -1,5 +1,5 @@
-from subprocess import check_output, STDOUT
 from logging import info
+from subprocess import STDOUT, check_output
 
 
 def custom_check_output(command: str):

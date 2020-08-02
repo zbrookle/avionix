@@ -29,7 +29,7 @@ class ChartBuilder:
         output_directory: Optional[str] = None,
         keep_chart: bool = False,
         namespace: Optional[str] = None,
-        create_namespace: bool = False
+        create_namespace: bool = False,
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects

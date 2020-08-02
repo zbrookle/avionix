@@ -5,11 +5,11 @@ import pytest
 
 from avionix import ChartInfo, ObjectMeta
 from avionix.kubernetes_objects.core import (
+    ConfigMap,
     Pod,
     PodSpec,
     PodTemplateSpec,
     ServiceAccount,
-    ConfigMap,
 )
 from avionix.kubernetes_objects.meta import LabelSelector
 from avionix.kubernetes_objects.reference import ObjectReference

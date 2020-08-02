@@ -89,6 +89,27 @@ def test_installation_with_namespace(chart_info):
         assert helm_installation["NAMESPACE"][0] == "test"
 
 
+def test_helm_upgrade(chart_info):
+    builder = ChartBuilder(chart_info, [])
+    with ChartInstallationContext(builder):
+        # Check helm release
+        helm_installation = get_helm_installations()
+        assert helm_installation["NAME"][0] == "test"
+        assert helm_installation["REVISION"][0] == "1"
+        assert helm_installation["STATUS"][0] == "deployed"
+        assert helm_installation["NAMESPACE"][0] == "default"
+
+        builder.upgrade_chart()
+
+        helm_installation = get_helm_installations()
+        assert helm_installation["NAME"][0] == "test"
+        assert helm_installation["REVISION"][0] == "2"
+        assert helm_installation["STATUS"][0] == "deployed"
+        assert helm_installation["NAMESPACE"][0] == "default"
+
+
+
+
 def test_installing_two_components(
     config_map, config_map2, chart_info: ChartInfo,
 ):

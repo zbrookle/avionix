@@ -132,16 +132,37 @@ class ChartBuilder:
         info(f"Uninstalling chart {self.chart_info.name}")
         custom_check_output(self.__get_helm_uninstall_command())
 
-    def __handle_uninstallation(self):
+    def __check_if_installed(self):
         info(f"Checking if helm chart {self.chart_info.name} is installed")
         if not self.is_installed:
             raise ChartNotInstalledError(
                 f'Error: chart "{self.chart_info.name}" is not installed'
             )
+
+    def __handle_uninstallation(self):
+        self.__check_if_installed()
         self.run_helm_uninstall()
 
     def uninstall_chart(self):
         self.__handle_uninstallation()
+
+    def __get_helm_upgrade_command(self):
+        command = f"helm upgrade {self.chart_info.name} {self.chart_folder_path}"
+        return self.__handle_namespace(command)
+
+    def __handle_upgrade(self):
+        self.__check_if_installed()
+        self.update_dependencies()
+        self.generate_chart()
+        self.run_helm_upgrade()
+
+    def run_helm_upgrade(self):
+        info(f"Upgrading helm chart {self.chart_info.name}")
+        custom_check_output(self.__get_helm_upgrade_command())
+
+    def upgrade_chart(self):
+        self.generate_chart()
+        self.__handle_upgrade()
 
     @property
     def is_installed(self):

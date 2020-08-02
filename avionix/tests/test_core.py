@@ -45,11 +45,6 @@ from avionix.testing.installation_context import ChartInstallationContext
 from avionix.tests.utils import get_event_info, get_pod_with_options
 
 
-@pytest.fixture
-def config_map():
-    return ConfigMap(ObjectMeta(name="test-config-map"), data={"my_test_value": "yes"})
-
-
 def test_config_map(chart_info: ChartInfo, config_map: ConfigMap):
     builder = ChartBuilder(chart_info, [config_map])
     with ChartInstallationContext(builder):

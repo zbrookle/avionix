@@ -9,6 +9,7 @@ from avionix.kubernetes_objects.core import (
     PodSpec,
     PodTemplateSpec,
     ServiceAccount,
+    ConfigMap,
 )
 from avionix.kubernetes_objects.meta import LabelSelector
 from avionix.kubernetes_objects.reference import ObjectReference
@@ -74,3 +75,15 @@ def event_obj_ref():
 @pytest.fixture
 def empty_service_account():
     return ServiceAccount(ObjectMeta(name="test-service-account"))
+
+
+@pytest.fixture
+def config_map():
+    return ConfigMap(ObjectMeta(name="test-config-map"), data={"my_test_value": "yes"})
+
+
+@pytest.fixture
+def config_map2():
+    return ConfigMap(
+        ObjectMeta(name="test-config-map-2"), data={"my_test_value": "yes"}
+    )

@@ -28,6 +28,7 @@ class ChartBuilder:
         kubernetes_objects: List[KubernetesBaseObject],
         output_directory: Optional[str] = None,
         keep_chart: bool = False,
+        namespace: Optional[str] = None,
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
@@ -35,6 +36,7 @@ class ChartBuilder:
         self.__templates_directory = self.chart_folder_path / "templates"
         self.__chart_yaml = self.chart_folder_path / "Chart.yaml"
         self.__keep_chart = keep_chart
+        self.__namespace = namespace
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
                 self.__templates_directory
@@ -86,18 +88,30 @@ class ChartBuilder:
             values_text += dependency.get_values_yaml() + "\n"
         return values_text
 
-    def __run_helm_install(self):
+    def __handle_namespace(self, command: str):
+        if self.__namespace is not None:
+            return command + f" -n {self.__namespace}"
+        return command
+
+    def __get_helm_install_command(self):
+        command = (
+            f"helm install {self.chart_info.name} {self.chart_folder_path.resolve()}"
+        )
+        return self.__handle_namespace(command)
+
+    def run_helm_install(self):
+        info(custom_check_output(self.__get_helm_install_command()))
+
+    def __handle_installation(self):
         try:
             info(f"Installing helm chart {self.chart_info.name}...")
-            custom_check_output(
-                f"helm install {self.chart_info.name} "
-                f"{self.chart_folder_path.resolve()}",
-            )
+            self.run_helm_install()
         except subprocess.CalledProcessError as err:
             decoded = err.output.decode("utf-8")
             error = ErrorFactory(decoded).get_error()
             if error is not None:
                 raise error
+            print(self.is_installed)
             if self.is_installed:
                 self.uninstall_chart()
             raise post_uninstall_handle_error(decoded)
@@ -105,20 +119,28 @@ class ChartBuilder:
     def install_chart(self):
         self.generate_chart()
         self.update_dependencies()
-        self.__run_helm_install()
+        self.__handle_installation()
         if not self.__keep_chart:
             self.__delete_chart_directory()
 
-    def uninstall_chart(self):
-        info(f"Uninstalling helm chart {self.chart_info.name}")
+    def __get_helm_uninstall_command(self):
+        command = f"helm uninstall {self.chart_info.name}"
+        return self.__handle_namespace(command)
+
+    def run_helm_uninstall(self):
+        info(custom_check_output(self.__get_helm_uninstall_command()))
+
+    def __handle_uninstallation(self):
+        info("here")
         if not self.is_installed:
             raise ChartNotInstalledError(
                 f'Error: chart "{self.chart_info.name}" is not installed'
             )
-        subprocess.check_call(
-            f"helm uninstall {self.chart_info.name}".split(" "),
-            stderr=subprocess.STDOUT,
-        )
+        self.run_helm_uninstall()
+
+    def uninstall_chart(self):
+        info(f"Uninstalling helm chart {self.chart_info.name}")
+        self.__handle_uninstallation()
 
     @property
     def is_installed(self):

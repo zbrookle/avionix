@@ -29,10 +29,10 @@ def test_chart_folder_building(test_deployment1: Deployment):
     shutil.rmtree(test_folder)
 
 
-def test_chart_installation(test_deployment1: Deployment):
+def test_chart_installation(config_map):
     builder = ChartBuilder(
         ChartInfo(api_version="3.2.4", name="test", version="0.1.0", app_version="v1"),
-        [test_deployment1],
+        [config_map],
     )
     with ChartInstallationContext(builder):
         # Check helm release
@@ -43,13 +43,9 @@ def test_chart_installation(test_deployment1: Deployment):
 
         assert builder.is_installed
 
-        deployments = kubectl_get("deployments")
-        assert deployments["NAME"][0] == "test-deployment-1"
-        assert deployments["READY"][0] == "1/1"
-
-        pods = kubectl_get("pods")
-        assert pods["READY"][0] == "1/1"
-        assert pods["STATUS"][0] == "Running"
+        config_maps = kubectl_get("configmaps")
+        assert config_maps["NAME"][0] == "test-config-map"
+        assert config_maps["DATA"][0] == "1"
 
 
 def test_chart_w_dependencies():
@@ -82,10 +78,14 @@ def test_chart_w_dependencies():
         assert builder.is_installed
 
 
-def test_intalling_two_components(
-    test_deployment1: Deployment, test_deployment2: Deployment, chart_info: ChartInfo,
+# def test_installation_with_namespace():
+
+
+def test_installing_two_components(
+    config_map, config_map2, chart_info: ChartInfo,
 ):
-    builder = ChartBuilder(chart_info, [test_deployment1, test_deployment2],)
+    config_map.metadata.name = "test-config-map-1"
+    builder = ChartBuilder(chart_info, [config_map, config_map2],)
     with ChartInstallationContext(builder):
         # Check helm release
         helm_installation = get_helm_installations()
@@ -94,10 +94,7 @@ def test_intalling_two_components(
         assert helm_installation["STATUS"][0] == "deployed"
 
         # Check kubernetes components
-        deployments = kubectl_get("deployments")
-        pods = kubectl_get("pods")
+        config_maps = kubectl_get("configmaps")
         for i in range(2):
-            assert pods["READY"][i] == "1/1"
-            assert pods["STATUS"][i] == "Running"
-            assert deployments["NAME"][i] == f"test-deployment-{i + 1}"
-            assert deployments["READY"][i] == "1/1"
+            assert config_maps["NAME"][i] == f"test-config-map-{i + 1}"
+            assert config_maps["DATA"][i] == "1"

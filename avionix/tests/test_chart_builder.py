@@ -108,8 +108,6 @@ def test_helm_upgrade(chart_info):
         assert helm_installation["NAMESPACE"][0] == "default"
 
 
-
-
 def test_installing_two_components(
     config_map, config_map2, chart_info: ChartInfo,
 ):

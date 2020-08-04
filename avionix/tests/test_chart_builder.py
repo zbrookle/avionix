@@ -60,7 +60,9 @@ def test_chart_w_dependencies(dependency):
         [],
         keep_chart=True,
     )
-    with ChartInstallationContext(builder):
+    from datetime import datetime
+    start = datetime.now()
+    with ChartInstallationContext(builder, timeout=60):
         # Check helm release
         helm_installation = get_helm_installations()
         assert helm_installation["NAME"][0] == "test"
@@ -72,7 +74,7 @@ def test_chart_w_dependencies(dependency):
 
 def test_installation_with_namespace(chart_info):
     builder = ChartBuilder(chart_info, [], namespace="test", create_namespace=True)
-    with ChartInstallationContext(builder):
+    with ChartInstallationContext(builder, timeout=60):
         # Check helm release
         helm_installation = get_helm_installations("test")
         assert helm_installation["NAME"][0] == "test"

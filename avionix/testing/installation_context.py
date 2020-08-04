@@ -21,7 +21,7 @@ class ChartInstallationContext:
         self,
         chart_builder: ChartBuilder,
         status_resource: str = "pods",
-        timeout: int = 20,
+        timeout: int = 40,
         expected_status: Optional[set] = None,
         status_field: str = "STATUS",
         uninstall_func: Optional[Callable] = None,

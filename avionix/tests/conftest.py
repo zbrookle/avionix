@@ -96,5 +96,5 @@ def dependency():
         "1.6.6",
         "https://kubernetes-charts.storage.googleapis.com/",
         "stable",
-        values={"resources": {"requests": {"memory": "100Mi"}}},
+        values={"resources": {"requests": {"memory": "10Mi"}}},
     )

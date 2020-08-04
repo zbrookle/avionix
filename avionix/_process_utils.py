@@ -1,5 +1,5 @@
-from logging import info, error
-from subprocess import STDOUT, check_output, CalledProcessError
+from logging import error, info
+from subprocess import STDOUT, CalledProcessError, check_output
 
 
 def custom_check_output(command: str):

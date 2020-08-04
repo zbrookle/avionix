@@ -60,8 +60,6 @@ def test_chart_w_dependencies(dependency):
         [],
         keep_chart=True,
     )
-    from datetime import datetime
-    start = datetime.now()
     with ChartInstallationContext(builder, timeout=60):
         # Check helm release
         helm_installation = get_helm_installations()

@@ -92,9 +92,9 @@ def config_map2():
 @pytest.fixture
 def dependency():
     return ChartDependency(
-        "mysql",
-        "1.6.6",
+        "grafana",
+        "5.5.2",
         "https://kubernetes-charts.storage.googleapis.com/",
         "stable",
-        values={"resources": {"requests": {"memory": "10Mi"}}},
+        values={"resources": {"requests": {"memory": "100Mi"}}},
     )

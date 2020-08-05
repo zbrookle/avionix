@@ -71,7 +71,8 @@ These are all directly equivalent to the helm commands.
 ## Inheritance
 
 The real power of avionix comes from it being object oriented. The one thing that
- helm is missing that avionix has is inheritance.
+ helm is missing that avionix has is inheritance. This is an excerpt from another
+  package built with avionix, [avionix_airflow](https://github.com/zbrookle/avionix_airflow)
 ```python
 from typing import List, Optional
 

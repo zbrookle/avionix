@@ -583,19 +583,19 @@ class ConfigMapEnvSource(HelmYaml):
 class EnvFromSource(HelmYaml):
     """
     :param config_map_ref:The ConfigMap to select from
-    :type config_map_ref: ConfigMapEnvSource
+    :type config_map_ref: Optional[ConfigMapEnvSource]
     :param prefix:An optional identifier to prepend to each key in the ConfigMap. Must \
         be a C_IDENTIFIER.
-    :type prefix: str
+    :type prefix: Optional[str]
     :param secret_ref:The Secret to select from
-    :type secret_ref: SecretEnvSource
+    :type secret_ref: Optional[SecretEnvSource]
     """
 
     def __init__(
         self,
-        config_map_ref: ConfigMapEnvSource,
-        prefix: str,
-        secret_ref: SecretEnvSource,
+        config_map_ref: Optional[ConfigMapEnvSource],
+        prefix: Optional[str],
+        secret_ref: Optional[SecretEnvSource],
     ):
         self.configMapRef = config_map_ref
         self.prefix = prefix

@@ -52,7 +52,7 @@ class ChartInstallationContext:
 
     def __enter__(self):
         os.makedirs(str(self.__temp_dir), exist_ok=True)
-        options = {"dependency-update": None, "wait": None, "create-namespace": None}
+        options = {"dependency-update": None, "wait": None, "create-namespace": ""}
         try:
             self.chart_builder.install_chart(options=options)
         except ChartAlreadyInstalledError:

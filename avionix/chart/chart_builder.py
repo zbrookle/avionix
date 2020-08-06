@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 
 from avionix._process_utils import custom_check_output
 from avionix.chart.chart_info import ChartInfo
@@ -97,7 +97,9 @@ class ChartBuilder:
                 option_string += f" {value}"
         return option_string
 
-    def __get_helm_install_command(self, options: Optional[Dict[str, Optional[str]]] = None):
+    def __get_helm_install_command(
+        self, options: Optional[Dict[str, Optional[str]]] = None
+    ):
         command = (
             f"helm install {self.chart_info.name} {self.chart_folder_path.resolve()}"
         )
@@ -126,7 +128,9 @@ class ChartBuilder:
         if not self.__keep_chart:
             self.__delete_chart_directory()
 
-    def __get_helm_uninstall_command(self, options: Optional[Dict[str, Optional[str]]] = None):
+    def __get_helm_uninstall_command(
+        self, options: Optional[Dict[str, Optional[str]]] = None
+    ):
         command = f"helm uninstall {self.chart_info.name}"
         return self.__handle_namespace(command) + self.__parse_options(options)
 
@@ -141,7 +145,9 @@ class ChartBuilder:
                 f'Error: chart "{self.chart_info.name}" is not installed'
             )
 
-    def __handle_uninstallation(self, options: Optional[Dict[str, Optional[str]]] = None):
+    def __handle_uninstallation(
+        self, options: Optional[Dict[str, Optional[str]]] = None
+    ):
         self.__check_if_installed()
         self.run_helm_uninstall(options)
 
@@ -153,7 +159,9 @@ class ChartBuilder:
             return command + f" -n {self.__namespace}"
         return command
 
-    def __get_helm_upgrade_command(self, options: Optional[Dict[str, Optional[str]]] = None):
+    def __get_helm_upgrade_command(
+        self, options: Optional[Dict[str, Optional[str]]] = None
+    ):
         command = f"helm upgrade {self.chart_info.name} {self.chart_folder_path}"
         return self.__handle_namespace(command) + self.__parse_options(options)
 
@@ -177,8 +185,9 @@ class ChartBuilder:
         self.update_dependencies()
         update_depenedencies = "dependency-update"
         if options is not None and update_depenedencies in options:
-            custom_check_output(f"helm dependency update "
-                                f"{self.chart_folder_path.resolve()}")
+            custom_check_output(
+                f"helm dependency update " f"{self.chart_folder_path.resolve()}"
+            )
             del options[update_depenedencies]
         self.__handle_upgrade(options)
 

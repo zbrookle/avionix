@@ -71,7 +71,7 @@ def test_chart_w_dependencies(dependency):
 
 
 def test_installation_with_namespace(chart_info):
-    builder = ChartBuilder(chart_info, [], namespace="test", create_namespace=True)
+    builder = ChartBuilder(chart_info, [], namespace="test")
     with ChartInstallationContext(builder, timeout=60):
         # Check helm release
         helm_installation = get_helm_installations("test")
@@ -105,7 +105,7 @@ def test_helm_upgrade_w_dependencies(chart_info, dependency):
         [],
     )
     with ChartInstallationContext(builder):
-        builder.upgrade_chart()
+        builder.upgrade_chart(options={"dependency-update": None})
         helm_installation = get_helm_installations()
         assert helm_installation["NAME"][0] == "test"
         assert helm_installation["REVISION"][0] == "2"

@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 from avionix._process_utils import custom_check_output
 from avionix.chart.chart_info import ChartInfo
@@ -29,7 +29,6 @@ class ChartBuilder:
         output_directory: Optional[str] = None,
         keep_chart: bool = False,
         namespace: Optional[str] = None,
-        create_namespace: bool = False,
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
@@ -38,7 +37,6 @@ class ChartBuilder:
         self.__chart_yaml = self.chart_folder_path / "Chart.yaml"
         self.__keep_chart = keep_chart
         self.__namespace = namespace
-        self.__create_namespace = create_namespace
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
                 self.__templates_directory
@@ -79,9 +77,6 @@ class ChartBuilder:
         info("Adding dependencies...")
         for dependency in self.chart_info.dependencies:
             dependency.add_repo()
-        custom_check_output(
-            f"helm dependencies update {self.chart_folder_path.resolve()}"
-        )
 
     def __get_values_yaml(self):
         values_text = ""
@@ -89,26 +84,32 @@ class ChartBuilder:
             values_text += dependency.get_values_yaml() + "\n"
         return values_text
 
-    def __handle_namespace(self, command: str):
-        if self.__namespace is not None:
-            return command + f" -n {self.__namespace}"
-        return command
+    def __parse_options(self, options: Optional[Dict[str, Optional[str]]] = None):
+        option_string = ""
+        if options is None:
+            return option_string
+        for option in options:
+            option_string += f" --{option}"
 
-    def __get_helm_install_command(self):
+            # Add value after flag if one is given
+            value = options[option]
+            if value:
+                option_string += f" {value}"
+        return option_string
+
+    def __get_helm_install_command(self, options: Optional[Dict[str, Optional[str]]] = None):
         command = (
             f"helm install {self.chart_info.name} {self.chart_folder_path.resolve()}"
         )
-        if self.__create_namespace:
-            command += " --create-namespace"
-        return self.__handle_namespace(command)
+        return self.__handle_namespace(command) + self.__parse_options(options)
 
-    def run_helm_install(self):
-        custom_check_output(self.__get_helm_install_command())
+    def run_helm_install(self, options: Optional[Dict[str, Optional[str]]] = None):
+        custom_check_output(self.__get_helm_install_command(options))
 
-    def __handle_installation(self):
+    def __handle_installation(self, options: Optional[Dict[str, Optional[str]]] = None):
         try:
             info(f"Installing helm chart {self.chart_info.name}...")
-            self.run_helm_install()
+            self.run_helm_install(options)
         except subprocess.CalledProcessError as err:
             decoded = err.output.decode("utf-8")
             error = ErrorFactory(decoded).get_error()
@@ -118,18 +119,18 @@ class ChartBuilder:
                 self.uninstall_chart()
             raise post_uninstall_handle_error(decoded)
 
-    def install_chart(self):
+    def install_chart(self, options: Optional[Dict[str, Optional[str]]] = None):
         self.generate_chart()
         self.update_dependencies()
-        self.__handle_installation()
+        self.__handle_installation(options)
         if not self.__keep_chart:
             self.__delete_chart_directory()
 
-    def __get_helm_uninstall_command(self):
+    def __get_helm_uninstall_command(self, options: Optional[Dict[str, Optional[str]]] = None):
         command = f"helm uninstall {self.chart_info.name}"
-        return self.__handle_namespace(command)
+        return self.__handle_namespace(command) + self.__parse_options(options)
 
-    def run_helm_uninstall(self):
+    def run_helm_uninstall(self, options: Optional[Dict[str, Optional[str]]] = None):
         info(f"Uninstalling chart {self.chart_info.name}")
         custom_check_output(self.__get_helm_uninstall_command())
 
@@ -140,20 +141,25 @@ class ChartBuilder:
                 f'Error: chart "{self.chart_info.name}" is not installed'
             )
 
-    def __handle_uninstallation(self):
+    def __handle_uninstallation(self, options: Optional[Dict[str, Optional[str]]] = None):
         self.__check_if_installed()
-        self.run_helm_uninstall()
+        self.run_helm_uninstall(options)
 
-    def uninstall_chart(self):
-        self.__handle_uninstallation()
+    def uninstall_chart(self, options: Optional[Dict[str, Optional[str]]] = None):
+        self.__handle_uninstallation(options)
 
-    def __get_helm_upgrade_command(self):
+    def __handle_namespace(self, command: str):
+        if self.__namespace is not None:
+            return command + f" -n {self.__namespace}"
+        return command
+
+    def __get_helm_upgrade_command(self, options: Optional[Dict[str, Optional[str]]] = None):
         command = f"helm upgrade {self.chart_info.name} {self.chart_folder_path}"
-        return self.__handle_namespace(command)
+        return self.__handle_namespace(command) + self.__parse_options(options)
 
-    def __handle_upgrade(self):
+    def __handle_upgrade(self, options: Optional[Dict[str, Optional[str]]] = None):
         try:
-            self.run_helm_upgrade()
+            self.run_helm_upgrade(options)
         except subprocess.CalledProcessError as err:
             decoded = err.output.decode("utf-8")
             error = ErrorFactory(decoded).get_error()
@@ -161,15 +167,20 @@ class ChartBuilder:
                 raise error
             raise post_uninstall_handle_error(decoded)
 
-    def run_helm_upgrade(self):
+    def run_helm_upgrade(self, options: Optional[Dict[str, Optional[str]]] = None):
         info(f"Upgrading helm chart {self.chart_info.name}")
-        custom_check_output(self.__get_helm_upgrade_command())
+        custom_check_output(self.__get_helm_upgrade_command(options))
 
-    def upgrade_chart(self):
+    def upgrade_chart(self, options: Optional[Dict[str, Optional[str]]] = None):
         self.__check_if_installed()
         self.generate_chart()
         self.update_dependencies()
-        self.__handle_upgrade()
+        update_depenedencies = "dependency-update"
+        if options is not None and update_depenedencies in options:
+            custom_check_output(f"helm dependency update "
+                                f"{self.chart_folder_path.resolve()}")
+            del options[update_depenedencies]
+        self.__handle_upgrade(options)
 
     @property
     def is_installed(self):

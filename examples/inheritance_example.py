@@ -1,13 +1,13 @@
 from typing import List, Optional
 
 from my_package import (
+    AirflowDagVolumeGroup,
     AirflowLogVolumeGroup,
     AirflowOptions,
+    ExternalStorageVolumeGroup,
     RedisOptions,
     SqlOptions,
     ValueOrchestrator,
-    AirflowDagVolumeGroup,
-    ExternalStorageVolumeGroup,
 )
 
 from avionix.kubernetes_objects.core import (
@@ -15,9 +15,9 @@ from avionix.kubernetes_objects.core import (
     ContainerPort,
     EnvFromSource,
     EnvVar,
+    HTTPGetAction,
     Probe,
     SecretEnvSource,
-    HTTPGetAction,
 )
 
 

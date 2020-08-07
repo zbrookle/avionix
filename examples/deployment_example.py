@@ -1,12 +1,12 @@
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
+from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec, PodTemplateSpec
 from avionix.kubernetes_objects.core import (
-    PodSpec,
-    LabelSelector,
     Container,
     ContainerPort,
     EnvVar,
+    LabelSelector,
+    PodSpec,
 )
-from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec, PodTemplateSpec
 
 container = Container(
     name=f"test-container",
@@ -20,8 +20,7 @@ deployment = Deployment(
     spec=DeploymentSpec(
         replicas=1,
         template=PodTemplateSpec(
-            ObjectMeta(labels={"app": "my_app"}),
-            spec=PodSpec(containers=[container]),
+            ObjectMeta(labels={"app": "my_app"}), spec=PodSpec(containers=[container]),
         ),
         selector=LabelSelector(match_labels={"app": "my_app"}),
     ),

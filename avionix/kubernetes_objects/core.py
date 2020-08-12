@@ -3061,15 +3061,15 @@ class CSIPersistentVolumeSource(HelmYaml):
     """
     :param driver:Driver is the name of the driver to use for this volume. Required.
     :type driver: str
-    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
-        the host operating system. Ex. "ext4", "xfs", "ntfs".
-    :type fs_type: str
-    :param volume_attributes:Attributes of the volume to publish.
-    :type volume_attributes: dict
     :param volume_handle:VolumeHandle is the unique volume name returned by the CSI \
         volume plugin’s CreateVolume to refer to the volume on all subsequent calls. \
         Required.
     :type volume_handle: str
+    :param fs_type:Filesystem type to mount. Must be a filesystem type supported by \
+    the host operating system. Ex. "ext4", "xfs", "ntfs".
+    :type fs_type: Optional[str]
+    :param volume_attributes:Attributes of the volume to publish.
+    :type volume_attributes: Optional[dict]
     :param controller_expand_secret_ref:ControllerExpandSecretRef is a reference to \
         the secret object containing sensitive information to pass to the CSI driver \
         to complete the CSI ControllerExpandVolume call. This is an alpha field and \
@@ -3103,9 +3103,9 @@ class CSIPersistentVolumeSource(HelmYaml):
     def __init__(
         self,
         driver: str,
-        fs_type: str,
-        volume_attributes: dict,
         volume_handle: str,
+        fs_type: Optional[str] = None,
+        volume_attributes: Optional[dict] = None,
         controller_expand_secret_ref: Optional[SecretReference] = None,
         controller_publish_secret_ref: Optional[SecretReference] = None,
         node_publish_secret_ref: Optional[SecretReference] = None,

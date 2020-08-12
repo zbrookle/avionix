@@ -108,6 +108,10 @@ class RbacAuthorization(KubernetesBaseObject):
     _version_prefix = "rbac.authorization.k8s.io/"
     _base_object_name = "RbacAuthorization"
 
+class Storage(KubernetesBaseObject):
+
+    _version_prefix = "storage.k8s.io/"
+    _base_object_name = "Storage"
 
 class BaseSpec(HelmYaml):
     pass

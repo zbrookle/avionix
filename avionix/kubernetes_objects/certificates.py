@@ -8,12 +8,12 @@ from avionix.yaml.yaml_handling import HelmYaml
 
 class CertificateSigningRequestSpec(HelmYaml):
     """
-    :param extra:Extra information about the requesting user. See user.Info interface \
+    :param extra: Extra information about the requesting user. See user.Info interface \
         for details.
-    :param groups:Group information about the requesting user. See user.Info interface \
+    :param groups: Group information about the requesting user. See user.Info interface \
         for details.
-    :param request:Base64-encoded PKCS#10 CSR data
-    :param signer_name:Requested signer for the request. It is a qualified name in the \
+    :param request: Base64-encoded PKCS#10 CSR data
+    :param signer_name: Requested signer for the request. It is a qualified name in the \
         form: `scope-hostname.io/name`. If empty, it will be defaulted:  1. If it's a \
         kubelet client certificate, it is assigned     \
         "kubernetes.io/kube-apiserver-client-kubelet".  2. If it's a kubelet serving \
@@ -21,12 +21,12 @@ class CertificateSigningRequestSpec(HelmYaml):
         Otherwise, it is assigned "kubernetes.io/legacy-unknown". Distribution of \
         trust for signers happens out of band. You can select on this field using \
         `spec.signerName`.
-    :param usages:allowedUsages specifies a set of usage contexts the key will be \
+    :param usages: allowedUsages specifies a set of usage contexts the key will be \
         valid for. See: https://tools.ietf.org/html/rfc5280#section-4.2.1.3      \
         https://tools.ietf.org/html/rfc5280#section-4.2.1.12
-    :param username:Information about the requesting user. See user.Info interface for \
+    :param username: Information about the requesting user. See user.Info interface for \
         details.
-    :param uid:UID information about the requesting user. See user.Info interface for \
+    :param uid: UID information about the requesting user. See user.Info interface for \
         details.
     """
 
@@ -51,10 +51,10 @@ class CertificateSigningRequestSpec(HelmYaml):
 
 class CertificateSigningRequestCondition(HelmYaml):
     """
-    :param last_update_time:timestamp for the last update to this condition
-    :param message:human readable message with details about the request state
-    :param reason:brief reason for the request state
-    :param type:request approval state, currently Approved or Denied.
+    :param last_update_time: timestamp for the last update to this condition
+    :param message: human readable message with details about the request state
+    :param reason: brief reason for the request state
+    :param type: request approval state, currently Approved or Denied.
     """
 
     def __init__(self, last_update_time: time, message: str, reason: str, type: str):
@@ -66,9 +66,9 @@ class CertificateSigningRequestCondition(HelmYaml):
 
 class CertificateSigningRequest(KubernetesBaseObject):
     """
-    :param metadata:None
-    :param spec:The certificate request itself and any additional information.
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param metadata: None
+    :param spec: The certificate request itself and any additional information.
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
@@ -89,9 +89,9 @@ class CertificateSigningRequest(KubernetesBaseObject):
 
 class CertificateSigningRequestList(KubernetesBaseObject):
     """
-    :param metadata:None
-    :param items:None
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param metadata: None
+    :param items: None
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa

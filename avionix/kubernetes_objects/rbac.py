@@ -12,9 +12,9 @@ from avionix.kubernetes_objects.rbac_authorization import (
 
 class RoleBindingList(KubernetesBaseObject):
     """
-    :param metadata:Standard object's metadata.
-    :param items:Items is a list of RoleBindings
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param metadata: Standard object's metadata.
+    :param items: Items is a list of RoleBindings
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
@@ -33,9 +33,9 @@ class RoleBindingList(KubernetesBaseObject):
 
 class RoleList(KubernetesBaseObject):
     """
-    :param metadata:Standard object's metadata.
-    :param items:Items is a list of Roles
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param metadata: Standard object's metadata.
+    :param items: Items is a list of Roles
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
@@ -51,9 +51,9 @@ class RoleList(KubernetesBaseObject):
 
 class ClusterRoleBindingList(KubernetesBaseObject):
     """
-    :param metadata:Standard object's metadata.
-    :param items:Items is a list of ClusterRoleBindings
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param metadata: Standard object's metadata.
+    :param items: Items is a list of ClusterRoleBindings
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
@@ -72,9 +72,9 @@ class ClusterRoleBindingList(KubernetesBaseObject):
 
 class ClusterRoleList(KubernetesBaseObject):
     """
-    :param metadata:Standard object's metadata.
-    :param items:Items is a list of ClusterRoles
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param metadata: Standard object's metadata.
+    :param items: Items is a list of ClusterRoles
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa

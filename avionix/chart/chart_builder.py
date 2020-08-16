@@ -124,10 +124,13 @@ class ChartBuilder:
     def run_helm_install(self, options: Optional[Dict[str, Optional[str]]] = None):
         """
         Runs helm install on the chart
+
         :param options: A dictionary of command line arguments to pass to helm
 
-        For example, to run an install with updated dependencies and with verbose
-        logging:
+        :Example:
+
+        To run an install with updated dependencies and with verbose logging:
+
         >>> self.run_helm_install({"dependency_update": None, "v": "info"})
         """
         custom_check_output(self.__get_helm_install_command(options))
@@ -180,12 +183,13 @@ class ChartBuilder:
 
         :param options: A dictionary of command line arguments to pass to helm
 
-        Usage:
+        :Example:
+
         >>> self.run_helm_uninstall(
         >>>    {"dry-run": None,
         >>>    "description": "My uninstall description"
         >>>    }
-        >>>)
+        >>> )
         """
         info(f"Uninstalling chart {self.chart_info.name}")
         custom_check_output(self.__get_helm_uninstall_command(options))
@@ -209,12 +213,13 @@ class ChartBuilder:
 
         :param options: A dictionary of command line arguments to pass to helm
 
-        Usage:
+        :Example:
+
         >>> self.uninstall_chart(
         >>>    {"dry-run": None,
         >>>    "description": "My uninstall description"
         >>>    }
-        >>>)
+        >>> )
         """
         self.__handle_uninstallation(options)
 
@@ -245,7 +250,8 @@ class ChartBuilder:
 
         :param options: A dictionary of command line arguments to pass to helm
 
-        Usage:
+        :Example:
+
         >>> self.run_helm_upgrade(options={"atomic": None, "version": "2.0"})
         """
         info(f"Upgrading helm chart {self.chart_info.name}")
@@ -257,7 +263,8 @@ class ChartBuilder:
 
         :param options: A dictionary of command line arguments to pass to helm
 
-        Usage:
+        :Example:
+
         >>> self.upgrade_chart(options={"atomic": None, "version": "2.0"})
         """
         self.__check_if_installed()
@@ -274,8 +281,8 @@ class ChartBuilder:
     @property
     def is_installed(self):
         """
-        :return: True is chart with the given name is already installed in the chart
-        builders namespace, else False
+        :return: True if chart with the given name is already installed in the chart \
+            builders namespace, else False
         """
         installations = get_helm_installations(self.__namespace)
         filtered = installations[installations["NAME"] == self.chart_info.name]

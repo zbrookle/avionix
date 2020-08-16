@@ -20,6 +20,8 @@ class ErrorFactory:
             self._message,
         ):
             return NamespaceBeingTerminatedError(self._message)
+        if re.match(".*namespaces.*not found.*", self._message):
+            return NamespaceDoesNotExist(self._message)
         return None
 
 
@@ -42,6 +44,14 @@ class ChartNotInstalledError(AvionixError):
 
 class HelmError(AvionixError):
     pass
+
+
+class NamespaceDoesNotExist(AvionixError):
+    def __init__(self, msg: str):
+        super().__init__(
+            f"{msg}To create namespace on installation, "
+            f"use create_namespace=True in the ChartBuilder class"
+        )
 
 
 class NamespaceBeingTerminatedError(AvionixError):

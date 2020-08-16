@@ -1,9 +1,9 @@
-from logging import info
 import re
-from subprocess import check_output
 from typing import Any, List, Optional, Tuple
 
 from pandas import DataFrame
+
+from avionix._process_utils import custom_check_output
 
 
 def _space_split(output_line: str):
@@ -40,8 +40,8 @@ def _split_using_locations(locations: List[Tuple[int, int]], values_string: str)
     return vals
 
 
-def parse_binary_output_to_dataframe(output: bytes):
-    output_lines = output.decode("utf-8").split("\n")
+def parse_output_to_dataframe(output: str):
+    output_lines = output.split("\n")
     names = _space_split(output_lines[0])
     value_locations = _get_name_locations(names, output_lines[0])
     value_rows = []
@@ -50,7 +50,6 @@ def parse_binary_output_to_dataframe(output: bytes):
             values = _split_using_locations(value_locations, line)
             value_rows.append(values)
     df = DataFrame(data=value_rows, columns=names)
-    info("\n" + str(df))
     return df
 
 
@@ -60,4 +59,4 @@ def kubectl_get(resource: str, namespace: Optional[str] = None, wide: bool = Fal
         command += f" -n {namespace}"
     if wide:
         command += " -o wide"
-    return parse_binary_output_to_dataframe(check_output(command.split(" ")))
+    return parse_output_to_dataframe(custom_check_output(command))

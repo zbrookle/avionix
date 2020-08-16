@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kubernetes_objects.base_objects import KubernetesBaseObject, Storage
 from avionix.kubernetes_objects.core import PersistentVolumeSpec, TopologySelectorTerm
 from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
@@ -75,7 +75,7 @@ class CSINodeSpec(HelmYaml):
         self.drivers = drivers
 
 
-class StorageClass(KubernetesBaseObject):
+class StorageClass(Storage):
     """
     :param metadata:Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

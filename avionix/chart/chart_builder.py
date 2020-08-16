@@ -146,7 +146,6 @@ class ChartBuilder:
 
     def install_chart(self, options: Optional[Dict[str, Optional[str]]] = None):
         self.generate_chart()
-        self.update_dependencies()
         self.__handle_installation(options)
         if not self.__keep_chart:
             self.__delete_chart_directory()

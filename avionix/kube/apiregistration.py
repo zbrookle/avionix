@@ -52,7 +52,7 @@ class APIServiceSpec(HelmYaml):
         a higher priority. The primary sort is based on GroupPriorityMinimum, ordered \
         highest number to lowest (20 before 10). The secondary sort is based on the \
         alphabetical comparison of the name of the object.  (v1.bar before v1.foo) \
-        We'd recommend something like: *.k8s.io (except extensions) at 18000 and \
+        We'd recommend something like: \*.k8s.io (except extensions) at 18000 and \
         PaaSes (OpenShift, Deis) are recommended to be in the 2000s
     :param version: Version is the API version this server hosts.  For example, "v1"
     :param version_priority: VersionPriority controls the ordering of this API version \

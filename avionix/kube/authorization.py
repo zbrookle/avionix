@@ -115,9 +115,9 @@ class ResourceRule(HelmYaml):
     :param resource_names: ResourceNames is an optional white list of names that the \
         rule applies to.  An empty set means that everything is allowed.  "*" means \
         all.
-    :param resources: Resources is a list of resources this rule applies to.  "*" means \
-        all in the specified apiGroups.  "*/foo" represents the subresource 'foo' for \
-        all resources in the specified apiGroups.
+    :param resources: Resources is a list of resources this rule applies to.  "*"
+        means all in the specified apiGroups.  "\*/foo" represents the subresource
+        'foo' for all resources in the specified apiGroups.
     :param verbs: Verb is a list of kubernetes resource API verbs, like: get, list, \
         watch, create, update, delete, proxy.  "*" means all.
     """

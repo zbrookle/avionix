@@ -3584,7 +3584,7 @@ class NodeCondition(HelmYaml):
     :param last_transition_time: Last time the condition transit from one status to \
         another.
     :param message: Human readable message indicating details about last transition.
-    :param reason:(brief) reason for the condition's last transition.
+    :param reason: (brief) reason for the condition's last transition.
     :param type: Type of node condition.
     """
 
@@ -3874,7 +3874,7 @@ class NamespaceCondition(HelmYaml):
 class ContainerStateWaiting(HelmYaml):
     """
     :param message: Message regarding why the container is not yet running.
-    :param reason:(brief) reason the container is not yet running.
+    :param reason: (brief) reason the container is not yet running.
     """
 
     def __init__(self, message: str, reason: str):
@@ -3915,7 +3915,7 @@ class ContainerStateTerminated(HelmYaml):
     :param exit_code: Exit status from the last termination of the container
     :param finished_at: Time at which the container last terminated
     :param message: Message regarding the last termination of the container
-    :param reason:(brief) reason from the last termination of the container
+    :param reason: (brief) reason from the last termination of the container
     :param signal: Signal from the last termination of the container
     :param started_at: Time at which previous execution of the container started
     """

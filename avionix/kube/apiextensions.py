@@ -58,7 +58,8 @@ class CustomResourceDefinitionCondition(HelmYaml):
         transition.
     :param reason: reason is a unique, one-word, CamelCase reason for the condition's \
         last transition.
-    :param typeNamesAccepted and Terminating.
+    :param type: type is the type of the condition. Types include Established, \
+        NamesAccepted and Terminating.
     """
 
     def __init__(
@@ -316,13 +317,14 @@ class CustomResourceColumnDefinition(HelmYaml):
     :param json_path: jsonPath is a simple JSON path (i.e. with array notation) which \
         is evaluated against each custom resource to produce the value for this \
         column.
-    :param typehttps://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
+    :param type: type is an OpenAPI type definition for this column. \
+        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types \
         for details.
     :param description: description is a human readable description of this column.
     :param format: format is an optional OpenAPI type definition for this column. The \
         'name' format is applied to the primary identifier column to assist in clients \
         identifying column is the resource name. See \
-        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types  # noqa \
+        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types \
         for details.
     :param priority: priority is an integer defining the relative importance of this \
         column compared to others. Lower numbers are considered higher priority. \
@@ -480,7 +482,7 @@ class CustomResourceDefinitionNames(HelmYaml):
         the name of the CustomResourceDefinition (in the form \
         `<names.plural>.<group>`). Must be all lowercase.
     :param list_kind: listKind is the serialized kind of the list for this resource. \
-        Defaults to "`kind`List".
+        Defaults to `kind` List".
     :param short_names: shortNames are short names for the resource, exposed in API \
         discovery documents, and used by clients to support invocations like `kubectl \
         get <shortname>`. It must be all lowercase.

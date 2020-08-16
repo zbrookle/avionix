@@ -78,7 +78,7 @@ class JobCondition(HelmYaml):
     :param last_transition_time: Last time the condition transit from one status to \
         another.
     :param message: Human readable message indicating details about last transition.
-    :param reason:(brief) reason for the condition's last transition.
+    :param reason: (brief) reason for the condition's last transition.
     :param type: Type of job condition, Complete or Failed.
     """
 

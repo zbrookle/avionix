@@ -1,5 +1,3 @@
-.. _chart_builder
-
 Chart
 =====
 

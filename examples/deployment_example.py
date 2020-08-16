@@ -9,14 +9,14 @@ from avionix.kubernetes_objects.core import (
 )
 
 container = Container(
-    name=f"test-container",
+    name="test-container",
     image="k8s.gcr.io/echoserver:1.4",
     env=[EnvVar("test", "test-value")],
     ports=[ContainerPort(8080)],
 )
 
 deployment = Deployment(
-    metadata=ObjectMeta(name=f"test-deployment", labels={"app": "my_app"}),
+    metadata=ObjectMeta(name="test-deployment", labels={"app": "my_app"}),
     spec=DeploymentSpec(
         replicas=1,
         template=PodTemplateSpec(

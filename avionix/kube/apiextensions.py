@@ -1,9 +1,9 @@
 from datetime import time
 from typing import List, Optional, Union
 
-from avionix.kubernetes_objects.apiregistration import ServiceReference
-from avionix.kubernetes_objects.base_objects import ApiExtensions
-from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
+from avionix.kube.apiregistration import ServiceReference
+from avionix.kube.base_objects import ApiExtensions
+from avionix.kube.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 

@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.core import EndpointPort
-from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
-from avionix.kubernetes_objects.reference import ObjectReference
+from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.core import EndpointPort
+from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.reference import ObjectReference
 from avionix.yaml.yaml_handling import HelmYaml
 
 

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from avionix.chart.chart_dependency import ChartDependency
 from avionix.chart.chart_maintainer import ChartMaintainer
-from avionix.kubernetes_objects.base_objects import HelmYaml
+from avionix.kube.base_objects import HelmYaml
 
 
 class ChartInfo(HelmYaml):

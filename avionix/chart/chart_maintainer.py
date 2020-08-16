@@ -1,6 +1,6 @@
 from typing import Optional
 
-from avionix.kubernetes_objects.base_objects import HelmYaml
+from avionix.kube.base_objects import HelmYaml
 
 
 class ChartMaintainer(HelmYaml):

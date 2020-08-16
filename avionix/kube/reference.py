@@ -1,6 +1,6 @@
 from typing import Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import KubernetesBaseObject
 
 
 class ObjectReference(KubernetesBaseObject):

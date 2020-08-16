@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.core import SELinuxOptions
-from avionix.kubernetes_objects.meta import (
+from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.core import SELinuxOptions
+from avionix.kube.meta import (
     DeleteOptions,
     LabelSelector,
     ListMeta,

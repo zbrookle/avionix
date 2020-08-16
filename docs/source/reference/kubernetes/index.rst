@@ -4,7 +4,7 @@ Kubernetes Objects
 Sections
 --------
 
-.. currentmodule:: avionix.kubernetes_objects
+.. currentmodule:: avionix.kube
 
 .. autosummary::
    :toctree: modules

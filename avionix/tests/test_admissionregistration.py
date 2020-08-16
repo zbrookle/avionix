@@ -1,14 +1,14 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.admissionregistration import (
+from avionix.kube.admissionregistration import (
     MutatingWebhook,
     MutatingWebhookConfiguration,
     ValidatingWebhook,
     ValidatingWebhookConfiguration,
     WebhookClientConfig,
 )
-from avionix.kubernetes_objects.apiregistration import ServiceReference
+from avionix.kube.apiregistration import ServiceReference
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
 

@@ -1,8 +1,8 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import ApiRegistration
-from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
+from avionix.kube.base_objects import ApiRegistration
+from avionix.kube.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 

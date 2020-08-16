@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.apiextensions import (
+from avionix.kube.apiextensions import (
     CustomResourceColumnDefinition,
     CustomResourceDefinition,
     CustomResourceDefinitionNames,

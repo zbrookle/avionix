@@ -27,14 +27,14 @@ With avionix, you can build with the typical kubernetes components
 For example for a deployment:
 ```python
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.core import (
+from avionix.kube.core import (
     PodSpec,
     LabelSelector,
     Container,
     ContainerPort,
     EnvVar,
 )
-from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec, PodTemplateSpec
+from avionix.kube.apps import Deployment, DeploymentSpec, PodTemplateSpec
 
 container = Container(
     name=f"test-container",
@@ -113,7 +113,7 @@ from my_package import (
     ExternalStorageVolumeGroup,
 )
 
-from avionix.kubernetes_objects.core import (
+from avionix.kube.core import (
     Container,
     ContainerPort,
     EnvFromSource,

@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
-from avionix.kubernetes_objects.meta import ListMeta
-from avionix.kubernetes_objects.rbac_authorization import (
+from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.meta import ListMeta
+from avionix.kube.rbac_authorization import (
     ClusterRole,
     ClusterRoleBinding,
     Role,

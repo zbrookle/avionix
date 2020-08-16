@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.apiextensions import WebhookClientConfig
-from avionix.kubernetes_objects.base_objects import AdmissionRegistration
-from avionix.kubernetes_objects.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.apiextensions import WebhookClientConfig
+from avionix.kube.base_objects import AdmissionRegistration
+from avionix.kube.meta import LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 

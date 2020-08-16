@@ -1,10 +1,10 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import (
+from avionix.kube.base_objects import (
     KubernetesBaseObject,
     RbacAuthorization,
 )
-from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 

@@ -3,7 +3,7 @@ from typing import Optional
 from yaml import dump
 
 from avionix._process_utils import custom_check_output
-from avionix.kubernetes_objects.base_objects import HelmYaml
+from avionix.kube.base_objects import HelmYaml
 
 
 class ChartDependency(HelmYaml):

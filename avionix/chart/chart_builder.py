@@ -13,7 +13,7 @@ from avionix.errors import (
     ErrorFactory,
     post_uninstall_handle_error,
 )
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import KubernetesBaseObject
 
 
 class ChartBuilder:

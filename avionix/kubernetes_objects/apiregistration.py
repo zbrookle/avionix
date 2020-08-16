@@ -9,13 +9,10 @@ from avionix.yaml.yaml_handling import HelmYaml
 class ServiceReference(HelmYaml):
     """
     :param name:Name is the name of the service
-    :type name: str
     :param namespace:Namespace is the namespace of the service
-    :type namespace: Optional[str]
     :param port:If specified, the port on the service that hosting webhook. Default to \
         443 for backward compatibility. `port` should be a valid port number (1-65535, \
         inclusive).
-    :type port: Optional[int]
     """
 
     def __init__(
@@ -30,14 +27,10 @@ class APIServiceCondition(HelmYaml):
     """
     :param last_transition_time:Last time the condition transitioned from one status \
         to another.
-    :type last_transition_time: time
     :param message:Human-readable message indicating details about last transition.
-    :type message: str
     :param reason:Unique, one-word, CamelCase reason for the condition's last \
         transition.
-    :type reason: str
     :param type:Type is the type of the condition.
-    :type type: str
     """
 
     def __init__(
@@ -52,7 +45,6 @@ class APIServiceCondition(HelmYaml):
 class APIServiceSpec(HelmYaml):
     """
     :param group:Group is the API group name this server hosts
-    :type group: str
     :param group_priority_minimum:GroupPriorityMininum is the priority this group \
         should have at least. Higher priority means that the group is preferred by \
         clients over lower priority ones. Note that other versions of this group might \
@@ -62,9 +54,7 @@ class APIServiceSpec(HelmYaml):
         alphabetical comparison of the name of the object.  (v1.bar before v1.foo) \
         We'd recommend something like: *.k8s.io (except extensions) at 18000 and \
         PaaSes (OpenShift, Deis) are recommended to be in the 2000s
-    :type group_priority_minimum: int
     :param version:Version is the API version this server hosts.  For example, "v1"
-    :type version: str
     :param version_priority:VersionPriority controls the ordering of this API version \
         inside of its group.  Must be greater than zero. The primary sort is based on \
         VersionPriority, ordered highest to lowest (20 before 10). Since it's inside \
@@ -78,20 +68,16 @@ class APIServiceSpec(HelmYaml):
         with no suffix such as beta or alpha), and then by comparing major version, \
         then minor version. An example sorted list of versions: v10, v2, v1, v11beta2, \
         v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10.
-    :type version_priority: int
     :param ca_bundle:CABundle is a PEM encoded CA bundle which will be used to \
         validate an API server's serving certificate. If unspecified, system trust \
         roots on the apiserver are used.
-    :type ca_bundle: Optional[str]
     :param insecure_skip_tlsverify:InsecureSkipTLSVerify disables TLS certificate \
         verification when communicating with this server. This is strongly \
         discouraged.  You should use the CABundle instead.
-    :type insecure_skip_tlsverify: Optional[bool]
     :param service:Service is a reference to the service for this API server.  It must \
         communicate on port 443 If the Service is nil, that means the handling for the \
         API groupversion is handled locally on this server. The call will simply \
         delegate to the normal handler chain to be fulfilled.
-    :type service: Optional[ServiceReference]
     """
 
     def __init__(
@@ -116,14 +102,11 @@ class APIServiceSpec(HelmYaml):
 class APIService(ApiRegistration):
     """
     :param metadata:None
-    :type metadata: ObjectMeta
     :param spec:Spec contains information for locating and communicating with a server
-    :type spec: APIServiceSpec
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
     """
 
     def __init__(
@@ -140,14 +123,11 @@ class APIService(ApiRegistration):
 class APIServiceList(ApiRegistration):
     """
     :param metadata:None
-    :type metadata: ListMeta
     :param items:None
-    :type items: List[APIService]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
     """
 
     def __init__(

@@ -13,22 +13,16 @@ class ObjectReference(KubernetesBaseObject):
         triggered the event) or if no container name is specified "spec.containers[2]" \
         (container with index 2 in this pod). This syntax is chosen only to have some \
         well-defined way of referencing a part of an object.
-    :type field_path: str
     :param name:Name of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
-    :type name: Optional[str]
     :param namespace:Namespace of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-    :type namespace: Optional[str]
     :param resource_version:Specific resourceVersion to which this reference is made, \
         if any. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency  # noqa
-    :type resource_version: Optional[str]
     :param uid:UID of the referent. More info: \
         https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
-    :type uid: Optional[str]
     :param api_version:API version of the referent.
-    :type api_version: Optional[str]
     """
 
     def __init__(

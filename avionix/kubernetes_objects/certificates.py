@@ -10,12 +10,9 @@ class CertificateSigningRequestSpec(HelmYaml):
     """
     :param extra:Extra information about the requesting user. See user.Info interface \
         for details.
-    :type extra: dict
     :param groups:Group information about the requesting user. See user.Info interface \
         for details.
-    :type groups: List[str]
     :param request:Base64-encoded PKCS#10 CSR data
-    :type request: str
     :param signer_name:Requested signer for the request. It is a qualified name in the \
         form: `scope-hostname.io/name`. If empty, it will be defaulted:  1. If it's a \
         kubelet client certificate, it is assigned     \
@@ -24,17 +21,13 @@ class CertificateSigningRequestSpec(HelmYaml):
         Otherwise, it is assigned "kubernetes.io/legacy-unknown". Distribution of \
         trust for signers happens out of band. You can select on this field using \
         `spec.signerName`.
-    :type signer_name: str
     :param usages:allowedUsages specifies a set of usage contexts the key will be \
         valid for. See: https://tools.ietf.org/html/rfc5280#section-4.2.1.3      \
         https://tools.ietf.org/html/rfc5280#section-4.2.1.12
-    :type usages: List[str]
     :param username:Information about the requesting user. See user.Info interface for \
         details.
-    :type username: str
     :param uid:UID information about the requesting user. See user.Info interface for \
         details.
-    :type uid: Optional[str]
     """
 
     def __init__(
@@ -59,13 +52,9 @@ class CertificateSigningRequestSpec(HelmYaml):
 class CertificateSigningRequestCondition(HelmYaml):
     """
     :param last_update_time:timestamp for the last update to this condition
-    :type last_update_time: time
     :param message:human readable message with details about the request state
-    :type message: str
     :param reason:brief reason for the request state
-    :type reason: str
     :param type:request approval state, currently Approved or Denied.
-    :type type: str
     """
 
     def __init__(self, last_update_time: time, message: str, reason: str, type: str):
@@ -78,14 +67,11 @@ class CertificateSigningRequestCondition(HelmYaml):
 class CertificateSigningRequest(KubernetesBaseObject):
     """
     :param metadata:None
-    :type metadata: ObjectMeta
     :param spec:The certificate request itself and any additional information.
-    :type spec: CertificateSigningRequestSpec
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
     """
 
     _non_standard_version = "v1beta1"
@@ -104,14 +90,11 @@ class CertificateSigningRequest(KubernetesBaseObject):
 class CertificateSigningRequestList(KubernetesBaseObject):
     """
     :param metadata:None
-    :type metadata: ListMeta
     :param items:None
-    :type items: List[CertificateSigningRequest]
     :param api_version:APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
     """
 
     _non_standard_version = "v1beta1"

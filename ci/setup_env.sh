@@ -126,14 +126,4 @@ chmod 700 get_helm.sh
 
 minikube start
 
-# Install DB for Linux
-
-if [[ -n ${SQL:0} ]]; then
-  echo "installing dbs"
-  mysql -e 'create database pandas_nosetest;'
-  psql -c 'create database pandas_nosetest;' -U postgres
-else
-   echo "not using dbs on non-linux Travis builds or Azure Pipelines"
-fi
-
 echo "done"

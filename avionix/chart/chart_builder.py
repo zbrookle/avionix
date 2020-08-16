@@ -20,6 +20,15 @@ class ChartBuilder:
     """
     Main builder object. Accepts kubernetes objects and generates the helm chart
     structure. Can also perform the installation onto the server
+
+    :param chart_info: Contains all chart metadata and dependency info
+    :param kubernetes_objects: A list of kubernetes objects
+    :param output_directory: A path to the directory in which to place the generated \
+        chart
+    :param keep_chart: Whether or not to keep the chart after installation
+    :param namespace: The namespace in which all chart components should be installed \
+        This allows the convenience of not passing the namespace option to both \
+        install and uninstall
     """
 
     def __init__(
@@ -51,6 +60,9 @@ class ChartBuilder:
             shutil.rmtree(self.chart_info.name)
 
     def generate_chart(self):
+        """
+        Generates the chart but does not install it on kubernetes
+        """
         self.__delete_chart_directory()
         os.makedirs(self.__templates_directory, exist_ok=True)
         with open(self.__chart_yaml, "w+") as chart_yaml_file:
@@ -74,6 +86,9 @@ class ChartBuilder:
             values_file.write(self.__get_values_yaml())
 
     def update_dependencies(self):
+        """
+        Runs 'helm dependency update' on the chart
+        """
         info("Adding dependencies...")
         for dependency in self.chart_info.dependencies:
             dependency.add_repo()
@@ -106,6 +121,14 @@ class ChartBuilder:
         return self.__handle_namespace(command) + self.__parse_options(options)
 
     def run_helm_install(self, options: Optional[Dict[str, Optional[str]]] = None):
+        """
+        Runs helm install on the chart
+        :param options: A dictionary of command line arguments to pass to helm
+
+        For example, to run an install with updated dependencies and with verbose
+        logging:
+        >>> run_helm_install({"dependency_update": None, "v": "info"})
+        """
         custom_check_output(self.__get_helm_install_command(options))
 
     def __handle_installation(self, options: Optional[Dict[str, Optional[str]]] = None):

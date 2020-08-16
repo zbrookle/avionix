@@ -4,13 +4,7 @@ import pandas
 import pytest
 
 from avionix import ChartDependency, ChartInfo, ObjectMeta
-from avionix.kube.core import (
-    ConfigMap,
-    Pod,
-    PodSpec,
-    PodTemplateSpec,
-    ServiceAccount,
-)
+from avionix.kube.core import ConfigMap, Pod, PodSpec, PodTemplateSpec, ServiceAccount
 from avionix.kube.meta import LabelSelector
 from avionix.kube.reference import ObjectReference
 from avionix.tests.utils import get_test_container, get_test_deployment

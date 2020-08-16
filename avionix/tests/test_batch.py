@@ -1,12 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kube.batch import (
-    CronJob,
-    CronJobSpec,
-    JobSpec,
-    JobTemplateSpec,
-)
+from avionix.kube.batch import CronJob, CronJobSpec, JobSpec, JobTemplateSpec
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
 

@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 from pathlib import Path
 import sys
-import sphinx_rtd_theme
 
+import sphinx_rtd_theme
 
 module_path = str(Path(__file__).parents[2].resolve()) + "/"
 sys.path.insert(0, module_path)

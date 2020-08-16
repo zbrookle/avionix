@@ -2,12 +2,7 @@ from typing import List, Optional
 
 from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.kube.core import SELinuxOptions
-from avionix.kube.meta import (
-    DeleteOptions,
-    LabelSelector,
-    ListMeta,
-    ObjectMeta,
-)
+from avionix.kube.meta import DeleteOptions, LabelSelector, ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 

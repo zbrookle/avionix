@@ -7,4 +7,3 @@ API Reference
 
    kubernetes/index
    chart
-   logging

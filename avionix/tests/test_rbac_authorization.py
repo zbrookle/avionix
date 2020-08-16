@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.rbac_authorization import (
+from avionix.kube.rbac_authorization import (
     PolicyRule,
     Role,
     RoleBinding,

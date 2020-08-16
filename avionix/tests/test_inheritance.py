@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ChartInfo
-from avionix.kubernetes_objects.core import Event
+from avionix.kube.core import Event
 from avionix.testing.installation_context import ChartInstallationContext
 from avionix.tests.utils import get_event_info
 

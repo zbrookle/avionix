@@ -1,24 +1,22 @@
 from typing import List, Optional
 
-from avionix.kubernetes_objects.base_objects import Extensions
-from avionix.kubernetes_objects.core import TypedLocalObjectReference
-from avionix.kubernetes_objects.meta import ListMeta, ObjectMeta
+from avionix.kube.base_objects import Extensions
+from avionix.kube.core import TypedLocalObjectReference
+from avionix.kube.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
 class IngressTLS(HelmYaml):
     """
-    :param secret_name:SecretName is the name of the secret used to terminate SSL \
+    :param secret_name: SecretName is the name of the secret used to terminate SSL \
         traffic on 443. Field is left optional to allow SSL routing based on SNI \
         hostname alone. If the SNI host in a listener conflicts with the "Host" header \
         field used by an IngressRule, the SNI host is used for termination and value \
         of the Host header is used for routing.
-    :type secret_name: str
-    :param hosts:Hosts are a list of hosts included in the TLS certificate. The values \
+    :param hosts: Hosts are a list of hosts included in the TLS certificate. The values \
         in this list must match the name/s used in the tlsSecret. Defaults to the \
         wildcard host setting for the loadbalancer controller fulfilling this Ingress, \
         if left unspecified.
-    :type hosts: Optional[List[str]]
     """
 
     def __init__(self, secret_name: str, hosts: Optional[List[str]] = None):
@@ -28,14 +26,11 @@ class IngressTLS(HelmYaml):
 
 class IngressBackend(HelmYaml):
     """
-    :param service_name:Specifies the name of the referenced service.
-    :type service_name: str
-    :param service_port:Specifies the port of the referenced service.
-    :type service_port: int
-    :param resource:Resource is an ObjectRef to another Kubernetes resource in the \
+    :param service_name: Specifies the name of the referenced service.
+    :param service_port: Specifies the port of the referenced service.
+    :param resource: Resource is an ObjectRef to another Kubernetes resource in the \
         namespace of the Ingress object. If resource is specified, serviceName and \
         servicePort must not be specified.
-    :type resource: Optional[TypedLocalObjectReference]
     """
 
     def __init__(
@@ -51,15 +46,13 @@ class IngressBackend(HelmYaml):
 
 class HTTPIngressPath(HelmYaml):
     """
-    :param backend:Backend defines the referenced service endpoint to which the \
+    :param backend: Backend defines the referenced service endpoint to which the \
         traffic will be forwarded to.
-    :type backend: IngressBackend
-    :param path:Path is matched against the path of an incoming request. Currently it \
+    :param path: Path is matched against the path of an incoming request. Currently it \
         can contain characters disallowed from the conventional "path" part of a URL \
         as defined by RFC 3986. Paths must begin with a '/'. When unspecified, all \
         paths from incoming requests are matched.
-    :type path: Optional[str]
-    :param path_type:PathType determines the interpretation of the Path matching. \
+    :param path_type: PathType determines the interpretation of the Path matching. \
         PathType can be one of the following values: * Exact: Matches the URL path \
         exactly. * Prefix: Matches based on a URL path prefix split by '/'. Matching \
         is   done on a path element by element basis. A path element refers is the   \
@@ -72,7 +65,6 @@ class HTTPIngressPath(HelmYaml):
         separate PathType   or treat it identically to Prefix or Exact path types. \
         Implementations are required to support all path types. Defaults to \
         ImplementationSpecific.
-    :type path_type: Optional[str]
     """
 
     def __init__(
@@ -88,8 +80,7 @@ class HTTPIngressPath(HelmYaml):
 
 class HTTPIngressRuleValue(HelmYaml):
     """
-    :param paths:A collection of paths that map requests to backends.
-    :type paths: List[HTTPIngressPath]
+    :param paths: A collection of paths that map requests to backends.
     """
 
     def __init__(self, paths: List[HTTPIngressPath]):
@@ -98,9 +89,8 @@ class HTTPIngressRuleValue(HelmYaml):
 
 class IngressRule(HelmYaml):
     """
-    :param http:None
-    :type http: HTTPIngressRuleValue
-    :param host:Host is the fully qualified domain name of a network host, as defined \
+    :param http: None
+    :param host: Host is the fully qualified domain name of a network host, as defined \
         by RFC 3986. Note the following deviations from the "host" part of the URI as \
         defined in RFC 3986: 1. IPs are not allowed. Currently an IngressRuleValue can \
         only apply to    the IP in the Spec of the parent Ingress. 2. The `:` \
@@ -118,7 +108,6 @@ class IngressRule(HelmYaml):
         request matches this rule if the http host header is equal to Host. 2. If Host \
         is a wildcard, then the request matches this rule if the http host header is \
         to equal to the suffix (removing the first label) of the wildcard rule.
-    :type host: Optional[str]
     """
 
     def __init__(self, http: HTTPIngressRuleValue, host: Optional[str] = None):
@@ -128,7 +117,7 @@ class IngressRule(HelmYaml):
 
 class IngressSpec(HelmYaml):
     """
-    :param ingress_class_name:IngressClassName is the name of the IngressClass cluster \
+    :param ingress_class_name: IngressClassName is the name of the IngressClass cluster \
         resource. The associated IngressClass defines which controller will implement \
         the resource. This replaces the deprecated `kubernetes.io/ingress.class` \
         annotation. For backwards compatibility, when that annotation is set, it must \
@@ -137,21 +126,17 @@ class IngressSpec(HelmYaml):
         ignore Ingresses without a class specified. An IngressClass resource may be \
         marked as default, which can be used to set a default value for this field. \
         For more information, refer to the IngressClass documentation.
-    :type ingress_class_name: str
-    :param backend:A default backend capable of servicing requests that don't match \
+    :param backend: A default backend capable of servicing requests that don't match \
         any rule. At least one of 'backend' or 'rules' must be specified. This field \
         is optional to allow the loadbalancer controller or defaulting logic to \
         specify a global default.
-    :type backend: Optional[IngressBackend]
-    :param rules:A list of host rules used to configure the Ingress. If unspecified, \
+    :param rules: A list of host rules used to configure the Ingress. If unspecified, \
         or no rule matches, all traffic is sent to the default backend.
-    :type rules: Optional[List[IngressRule]]
-    :param tls:TLS configuration. Currently the Ingress only supports a single TLS \
+    :param tls: TLS configuration. Currently the Ingress only supports a single TLS \
         port, 443. If multiple members of this list specify different hosts, they will \
         be multiplexed on the same port according to the hostname specified through \
         the SNI TLS extension, if the ingress controller fulfilling the ingress \
         supports SNI.
-    :type tls: Optional[List[IngressTLS]]
     """
 
     def __init__(
@@ -169,17 +154,14 @@ class IngressSpec(HelmYaml):
 
 class Ingress(Extensions):
     """
-    :param metadata:Standard object's metadata. More info: \
+    :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ObjectMeta
-    :param spec:Spec is the desired state of the Ingress. More info: \
+    :param spec: Spec is the desired state of the Ingress. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
-    :type spec: IngressSpec
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
     """
 
     _non_standard_version = "v1beta1"
@@ -194,16 +176,13 @@ class Ingress(Extensions):
 
 class IngressList(Extensions):
     """
-    :param metadata:Standard object's metadata. More info: \
+    :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :type metadata: ListMeta
-    :param items:Items is the list of Ingress.
-    :type items: List[Ingress]
-    :param api_version:APIVersion defines the versioned schema of this representation \
+    :param items: Items is the list of Ingress.
+    :param api_version: APIVersion defines the versioned schema of this representation \
         of an object. Servers should convert recognized schemas to the latest internal \
         value, and may reject unrecognized values. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    :type api_version: Optional[str]
     """
 
     _non_standard_version = "v1beta1"

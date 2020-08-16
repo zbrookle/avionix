@@ -6,4 +6,4 @@ __version__ = get_versions()["version"]
 del get_versions
 
 from avionix.chart import ChartBuilder, ChartDependency, ChartInfo, ChartMaintainer
-from avionix.kubernetes_objects.meta import ObjectMeta
+from avionix.kube.meta import ObjectMeta

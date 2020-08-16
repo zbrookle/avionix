@@ -13,13 +13,22 @@ from avionix.errors import (
     ErrorFactory,
     post_uninstall_handle_error,
 )
-from avionix.kubernetes_objects.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import KubernetesBaseObject
 
 
 class ChartBuilder:
     """
     Main builder object. Accepts kubernetes objects and generates the helm chart
     structure. Can also perform the installation onto the server
+
+    :param chart_info: Contains all chart metadata and dependency info
+    :param kubernetes_objects: A list of kubernetes objects
+    :param output_directory: A path to the directory in which to place the generated \
+        chart
+    :param keep_chart: Whether or not to keep the chart after installation
+    :param namespace: The namespace in which all chart components should be installed \
+        This allows the convenience of not passing the namespace option to both \
+        install and uninstall
     """
 
     def __init__(
@@ -51,6 +60,9 @@ class ChartBuilder:
             shutil.rmtree(self.chart_info.name)
 
     def generate_chart(self):
+        """
+        Generates the chart but does not install it on kubernetes
+        """
         self.__delete_chart_directory()
         os.makedirs(self.__templates_directory, exist_ok=True)
         with open(self.__chart_yaml, "w+") as chart_yaml_file:
@@ -73,7 +85,10 @@ class ChartBuilder:
         ) as values_file:
             values_file.write(self.__get_values_yaml())
 
-    def update_dependencies(self):
+    def add_dependency_repos(self):
+        """
+        Adds repos for all dependencies listed
+        """
         info("Adding dependencies...")
         for dependency in self.chart_info.dependencies:
             dependency.add_repo()
@@ -84,7 +99,8 @@ class ChartBuilder:
             values_text += dependency.get_values_yaml() + "\n"
         return values_text
 
-    def __parse_options(self, options: Optional[Dict[str, Optional[str]]] = None):
+    @staticmethod
+    def __parse_options(options: Optional[Dict[str, Optional[str]]] = None):
         option_string = ""
         if options is None:
             return option_string
@@ -106,6 +122,17 @@ class ChartBuilder:
         return self.__handle_namespace(command) + self.__parse_options(options)
 
     def run_helm_install(self, options: Optional[Dict[str, Optional[str]]] = None):
+        """
+        Runs helm install on the chart
+
+        :param options: A dictionary of command line arguments to pass to helm
+
+        :Example:
+
+        To run an install with updated dependencies and with verbose logging:
+
+        >>> self.run_helm_install({"dependency_update": None, "v": "info"})
+        """
         custom_check_output(self.__get_helm_install_command(options))
 
     def __handle_installation(self, options: Optional[Dict[str, Optional[str]]] = None):
@@ -122,8 +149,24 @@ class ChartBuilder:
             raise post_uninstall_handle_error(decoded)
 
     def install_chart(self, options: Optional[Dict[str, Optional[str]]] = None):
+        """
+        Generates and installs the helm chart onto kubernetes and handles all failures.
+        It will also add the repos of all listed dependencies.
+
+        Note that the generated chart will be deleted if *keep_chart* is not set to
+        true on ChartBuilder
+
+        WARNING: If the helm chart installation fails, the chart will be uninstalled,
+        so if working with an existing chart, please use upgrade_chart instead
+
+        :param options: A dictionary of command line arguments to pass to helm
+
+        For example, to run an install with updated dependencies and with verbose
+        logging:
+        >>> self.helm_install({"dependency_update": None, "v": "info"})
+        """
         self.generate_chart()
-        self.update_dependencies()
+        self.add_dependency_repos()
         self.__handle_installation(options)
         if not self.__keep_chart:
             self.__delete_chart_directory()
@@ -135,8 +178,21 @@ class ChartBuilder:
         return self.__handle_namespace(command) + self.__parse_options(options)
 
     def run_helm_uninstall(self, options: Optional[Dict[str, Optional[str]]] = None):
+        """
+        Runs helm uninstall
+
+        :param options: A dictionary of command line arguments to pass to helm
+
+        :Example:
+
+        >>> self.run_helm_uninstall(
+        >>>    {"dry-run": None,
+        >>>    "description": "My uninstall description"
+        >>>    }
+        >>> )
+        """
         info(f"Uninstalling chart {self.chart_info.name}")
-        custom_check_output(self.__get_helm_uninstall_command())
+        custom_check_output(self.__get_helm_uninstall_command(options))
 
     def __check_if_installed(self):
         info(f"Checking if helm chart {self.chart_info.name} is installed")
@@ -152,6 +208,19 @@ class ChartBuilder:
         self.run_helm_uninstall(options)
 
     def uninstall_chart(self, options: Optional[Dict[str, Optional[str]]] = None):
+        """
+        Uninstalls the chart if present, if not present, raises an error
+
+        :param options: A dictionary of command line arguments to pass to helm
+
+        :Example:
+
+        >>> self.uninstall_chart(
+        >>>    {"dry-run": None,
+        >>>    "description": "My uninstall description"
+        >>>    }
+        >>> )
+        """
         self.__handle_uninstallation(options)
 
     def __handle_namespace(self, command: str):
@@ -176,23 +245,45 @@ class ChartBuilder:
             raise post_uninstall_handle_error(decoded)
 
     def run_helm_upgrade(self, options: Optional[Dict[str, Optional[str]]] = None):
+        """
+        Runs 'helm upgrade' on the chart
+
+        :param options: A dictionary of command line arguments to pass to helm
+
+        :Example:
+
+        >>> self.run_helm_upgrade(options={"atomic": None, "version": "2.0"})
+        """
         info(f"Upgrading helm chart {self.chart_info.name}")
         custom_check_output(self.__get_helm_upgrade_command(options))
 
     def upgrade_chart(self, options: Optional[Dict[str, Optional[str]]] = None):
+        """
+        Generates and upgrades the helm chart
+
+        :param options: A dictionary of command line arguments to pass to helm
+
+        :Example:
+
+        >>> self.upgrade_chart(options={"atomic": None, "version": "2.0"})
+        """
         self.__check_if_installed()
         self.generate_chart()
-        self.update_dependencies()
+        self.add_dependency_repos()
         update_depenedencies = "dependency-update"
         if options is not None and update_depenedencies in options:
             custom_check_output(
-                f"helm dependency update " f"{self.chart_folder_path.resolve()}"
+                f"helm dependency update {self.chart_folder_path.resolve()}"
             )
             del options[update_depenedencies]
         self.__handle_upgrade(options)
 
     @property
     def is_installed(self):
+        """
+        :return: True if chart with the given name is already installed in the chart \
+            builders namespace, else False
+        """
         installations = get_helm_installations(self.__namespace)
         filtered = installations[installations["NAME"] == self.chart_info.name]
         return not filtered.empty

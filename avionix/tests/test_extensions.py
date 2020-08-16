@@ -1,7 +1,7 @@
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kubernetes_objects.extensions import (
+from avionix.kube.extensions import (
     HTTPIngressPath,
     HTTPIngressRuleValue,
     Ingress,

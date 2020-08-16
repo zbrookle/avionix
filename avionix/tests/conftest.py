@@ -4,15 +4,9 @@ import pandas
 import pytest
 
 from avionix import ChartDependency, ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.core import (
-    ConfigMap,
-    Pod,
-    PodSpec,
-    PodTemplateSpec,
-    ServiceAccount,
-)
-from avionix.kubernetes_objects.meta import LabelSelector
-from avionix.kubernetes_objects.reference import ObjectReference
+from avionix.kube.core import ConfigMap, Pod, PodSpec, PodTemplateSpec, ServiceAccount
+from avionix.kube.meta import LabelSelector
+from avionix.kube.reference import ObjectReference
 from avionix.tests.utils import get_test_container, get_test_deployment
 
 logging.basicConfig(format="[%(filename)s:%(lineno)s] %(message)s", level=logging.INFO)

@@ -1,7 +1,7 @@
 from typing import Optional
 
-from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec
-from avionix.kubernetes_objects.core import (
+from avionix.kube.apps import Deployment, DeploymentSpec
+from avionix.kube.core import (
     Container,
     ContainerPort,
     EnvVar,
@@ -13,7 +13,7 @@ from avionix.kubernetes_objects.core import (
     Volume,
     VolumeMount,
 )
-from avionix.kubernetes_objects.meta import LabelSelector, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.testing.helpers import kubectl_get
 
 

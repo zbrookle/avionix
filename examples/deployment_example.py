@@ -1,12 +1,6 @@
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
-from avionix.kubernetes_objects.apps import Deployment, DeploymentSpec, PodTemplateSpec
-from avionix.kubernetes_objects.core import (
-    Container,
-    ContainerPort,
-    EnvVar,
-    LabelSelector,
-    PodSpec,
-)
+from avionix.kube.apps import Deployment, DeploymentSpec, PodTemplateSpec
+from avionix.kube.core import Container, ContainerPort, EnvVar, LabelSelector, PodSpec
 
 container = Container(
     name="test-container",

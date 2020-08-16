@@ -5,6 +5,13 @@ interface is written entirely in yaml which makes it hard to use and also has
   create an object oriented interface to make helm easy to use and reduce the
    repetition of code when possible.
    
+# Requirements
+
+In order for avionix to work you will need the following command line tools
+
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [helm](https://helm.sh/docs/intro/install/)
+   
 # Installation
 
 ```bash
@@ -13,7 +20,7 @@ pip install avionix
 
 # Usage
 
-With avionix you can, build with the typical kubernetes components
+With avionix, you can build with the typical kubernetes components
 
 ## Simple Example
 
@@ -65,8 +72,28 @@ builder.generate_chart()
 ```
 to view the chart.
 
-Additionally there are methods for upgrade and uninstall charts.
-These are all directly equivalent to the helm commands.
+Additionally 
+```python
+builder.uninstall_chart()
+```
+and 
+```python
+builder.upgrade_chart()
+```
+are included.
+
+These are all directly equivalent to their corresponding helm commands and also
+ support passing in command line by passing a dictionary in with the options needed.
+ 
+For example,
+```python
+builder.install_chart(options={"create-namespace": None, "dependency-update": None}))
+```
+
+If a command line option takes an argument in helm, then that value should be given
+ as the value in the corresponding dictionary key in the options dictionary.
+
+Avionix also supports all helm arguments by passing in 
 
 ## Inheritance
 
@@ -244,27 +271,12 @@ class FlowerUI(AirflowContainer):
         )
 ```
 
-# Development Environmnent
-
-For development you will need
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) 
-- [helm](https://helm.sh/docs/intro/install/)
-- [docker](https://docs.docker.com/get-docker/)
-
-# Starting the development environment
-
-Be sure that docker is running, then run the following command
-```bash
-minikube start --driver=docker
-```
-
 ## Warnings
 
-Note that you currently cannot use public instance variables if subclassing one of the
- kubernetes components.
+Note that you currently cannot use public instance variables when implementing a
+ child class one of the kubernetes components.
  
-For example in the above inhertiance example code, this would break the helm output,
+For example in the above inheritance example code, this would break the helm output,
 
 ```python
 class WebserverUI(AirflowContainer):
@@ -283,4 +295,28 @@ class WebserverUI(AirflowContainer):
             ports=[ContainerPort(8080, host_port=8080)],
             readiness_probe=AvionixAirflowProbe("/airflow", 8080, "0.0.0.0"),
         )
+```
+
+However, instead using a variable 
+```python
+self._my_personal_variable
+```
+would not break the output.
+
+# Examples
+
+A good example of how avionix can be used is can be found in [avionix_airflow](https://github.com/zbrookle/avionix_airflow), which
+ is airflow implemented on kubernetes using avionix
+ 
+# Development Environmnent
+
+For development you will need
+- [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) 
+- [docker](https://docs.docker.com/get-docker/)
+
+# Starting the development environment
+
+Be sure that docker is running, then run the following command
+```bash
+minikube start --driver=docker
 ```

@@ -70,3 +70,16 @@ and
 are included.
 
 For more specifics about chart builder see the :ref:`chart` documentation.
+
+These are all directly equivalent to their corresponding helm commands and also
+ support passing in command line by passing a dictionary in with the options needed.
+
+For example,
+
+.. code-block:: python
+
+    builder.install_chart(options={"create-namespace": None, "dependency-update": None}))
+
+
+If a command line option takes an argument in helm, then that value should be given
+ as the value in the corresponding dictionary key in the options dictionary.

@@ -21,19 +21,6 @@ In order for avionix to work you will need the following command line tools
 pip install avionix
 ```
 
-These are all directly equivalent to their corresponding helm commands and also
- support passing in command line by passing a dictionary in with the options needed.
- 
-For example,
-```python
-builder.install_chart(options={"create-namespace": None, "dependency-update": None}))
-```
-
-If a command line option takes an argument in helm, then that value should be given
- as the value in the corresponding dictionary key in the options dictionary.
-
-Avionix also supports all helm arguments by passing in 
-
 ## Inheritance
 
 The real power of avionix comes from it being object oriented. The one thing that

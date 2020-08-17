@@ -25,6 +25,7 @@ sys.path.insert(0, module_path)
 project = "Avionix"
 copyright = "2020, Zach Brookler, Varun Rao"
 author = "Zach Brookler, Varun Rao"
+version = "0.2.0"
 
 # The full version, including alpha/beta/rc tags
 release = "0.2.0"

@@ -1,3 +1,4 @@
+from pandas import DataFrame
 import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
@@ -78,7 +79,7 @@ def endpoints_with_subset(endpoints_metadata):
 
 
 def get_endpoints_info():
-    info = kubectl_get("endpoints")
+    info = DataFrame(kubectl_get("endpoints"))
     return info[info["NAME"] != "kubernetes"].reset_index(drop=True)
 
 
@@ -158,7 +159,7 @@ def test_create_namespace(chart_info, namespace):
     builder = ChartBuilder(chart_info, [namespace])
     with ChartInstallationContext(builder):
         namespace_info = kubectl_get("namespaces")
-        assert "test-namespace" in namespace_info["NAME"].values
+        assert "test-namespace" in namespace_info["NAME"]
 
 
 @pytest.fixture
@@ -172,7 +173,7 @@ def node(node_metadata):
 
 
 def get_node_info():
-    node_info = kubectl_get("nodes")
+    node_info = DataFrame(kubectl_get("nodes"))
     return node_info[node_info["NAME"] != "minikube"].reset_index(drop=True)
 
 
@@ -300,7 +301,7 @@ def non_empty_secret():
 
 
 def get_secret_info():
-    info = kubectl_get("secrets")
+    info = DataFrame(kubectl_get("secrets"))
     return info[info["NAME"] == "test-secret"].reset_index(drop=True)
 
 
@@ -340,7 +341,7 @@ def nonempty_service():
 
 
 def get_service_info():
-    info = kubectl_get("services")
+    info = DataFrame(kubectl_get("services"))
     return info[info["NAME"] != "kubernetes"].reset_index(drop=True)
 
 
@@ -370,7 +371,7 @@ def nonempty_service_account():
 
 
 def get_service_account_info():
-    info = kubectl_get("serviceaccounts")
+    info = DataFrame(kubectl_get("serviceaccounts"))
     return info[info["NAME"] != "default"].reset_index(drop=True)
 
 

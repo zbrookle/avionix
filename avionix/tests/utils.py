@@ -1,5 +1,7 @@
 from typing import Optional
 
+from pandas import DataFrame
+
 from avionix.kube.apps import Deployment, DeploymentSpec
 from avionix.kube.core import (
     Container,
@@ -43,7 +45,7 @@ def get_test_deployment(number: int):
 
 
 def get_event_info():
-    info = kubectl_get("events")
+    info = DataFrame(kubectl_get("events"))
     return info[(info["TYPE"] != "Normal") & (info["TYPE"] != "Warning")].reset_index(
         drop=True
     )

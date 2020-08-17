@@ -285,5 +285,4 @@ class ChartBuilder:
             builders namespace, else False
         """
         installations = get_helm_installations(self.__namespace)
-        filtered = installations[installations["NAME"] == self.chart_info.name]
-        return not filtered.empty
+        return self.chart_info.name in installations["NAME"]

@@ -1,0 +1,13 @@
+name: avionix_airflow
+dependencies:
+  - pip
+  - pyyaml=5.3.1
+
+  # Test requirements
+  - black
+  - flake8
+  - mypy
+  - isort
+  - pytest
+  - pandas
+  - pytest

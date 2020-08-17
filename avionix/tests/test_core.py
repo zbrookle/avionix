@@ -1,5 +1,5 @@
-import pytest
 from pandas import DataFrame
+import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kube.core import (

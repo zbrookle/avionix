@@ -5,6 +5,9 @@ interface is written entirely in yaml which makes it hard to use and also has
   create an object oriented interface to make helm easy to use and reduce the
    repetition of code when possible.
    
+# Documentation
+The official documentation is can be found on ReadTheDocs: https://avionix.readthedocs.io/en/latest/index.html
+   
 # Requirements
 
 In order for avionix to work you will need the following command line tools

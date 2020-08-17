@@ -19,5 +19,6 @@ oriented interface for helm deployment to kubernetes for the `Python <https://ww
    getting_started/index
    user_guide/index
    reference/index
+   development/index
 
 

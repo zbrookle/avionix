@@ -310,16 +310,3 @@ would not break the output.
 
 A good example of how avionix can be used is can be found in [avionix_airflow](https://github.com/zbrookle/avionix_airflow), which
  is airflow implemented on kubernetes using avionix
- 
-# Development Environmnent
-
-For development you will need
-- [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) 
-- [docker](https://docs.docker.com/get-docker/)
-
-# Starting the development environment
-
-Be sure that docker is running, then run the following command
-```bash
-minikube start --driver=docker
-```

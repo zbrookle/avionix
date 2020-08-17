@@ -34,9 +34,9 @@ setup(
         "Documentation": "https://github.com/zbrookle/avionix",
         "Bug Tracker": "https://github.com/zbrookle/avionix/issues",
     },
-    url="https://github.com/zbrookle/avionix",
+    url="https://avionix.readthedocs.io/en/latest/index.html",
     download_url="https://github.com/zbrookle/avionix/archive/master.zip",
-    keywords=["kuberenetes", "helm", "yaml", "docker", "infrastructure"],
+    keywords=["kubernetes", "helm", "yaml", "docker", "infrastructure", "devops"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

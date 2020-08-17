@@ -21,38 +21,6 @@ In order for avionix to work you will need the following command line tools
 pip install avionix
 ```
 
-## Warnings
-
-Note that you currently cannot use public instance variables when implementing a
- child class one of the kubernetes components.
- 
-For example in the above inheritance example code, this would break the helm output,
-
-```python
-class WebserverUI(AirflowContainer):
-    def __init__(
-        self,
-        sql_options: SqlOptions,
-        redis_options: RedisOptions,
-        airflow_options: AirflowOptions,
-    ):
-        self.my_personal_variable = "I'm breaking helm!"
-        super().__init__(
-            "webserver",
-            sql_options,
-            redis_options,
-            airflow_options,
-            ports=[ContainerPort(8080, host_port=8080)],
-            readiness_probe=AvionixAirflowProbe("/airflow", 8080, "0.0.0.0"),
-        )
-```
-
-However, instead using a variable 
-```python
-self._my_personal_variable
-```
-would not break the output.
-
 # Examples
 
 A good example of how avionix can be used is can be found in [avionix_airflow](https://github.com/zbrookle/avionix_airflow), which

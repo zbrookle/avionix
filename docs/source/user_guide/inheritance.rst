@@ -1,4 +1,5 @@
 .. include:: ../../shared/links.rst
+.. _inheritance:
 
 Inheritance
 ===========

@@ -18,3 +18,4 @@ Pre install requirements can be found at :ref:`install`.
    :caption: Contents:
 
    install
+   simple_example

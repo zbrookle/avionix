@@ -1,8 +1,6 @@
 import re
 from typing import Any, List, Optional, Tuple
 
-from pandas import DataFrame
-
 from avionix._process_utils import custom_check_output
 
 
@@ -40,7 +38,7 @@ def _split_using_locations(locations: List[Tuple[int, int]], values_string: str)
     return vals
 
 
-def parse_output_to_dataframe(output: str):
+def parse_output_to_dict(output: str):
     output_lines = output.split("\n")
     names = _space_split(output_lines[0])
     value_locations = _get_name_locations(names, output_lines[0])
@@ -49,8 +47,7 @@ def parse_output_to_dataframe(output: str):
         if line.strip():
             values = _split_using_locations(value_locations, line)
             value_rows.append(values)
-    df = DataFrame(data=value_rows, columns=names)
-    return df
+    return {names[i]: row for i, row in enumerate(zip(*value_rows))}
 
 
 def kubectl_get(resource: str, namespace: Optional[str] = None, wide: bool = False):
@@ -59,4 +56,4 @@ def kubectl_get(resource: str, namespace: Optional[str] = None, wide: bool = Fal
         command += f" -n {namespace}"
     if wide:
         command += " -o wide"
-    return parse_output_to_dataframe(custom_check_output(command))
+    return parse_output_to_dict(custom_check_output(command))

@@ -3,9 +3,7 @@ import os
 from pathlib import Path
 import shutil
 import time
-from typing import Callable, Optional
-
-from pandas import Series
+from typing import Callable, Dict, Optional, Tuple
 
 from avionix.chart import ChartBuilder
 from avionix.errors import ChartAlreadyInstalledError
@@ -37,16 +35,16 @@ class ChartInstallationContext:
         self.__status_field = status_field
         self.__uninstall_func = uninstall_func
 
-    def get_status_resources(self) -> Series:
+    def get_status_resources(self) -> Dict[str, Tuple[str]]:
         resources = kubectl_get(self.status_resource)
         if self.__status_field in resources:
             return resources[self.__status_field]
-        return Series([], dtype="object")
+        return {}
 
     def wait_for_uninstall(self):
         while True:
             resources = self.get_status_resources()
-            if resources.empty:
+            if not resources:
                 break
             time.sleep(1)
 

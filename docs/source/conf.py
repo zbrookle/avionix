@@ -22,10 +22,12 @@ import sys
 module_path = str(Path(__file__).parents[2].resolve()) + "/"
 sys.path.insert(0, module_path)
 
+import avionix
+
 project = "Avionix"
 copyright = "2020, Zach Brookler, Varun Rao"
 author = "Zach Brookler, Varun Rao"
-version = "0.2.0"
+version = avionix.__version__
 
 # The full version, including alpha/beta/rc tags
 release = "0.2.0"

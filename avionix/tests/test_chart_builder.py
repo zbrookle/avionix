@@ -34,6 +34,7 @@ def test_chart_installation(config_map):
         ChartInfo(api_version="3.2.4", name="test", version="0.1.0", app_version="v1"),
         [config_map],
     )
+    assert not builder.is_installed
     with ChartInstallationContext(builder):
         # Check helm release
         helm_installation = get_helm_installations()

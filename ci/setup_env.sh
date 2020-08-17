@@ -6,6 +6,5 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 
 minikube start
-minikube addons enable ingress
 
 echo "done"

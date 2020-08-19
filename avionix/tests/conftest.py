@@ -27,13 +27,7 @@ def test_deployment2():
 @pytest.fixture
 def chart_info():
     return ChartInfo(
-        api_version="3.2.4",
-        name="test",
-        version="0.1.0",
-        app_version="v1",
-        maintainers=[
-            ChartMaintainer("A Name Jr.", "someone@example.com", "www.example.com")
-        ],
+        api_version="3.2.4", name="test", version="0.1.0", app_version="v1",
     )
 
 

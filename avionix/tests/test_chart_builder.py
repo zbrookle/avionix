@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import shutil
 
-from avionix import ChartBuilder, ChartInfo
+from avionix import ChartBuilder, ChartInfo, ChartMaintainer
 from avionix.chart.chart_builder import get_helm_installations
 from avionix.kube.apps import Deployment
 from avionix.testing import kubectl_get
@@ -31,7 +31,15 @@ def test_chart_folder_building(test_deployment1: Deployment):
 
 def test_chart_installation(config_map):
     builder = ChartBuilder(
-        ChartInfo(api_version="3.2.4", name="test", version="0.1.0", app_version="v1"),
+        ChartInfo(
+            api_version="3.2.4",
+            name="test",
+            version="0.1.0",
+            app_version="v1",
+            maintainers=[
+                ChartMaintainer("A Name Jr.", "someone@example.com", "www.example.com")
+            ],
+        ),
         [config_map],
     )
     assert not builder.is_installed

@@ -23,6 +23,7 @@ class ChartInstallationContext:
         expected_status: Optional[set] = None,
         status_field: str = "STATUS",
         uninstall_func: Optional[Callable] = None,
+        extra_installation_args: Dict[str, Optional[str]] = None,
     ):
         self.chart_builder = chart_builder
         self.status_resource = status_resource
@@ -34,6 +35,7 @@ class ChartInstallationContext:
         self.__temp_dir = Path.cwd() / "tmp"
         self.__status_field = status_field
         self.__uninstall_func = uninstall_func
+        self.extra_installation_args = {} if extra_installation_args is None else {}
 
     def get_status_resources(self) -> Dict[str, Tuple[str]]:
         resources = kubectl_get(self.status_resource)
@@ -51,6 +53,7 @@ class ChartInstallationContext:
     def __enter__(self):
         os.makedirs(str(self.__temp_dir), exist_ok=True)
         options = {"dependency-update": None, "wait": None, "create-namespace": ""}
+        options.update(self.extra_installation_args)
         try:
             self.chart_builder.install_chart(options=options)
         except ChartAlreadyInstalledError:

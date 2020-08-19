@@ -71,6 +71,16 @@ def test_chart_w_dependencies(dependency):
         assert builder.is_installed
 
 
+def test_installation_with_value_args(chart_info):
+    builder = ChartBuilder(chart_info, [], namespace="test")
+    with ChartInstallationContext(builder, extra_installation_args={"output": "json"}):
+        helm_installation = get_helm_installations("test")
+        assert helm_installation["NAME"][0] == "test"
+        assert helm_installation["REVISION"][0] == "1"
+        assert helm_installation["STATUS"][0] == "deployed"
+        assert helm_installation["NAMESPACE"][0] == "test"
+
+
 def test_installation_with_namespace(chart_info):
     builder = ChartBuilder(chart_info, [], namespace="test")
     with ChartInstallationContext(builder, timeout=60):

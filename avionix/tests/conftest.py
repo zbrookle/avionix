@@ -3,7 +3,7 @@ import logging
 import pandas
 import pytest
 
-from avionix import ChartDependency, ChartInfo, ObjectMeta
+from avionix import ChartDependency, ChartInfo, ObjectMeta, ChartMaintainer
 from avionix.kube.core import ConfigMap, Pod, PodSpec, PodTemplateSpec, ServiceAccount
 from avionix.kube.meta import LabelSelector
 from avionix.kube.reference import ObjectReference
@@ -27,7 +27,13 @@ def test_deployment2():
 @pytest.fixture
 def chart_info():
     return ChartInfo(
-        api_version="3.2.4", name="test", version="0.1.0", app_version="v1"
+        api_version="3.2.4",
+        name="test",
+        version="0.1.0",
+        app_version="v1",
+        maintainers=[
+            ChartMaintainer("A Name Jr.", "someone@example.com", "www.example.com")
+        ],
     )
 
 

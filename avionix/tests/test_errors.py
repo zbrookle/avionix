@@ -5,7 +5,7 @@ from avionix.errors import (
     ChartAlreadyInstalledError,
     NamespaceDoesNotExist,
     ChartNotInstalledError,
-    HelmError
+    HelmError,
 )
 
 

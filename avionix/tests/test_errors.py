@@ -5,6 +5,7 @@ from avionix.errors import (
     ChartAlreadyInstalledError,
     NamespaceDoesNotExist,
     ChartNotInstalledError,
+    HelmError
 )
 
 
@@ -35,5 +36,5 @@ def test_namespace_doesnt_exist(chart_info):
 def test_raises_when_invalid_upgrade_parameter_passed(chart_info, config_map):
     builder = ChartBuilder(chart_info, [config_map])
     builder.install_chart()
-    with pytest.raises(ChartNotInstalledError):
+    with pytest.raises(HelmError):
         builder.upgrade_chart(options={"my-invalid-option": "hello"})

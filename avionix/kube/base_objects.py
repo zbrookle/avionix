@@ -115,5 +115,11 @@ class Storage(KubernetesBaseObject):
     _base_object_name = "Storage"
 
 
+class Authentication(KubernetesBaseObject):
+
+    _version_prefix = "authentication.k8s.io/"
+    _base_object_name = "Authentication"
+
+
 class BaseSpec(HelmYaml):
     pass

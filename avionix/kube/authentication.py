@@ -1,21 +1,23 @@
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Authentication
 from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class BoundObjectReference(KubernetesBaseObject):
+class BoundObjectReference(HelmYaml):
     """
+    :param api_version: API version of the referent.
+    :param kind: Kind of the referent. Valid kinds are 'Pod' and 'Secret'.
     :param name: Name of the referent.
     :param uid: UID of the referent.
-    :param api_version: API version of the referent.
     """
 
     def __init__(
-        self, name: str, uid: Optional[str] = None, api_version: Optional[str] = None
+        self, api_version: str, kind: str, name: str, uid: Optional[str] = None
     ):
-        super().__init__(api_version)
+        self.apiVersion = api_version
+        self.kind = kind
         self.name = name
         self.uid = uid
 
@@ -48,7 +50,7 @@ class TokenRequestSpec(HelmYaml):
         self.expirationSeconds = expiration_seconds
 
 
-class TokenRequest(KubernetesBaseObject):
+class TokenRequest(Authentication):
     """
     :param metadata: None
     :param spec: None
@@ -104,7 +106,7 @@ class TokenReviewSpec(HelmYaml):
         self.token = token
 
 
-class TokenReview(KubernetesBaseObject):
+class TokenReview(Authentication):
     """
     :param metadata: None
     :param spec: Spec holds information about the request being evaluated

@@ -76,4 +76,3 @@ class RuntimeClass(Node):
         self.handler = handler
         self.scheduling = scheduling
         self.overhead = overhead
-

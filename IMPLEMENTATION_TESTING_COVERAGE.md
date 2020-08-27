@@ -32,10 +32,10 @@
 - [X] Job
 - [X] Lease
 - [X] NetworkPolicy
-- [ ] RuntimeClass
-- [ ] ClusterRoleBinding
-- [ ] ClusterRole
-- [ ] RoleBinding
+- [X] RuntimeClass
+- [X] ClusterRoleBinding
+- [X] ClusterRole
+- [X] RoleBinding
 - [X] Role
 - [ ] PriorityClass
 - [ ] CSIDriver

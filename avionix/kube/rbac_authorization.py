@@ -10,27 +10,27 @@ class PolicyRule(HelmYaml):
     :param api_groups: APIGroups is the name of the APIGroup that contains the \
         resources.  If multiple API groups are specified, any action requested against \
         one of the enumerated resources in any API group will be allowed.
+    :param resources: Resources is a list of resources this rule applies to.  \
+        ResourceAll represents all resources.
+    :param verbs: Verbs is a list of Verbs that apply to ALL the ResourceKinds and \
+        AttributeRestrictions contained in this rule.  VerbAll represents all kinds.
+    :param resource_names: ResourceNames is an optional white list of names that the \
+        rule applies to.  An empty set means that everything is allowed.
     :param non_resource_urls: NonResourceURLs is a set of partial urls that a user \
         should have access to.  '*'s are allowed, but only as the full, final step in \
         the path Since non-resource URLs are not namespaced, this field is only \
         applicable for ClusterRoles referenced from a ClusterRoleBinding. Rules can \
         either apply to API resources (such as "pods" or "secrets") or non-resource \
         URL paths (such as "/api"),  but not both.
-    :param resource_names: ResourceNames is an optional white list of names that the \
-        rule applies to.  An empty set means that everything is allowed.
-    :param resources: Resources is a list of resources this rule applies to.  \
-        ResourceAll represents all resources.
-    :param verbs: Verbs is a list of Verbs that apply to ALL the ResourceKinds and \
-        AttributeRestrictions contained in this rule.  VerbAll represents all kinds.
     """
 
     def __init__(
         self,
-        api_groups: Optional[List[str]] = None,
-        non_resource_urls: Optional[List[str]] = None,
+        api_groups: List[str],
+        resources: List[str],
+        verbs: List[str],
         resource_names: Optional[List[str]] = None,
-        resources: Optional[List[str]] = None,
-        verbs: Optional[List[str]] = None,
+        non_resource_urls: Optional[List[str]] = None,
     ):
         self.apiGroups = api_groups
         self.nonResourceURLs = non_resource_urls
@@ -137,7 +137,7 @@ class AggregationRule(HelmYaml):
         self.clusterRoleSelectors = cluster_role_selectors
 
 
-class ClusterRole(KubernetesBaseObject):
+class ClusterRole(RbacAuthorization):
     """
     :param metadata: Standard object's metadata.
     :param aggregation_rule: AggregationRule is an optional field that describes how to \
@@ -154,8 +154,8 @@ class ClusterRole(KubernetesBaseObject):
     def __init__(
         self,
         metadata: ObjectMeta,
-        aggregation_rule: AggregationRule,
-        rules: List[PolicyRule],
+        aggregation_rule: Optional[AggregationRule] = None,
+        rules: Optional[List[PolicyRule]] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
@@ -164,7 +164,7 @@ class ClusterRole(KubernetesBaseObject):
         self.rules = rules
 
 
-class ClusterRoleBinding(KubernetesBaseObject):
+class ClusterRoleBinding(RbacAuthorization):
     """
     :param metadata: Standard object's metadata.
     :param role_ref: RoleRef can only reference a ClusterRole in the global namespace. \
@@ -180,7 +180,7 @@ class ClusterRoleBinding(KubernetesBaseObject):
         self,
         metadata: ObjectMeta,
         role_ref: RoleRef,
-        subjects: List[Subject],
+        subjects: Optional[List[Subject]] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)

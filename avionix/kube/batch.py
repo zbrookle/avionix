@@ -97,7 +97,7 @@ class JobCondition(HelmYaml):
         self.type = type
 
 
-class Job(KubernetesBaseObject):
+class Job(Batch):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

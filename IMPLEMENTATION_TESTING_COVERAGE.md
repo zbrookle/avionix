@@ -28,7 +28,7 @@
 - [X] Deployment
 - [X] ReplicaSet
 - [X] StatefulSet
-- [ ] HorizontalPodAutoscaler
+- [X] HorizontalPodAutoscaler
 - [ ] Job
 - [ ] Lease
 - [ ] NetworkPolicy

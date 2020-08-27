@@ -139,5 +139,11 @@ class Coordination(KubernetesBaseObject):
     _base_object_name = "Coordination"
 
 
+class Networking(KubernetesBaseObject):
+
+    _version_prefix = "networking.k8s.io/"
+    _base_object_name = "Networking"
+
+
 class BaseSpec(HelmYaml):
     pass

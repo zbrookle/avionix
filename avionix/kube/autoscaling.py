@@ -1,11 +1,11 @@
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import KubernetesBaseObject, Autoscaling
 from avionix.kube.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class CrossVersionObjectReference(KubernetesBaseObject):
+class CrossVersionObjectReference(Autoscaling):
     """
     :param name: Name of the referent; More info: \
         http://kubernetes.io/docs/user-guide/identifiers#names
@@ -47,7 +47,7 @@ class HorizontalPodAutoscalerSpec(HelmYaml):
         self.targetCPUUtilizationPercentage = target_cpuutilization_percentage
 
 
-class HorizontalPodAutoscaler(KubernetesBaseObject):
+class HorizontalPodAutoscaler(Autoscaling):
     """
     :param metadata: Standard object metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

@@ -127,5 +127,11 @@ class Authorization(KubernetesBaseObject):
     _base_object_name = "Authorization"
 
 
+class Autoscaling(KubernetesBaseObject):
+
+    _version_prefix = "autoscaling/"
+    _base_object_name = "Autoscaling"
+
+
 class BaseSpec(HelmYaml):
     pass

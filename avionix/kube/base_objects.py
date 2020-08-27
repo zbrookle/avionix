@@ -133,5 +133,11 @@ class Autoscaling(KubernetesBaseObject):
     _base_object_name = "Autoscaling"
 
 
+class Coordination(KubernetesBaseObject):
+
+    _version_prefix = "coordination.k8s.io/"
+    _base_object_name = "Coordination"
+
+
 class BaseSpec(HelmYaml):
     pass

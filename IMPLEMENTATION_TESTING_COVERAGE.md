@@ -29,8 +29,8 @@
 - [X] ReplicaSet
 - [X] StatefulSet
 - [X] HorizontalPodAutoscaler
-- [ ] Job
-- [ ] Lease
+- [X] Job
+- [X] Lease
 - [ ] NetworkPolicy
 - [ ] RuntimeClass
 - [ ] ClusterRoleBinding

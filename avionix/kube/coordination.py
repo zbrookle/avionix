@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import KubernetesBaseObject, Coordination
 from avionix.kube.meta import ListMeta, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
@@ -22,11 +22,11 @@ class LeaseSpec(HelmYaml):
 
     def __init__(
         self,
-        acquire_time: time,
-        holder_identity: str,
-        lease_duration_seconds: int,
-        lease_transitions: int,
-        renew_time: time,
+        acquire_time: Optional[time] = None,
+        holder_identity: Optional[str] = None,
+        lease_duration_seconds: Optional[int] = None,
+        lease_transitions: Optional[int] = None,
+        renew_time: Optional[time] = None,
     ):
         self.acquireTime = acquire_time
         self.holderIdentity = holder_identity
@@ -35,7 +35,7 @@ class LeaseSpec(HelmYaml):
         self.renewTime = renew_time
 
 
-class Lease(KubernetesBaseObject):
+class Lease(Coordination):
     """
     :param metadata: More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

@@ -37,7 +37,7 @@
 - [X] ClusterRole
 - [X] RoleBinding
 - [X] Role
-- [ ] PriorityClass
+- [X] PriorityClass
 - [ ] CSIDriver
 - [ ] CSINode
 - [ ] StorageClass

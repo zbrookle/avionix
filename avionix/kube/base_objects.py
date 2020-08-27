@@ -151,5 +151,11 @@ class Node(KubernetesBaseObject):
     _base_object_name = "Node"
 
 
+class Scheduling(KubernetesBaseObject):
+
+    _version_prefix = "scheduling.k8s.io/"
+    _base_object_name = "Scheduling"
+
+
 class BaseSpec(HelmYaml):
     pass

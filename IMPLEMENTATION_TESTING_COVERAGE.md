@@ -31,7 +31,7 @@
 - [X] HorizontalPodAutoscaler
 - [X] Job
 - [X] Lease
-- [ ] NetworkPolicy
+- [X] NetworkPolicy
 - [ ] RuntimeClass
 - [ ] ClusterRoleBinding
 - [ ] ClusterRole

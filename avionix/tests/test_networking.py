@@ -38,7 +38,7 @@ POLICY_PEER = NetworkPolicyPeer(IPBlock("10.0.0.0/24"))
             [NetworkPolicyIngressRule([POLICY_PEER], [POLICY_PORT])],
             None,
         ),
-        ("policy-types", SELECTOR, None, None, ["Ingress"])
+        ("policy-types", SELECTOR, None, None, ["Ingress"]),
     ],
 )
 def test_network_policy(

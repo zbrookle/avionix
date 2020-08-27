@@ -145,5 +145,11 @@ class Networking(KubernetesBaseObject):
     _base_object_name = "Networking"
 
 
+class Node(KubernetesBaseObject):
+
+    _version_prefix = "node.k8s.io/"
+    _base_object_name = "Node"
+
+
 class BaseSpec(HelmYaml):
     pass

@@ -20,4 +20,3 @@ def test_lease(chart_info, holder_identity):
         lease_info = kubectl_get("lease")
         assert lease_info["NAME"][0] == "test-lease"
         assert lease_info["HOLDER"][0] == (holder_identity if holder_identity else "")
-

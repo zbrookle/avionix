@@ -160,27 +160,6 @@ class StatefulSet(Apps):
         self.spec = spec
 
 
-class StatefulSetList(Apps):
-    """
-    :param metadata: None
-    :param items: None
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[StatefulSet],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class ControllerRevision(Apps):
     """
     :param metadata: Standard object's metadata. More info: \
@@ -204,28 +183,6 @@ class ControllerRevision(Apps):
         self.metadata = metadata
         self.data = data
         self.revision = revision
-
-
-class ControllerRevisionList(Apps):
-    """
-    :param metadata: More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: Items is the list of ControllerRevisions
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[ControllerRevision],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class RollingUpdateDeployment(HelmYaml):
@@ -372,28 +329,6 @@ class DaemonSet(Apps):
         self.spec = spec
 
 
-class DaemonSetList(Apps):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: A list of daemon sets.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[DaemonSet],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class ReplicaSetCondition(HelmYaml):
     """
     :param last_transition_time: The last time the condition transitioned from one \
@@ -467,29 +402,6 @@ class ReplicaSet(Apps):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class ReplicaSetList(Apps):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of ReplicaSets. More info: \
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[ReplicaSet],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class DeploymentStrategy(HelmYaml):
@@ -575,24 +487,3 @@ class Deployment(Apps):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class DeploymentList(Apps):
-    """
-    :param metadata: Standard list metadata.
-    :param items: Items is the list of Deployments.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[Deployment],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

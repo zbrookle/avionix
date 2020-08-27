@@ -117,25 +117,6 @@ class Job(Batch):
         self.spec = spec
 
 
-class JobList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: items is the list of Jobs.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self, metadata: ListMeta, items: List[Job], api_version: Optional[str] = None
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class JobTemplateSpec(HelmYaml):
     """
     :param spec: Specification of the desired behavior of the job. More info: \
@@ -216,27 +197,3 @@ class CronJob(Batch):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class CronJobList(Batch):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: items is the list of CronJobs.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[CronJob],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

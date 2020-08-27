@@ -28,19 +28,11 @@
 - [X] Deployment
 - [X] ReplicaSet
 - [ ] StatefulSet
-- [ ] TokenReview
-- [ ] LocalSubjectAccessReview
-- [ ] SelfSubjectAccessReview
-- [ ] SelfSubjectRulesReview
-- [ ] SubjectAccessReview
 - [ ] HorizontalPodAutoscaler
 - [ ] Job
-- [ ] CertificateSigningRequest
 - [ ] Lease
 - [ ] NetworkPolicy
 - [ ] RuntimeClass
-- [ ] PodDisruptionBudget
-- [ ] PodSecurityPolicy
 - [ ] ClusterRoleBinding
 - [ ] ClusterRole
 - [ ] RoleBinding
@@ -50,6 +42,14 @@
 - [ ] CSINode
 - [ ] StorageClass
 - [ ] VolumeAttachment
+
+# Likely won't implement
+
+- [ ] TokenReview
+- [ ] LocalSubjectAccessReview
+- [ ] SelfSubjectAccessReview
+- [ ] SelfSubjectRulesReview
+- [ ] SubjectAccessReview
 
 #### v1beta1
 

@@ -65,6 +65,14 @@ class StatefulSetSpec(HelmYaml):
         if insufficient replicas are detected. Each pod stamped out by the StatefulSet \
         will fulfill this Template, but have a unique identity from the rest of the \
         StatefulSet.
+    :param selector: selector is a label query over pods that should match the replica \
+        count. It must match the pod template's labels. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :param service_name: serviceName is the name of the service that governs this \
+        StatefulSet. This service must exist before the StatefulSet, and is \
+        responsible for the network identity of the set. Pods get DNS/hostnames that \
+        follow the pattern: pod-specific-string.serviceName.default.svc.cluster.local \
+        where "pod-specific-string" is managed by the StatefulSet controller.
     :param pod_management_policy: podManagementPolicy controls how pods are created \
         during initial scale up, when replacing pods on nodes, or when scaling down. \
         The default policy is `OrderedReady`, where pods are created in increasing \
@@ -77,14 +85,6 @@ class StatefulSetSpec(HelmYaml):
         revisions that will be maintained in the StatefulSet's revision history. The \
         revision history consists of all revisions not represented by a currently \
         applied StatefulSetSpec version. The default value is 10.
-    :param selector: selector is a label query over pods that should match the replica \
-        count. It must match the pod template's labels. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :param service_name: serviceName is the name of the service that governs this \
-        StatefulSet. This service must exist before the StatefulSet, and is \
-        responsible for the network identity of the set. Pods get DNS/hostnames that \
-        follow the pattern: pod-specific-string.serviceName.default.svc.cluster.local \
-        where "pod-specific-string" is managed by the StatefulSet controller.
     :param volume_claim_templates: volumeClaimTemplates is a list of claims that pods \
         are allowed to reference. The StatefulSet controller is responsible for \
         mapping network identities to claims in a way that maintains the identity of a \
@@ -103,11 +103,11 @@ class StatefulSetSpec(HelmYaml):
     def __init__(
         self,
         template: PodTemplateSpec,
-        pod_management_policy: str,
-        revision_history_limit: int,
         selector: LabelSelector,
         service_name: str,
-        volume_claim_templates: List[PersistentVolumeClaim],
+        pod_management_policy: Optional[str] = None,
+        revision_history_limit: Optional[int] = None,
+        volume_claim_templates: Optional[List[PersistentVolumeClaim]] = None,
         replicas: Optional[int] = None,
         update_strategy: Optional[StatefulSetUpdateStrategy] = None,
     ):

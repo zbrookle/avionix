@@ -27,7 +27,7 @@
 - [X] DaemonSet
 - [X] Deployment
 - [X] ReplicaSet
-- [ ] StatefulSet
+- [X] StatefulSet
 - [ ] HorizontalPodAutoscaler
 - [ ] Job
 - [ ] Lease

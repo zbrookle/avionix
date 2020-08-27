@@ -120,6 +120,11 @@ class Authentication(KubernetesBaseObject):
     _version_prefix = "authentication.k8s.io/"
     _base_object_name = "Authentication"
 
+class Authorization(KubernetesBaseObject):
+
+    _version_prefix = "authorization.k8s.io/"
+    _base_object_name = "Authorization"
+
 
 class BaseSpec(HelmYaml):
     pass

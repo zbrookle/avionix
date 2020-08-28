@@ -39,7 +39,7 @@
 - [X] Role
 - [X] PriorityClass
 - [X] CSIDriver
-- [ ] CSINode
+- [X] CSINode
 - [ ] StorageClass
 - [ ] VolumeAttachment
 

@@ -25,8 +25,6 @@ class CSINodeDriver(HelmYaml):
     :param name: This is the name of the CSI driver that this object refers to. This \
         MUST be the same name returned by the CSI GetPluginName() call for that \
         driver.
-    :param allocatable: allocatable represents the volume resources of a node that are \
-        available for scheduling. This field is beta.
     :param node_id: nodeID of the node from the driver point of view. This field \
         enables Kubernetes to communicate with storage systems that do not share the \
         same nomenclature for nodes. For example, Kubernetes may refer to a given node \
@@ -35,6 +33,8 @@ class CSINodeDriver(HelmYaml):
         specific node, it can use this field to refer to the node name using the ID \
         that the storage system will understand, e.g. "nodeA" instead of "node1". This \
         field is required.
+    :param allocatable: allocatable represents the volume resources of a node that are \
+        available for scheduling. This field is beta.
     :param topology_keys: topologyKeys is the list of keys supported by the driver. \
         When a driver is initialized on a cluster, it provides a set of topology keys \
         that it understands (e.g. "company.com/zone", "company.com/region"). When a \
@@ -49,9 +49,9 @@ class CSINodeDriver(HelmYaml):
     def __init__(
         self,
         name: str,
-        allocatable: VolumeNodeResources,
         node_id: str,
-        topology_keys: List[str],
+        allocatable: Optional[VolumeNodeResources] = None,
+        topology_keys: Optional[List[str]] = None,
     ):
         self.name = name
         self.allocatable = allocatable
@@ -250,7 +250,7 @@ class CSIDriverSpec(HelmYaml):
         self.podInfoOnMount = pod_info_on_mount
 
 
-class CSINode(KubernetesBaseObject):
+class CSINode(Storage):
     """
     :param metadata: metadata.name must be the Kubernetes node name.
     :param spec: spec is the specification of CSINode

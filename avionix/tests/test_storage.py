@@ -3,10 +3,13 @@ import pytest
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.storage import (
     CSINode,
+    CSINodeSpec,
     CSIDriver,
     CSIDriverSpec,
+    CSINodeDriver,
     StorageClass,
     VolumeAttachment,
+VolumeNodeResources
 )
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
@@ -39,3 +42,26 @@ def test_csi_driver(chart_info, driver: CSIDriver):
             if driver.spec.volumeLifecycleModes
             else "Persistent"
         )
+
+
+@pytest.mark.parametrize(
+    "csi_node",
+    [
+        CSINode(
+            ObjectMeta(name="test-node"),
+            CSINodeSpec([CSINodeDriver("test", "test-id")]),
+        ),
+        CSINode(
+            ObjectMeta(name="test-node"),
+            CSINodeSpec([CSINodeDriver("test", "test-id", VolumeNodeResources(2))])
+        )
+    ],
+)
+def test_csi_node(chart_info, csi_node: CSINode):
+    builder = ChartBuilder(chart_info, [csi_node],)
+    with ChartInstallationContext(builder):
+        csi_node_info = kubectl_get("csinode")
+        csi_frame = DataFrame(csi_node_info)
+        csi_frame = csi_frame[csi_frame["NAME"] != "minikube"].reset_index(drop=True)
+        assert csi_frame["NAME"][0] == csi_node.metadata.name
+        assert csi_frame["DRIVERS"][0] == str(len(csi_node.spec.drivers))

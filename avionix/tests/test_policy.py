@@ -1,9 +1,10 @@
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kube.policy import PodDisruptionBudget, PodDisruptionBudgetSpec
+from avionix.kube.policy import PodDisruptionBudget, PodDisruptionBudgetSpec, Eviction
 from avionix.testing.helpers import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
 import pytest
 from typing import Union
+from avionix.errors import HelmError
 
 
 def none_to_na(value: Union[str, int]):
@@ -36,3 +37,14 @@ def test_pod_disruption_budget(chart_info, pod_disruption_budget):
         assert budget_info["MAX UNAVAILABLE"][0] == none_to_na(
             pod_disruption_budget.spec.maxUnavailable
         )
+
+
+@pytest.mark.xfail(
+    raises=HelmError, reason="Minikube version not high enough for eviction?"
+)
+def test_eviction(chart_info):
+    builder = ChartBuilder(
+        chart_info, [Eviction(ObjectMeta(name="test-eviction"), None)],
+    )
+    with ChartInstallationContext(builder):
+        kubectl_get("eviction")

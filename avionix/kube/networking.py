@@ -193,7 +193,7 @@ class IngressClassSpec(HelmYaml):
         self.parameters = parameters
 
 
-class IngressClass(KubernetesBaseObject):
+class IngressClass(Networking):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

@@ -12,6 +12,8 @@ from avionix.kube.networking import (
     NetworkPolicyPeer,
     NetworkPolicyPort,
     NetworkPolicySpec,
+    IngressClass,
+    IngressClassSpec,
 )
 from avionix.testing.helpers import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
@@ -70,3 +72,19 @@ def test_network_policy(
             first_key = list(match_labels.keys())[0]
             selector = f"{first_key}={match_labels[first_key]}"
         assert network_policy_info["POD-SELECTOR"][0] == selector
+
+
+def test_ingress_class(chart_info):
+    ingress_class = IngressClass(
+                ObjectMeta(name="test-ingress-class"), IngressClassSpec("acme.io/foo")
+            )
+    builder = ChartBuilder(
+        chart_info,
+        [
+            ingress_class
+        ],
+    )
+    with ChartInstallationContext(builder):
+        ingress_class_info = kubectl_get("ingressclass")
+        assert ingress_class_info["NAME"][0] == ingress_class.metadata.name
+        assert ingress_class_info["CONTROLLER"][0] == ingress_class.spec.controller

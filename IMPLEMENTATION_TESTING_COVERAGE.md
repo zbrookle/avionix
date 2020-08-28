@@ -56,7 +56,7 @@
 - [X] Ingress
 - [X] PodDisruptionBudget
 - [ ] Eviction
-- [ ] IngressClass
+- [X] IngressClass
 - [ ] RuntimeClass
 - [ ] CertificateSigningRequest
 - [ ] EndpointSlice

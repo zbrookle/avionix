@@ -1,3 +1,5 @@
+from pandas import DataFrame
+
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.certificates import (
     CertificateSigningRequest,
@@ -5,7 +7,6 @@ from avionix.kube.certificates import (
 )
 from avionix.testing.helpers import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
-from pandas import DataFrame
 
 
 def test_certificate_signing_request(chart_info):
@@ -38,7 +39,6 @@ def test_certificate_signing_request(chart_info):
             kubectl_get("certificatesigningrequest")
         )
         certificate_signing_request_frame = certificate_signing_request_frame[
-            certificate_signing_request_frame["NAME"]
-            == signing_request.metadata.name
+            certificate_signing_request_frame["NAME"] == signing_request.metadata.name
         ]
         assert certificate_signing_request_frame["NAME"][0] == "signing-request"

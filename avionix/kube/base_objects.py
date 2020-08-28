@@ -169,5 +169,11 @@ class Certificates(KubernetesBaseObject):
     _base_object_name = "Certificates"
 
 
+class Discovery(KubernetesBaseObject):
+
+    _version_prefix = "discovery.k8s.io/"
+    _base_object_name = "Discovery"
+
+
 class BaseSpec(HelmYaml):
     pass

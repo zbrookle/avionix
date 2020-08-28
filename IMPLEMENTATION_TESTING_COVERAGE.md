@@ -41,7 +41,7 @@
 - [X] CSIDriver
 - [X] CSINode
 - [X] StorageClass
-- [ ] VolumeAttachment
+- [X] VolumeAttachment
 
 # Likely won't implement
 

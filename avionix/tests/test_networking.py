@@ -76,14 +76,9 @@ def test_network_policy(
 
 def test_ingress_class(chart_info):
     ingress_class = IngressClass(
-                ObjectMeta(name="test-ingress-class"), IngressClassSpec("acme.io/foo")
-            )
-    builder = ChartBuilder(
-        chart_info,
-        [
-            ingress_class
-        ],
+        ObjectMeta(name="test-ingress-class"), IngressClassSpec("acme.io/foo")
     )
+    builder = ChartBuilder(chart_info, [ingress_class],)
     with ChartInstallationContext(builder):
         ingress_class_info = kubectl_get("ingressclass")
         assert ingress_class_info["NAME"][0] == ingress_class.metadata.name

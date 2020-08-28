@@ -58,7 +58,7 @@
 - [ ] Eviction
 - [X] IngressClass
 - [ ] RuntimeClass
-- [ ] CertificateSigningRequest
+- [X] CertificateSigningRequest
 - [ ] EndpointSlice
 - [X] CronJob
 - [ ] PodSecurityPolicy

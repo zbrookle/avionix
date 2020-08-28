@@ -163,5 +163,11 @@ class Policy(KubernetesBaseObject):
     _base_object_name = "Policy"
 
 
+class Certificates(KubernetesBaseObject):
+
+    _version_prefix = "certificates.k8s.io/"
+    _base_object_name = "Certificates"
+
+
 class BaseSpec(HelmYaml):
     pass

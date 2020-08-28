@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject, Networking
+from avionix.kube.base_objects import Networking
 from avionix.kube.core import TypedLocalObjectReference
 from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml

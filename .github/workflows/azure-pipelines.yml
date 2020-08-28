@@ -95,9 +95,8 @@ jobs:
         ci/run_tests.sh
       if: always()
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: CodeCov
+      shell: bash -l {0}
+      run: |
+        bash <(curl -s https://codecov.io/bash)
+      if: success()

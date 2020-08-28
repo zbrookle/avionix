@@ -40,5 +40,5 @@ def test_certificate_signing_request(chart_info):
         )
         certificate_signing_request_frame = certificate_signing_request_frame[
             certificate_signing_request_frame["NAME"] == signing_request.metadata.name
-        ]
+        ].reset_index()
         assert certificate_signing_request_frame["NAME"][0] == "signing-request"

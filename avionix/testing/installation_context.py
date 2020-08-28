@@ -23,7 +23,7 @@ class ChartInstallationContext:
         expected_status: Optional[set] = None,
         status_field: str = "STATUS",
         uninstall_func: Optional[Callable] = None,
-        extra_installation_args: Dict[str, Optional[str]] = None,
+        extra_installation_args: Optional[Dict[str, str]] = None,
     ):
         self.chart_builder = chart_builder
         self.status_resource = status_resource
@@ -35,7 +35,9 @@ class ChartInstallationContext:
         self.__temp_dir = Path.cwd() / "tmp"
         self.__status_field = status_field
         self.__uninstall_func = uninstall_func
-        self.extra_installation_args = {} if extra_installation_args is None else {}
+        self.extra_installation_args: Dict[
+            str, str
+        ] = {} if extra_installation_args is None else {}
 
     def get_status_resources(self) -> Dict[str, Tuple[str]]:
         resources = kubectl_get(self.status_resource)

@@ -40,7 +40,7 @@
 - [X] PriorityClass
 - [X] CSIDriver
 - [X] CSINode
-- [ ] StorageClass
+- [X] StorageClass
 - [ ] VolumeAttachment
 
 # Likely won't implement

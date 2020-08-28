@@ -73,6 +73,7 @@ class StorageClass(Storage):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+    :param provisioner: Provisioner indicates the type of the provisioner.
     :param allow_volume_expansion: AllowVolumeExpansion shows whether the storage class \
         allow volume expand
     :param allowed_topologies: Restrict the node topologies where volumes can be \
@@ -82,7 +83,6 @@ class StorageClass(Storage):
         VolumeScheduling feature.
     :param parameters: Parameters holds the parameters for the provisioner that should \
         create volumes of this storage class.
-    :param provisioner: Provisioner indicates the type of the provisioner.
     :param volume_binding_mode: VolumeBindingMode indicates how PersistentVolumeClaims \
         should be provisioned and bound.  When unset, VolumeBindingImmediate is used. \
         This field is only honored by servers that enable the VolumeScheduling \
@@ -101,11 +101,11 @@ class StorageClass(Storage):
     def __init__(
         self,
         metadata: ObjectMeta,
-        allow_volume_expansion: bool,
-        allowed_topologies: List[TopologySelectorTerm],
-        parameters: dict,
         provisioner: str,
-        volume_binding_mode: str,
+        allow_volume_expansion: Optional[bool] = None,
+        allowed_topologies: Optional[List[TopologySelectorTerm]] = None,
+        parameters: Optional[dict] = None,
+        volume_binding_mode: Optional[str] = None,
         mount_options: Optional[List[str]] = None,
         reclaim_policy: Optional[str] = None,
         api_version: Optional[str] = None,

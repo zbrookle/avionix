@@ -18,8 +18,10 @@ from avionix.testing.installation_context import ChartInstallationContext
 
 
 @pytest.fixture(
-    params=[{"api_groups": [""], "resources": ["pods"], "verbs": ["get"]},
-            {"api_groups": ["apps"], "resources": ["deployments"], "verbs": ["get"]}]
+    params=[
+        {"api_groups": [""], "resources": ["pods"], "verbs": ["get"]},
+        {"api_groups": ["apps"], "resources": ["deployments"], "verbs": ["get"]},
+    ]
 )
 def role(request):
     return Role(ObjectMeta(name="test-role"), [PolicyRule(**request.param)])

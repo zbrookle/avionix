@@ -1,8 +1,8 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Policy
 from avionix.kube.core import SELinuxOptions
-from avionix.kube.meta import DeleteOptions, LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import DeleteOptions, LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -65,14 +65,17 @@ class PodDisruptionBudgetSpec(HelmYaml):
     """
 
     def __init__(
-        self, max_unavailable: str, min_available: LabelSelector, selector: str
+        self,
+        max_unavailable: Optional[Union[int, str]] = None,
+        min_available: Optional[Union[int, str]] = None,
+        selector: Optional[LabelSelector] = None,
     ):
         self.maxUnavailable = max_unavailable
         self.minAvailable = min_available
         self.selector = selector
 
 
-class PodDisruptionBudget(KubernetesBaseObject):
+class PodDisruptionBudget(Policy):
     """
     :param metadata: None
     :param spec: Specification of the desired behavior of the PodDisruptionBudget.
@@ -95,7 +98,7 @@ class PodDisruptionBudget(KubernetesBaseObject):
         self.spec = spec
 
 
-class Eviction(KubernetesBaseObject):
+class Eviction(Policy):
     """
     :param metadata: ObjectMeta describes the pod that is being evicted.
     :param delete_options: DeleteOptions may be provided
@@ -116,29 +119,6 @@ class Eviction(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.deleteOptions = delete_options
-
-
-class PodDisruptionBudgetList(KubernetesBaseObject):
-    """
-    :param metadata: None
-    :param items: None
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[PodDisruptionBudget],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class HostPortRange(HelmYaml):
@@ -375,7 +355,7 @@ class PodSecurityPolicySpec(HelmYaml):
         self.volumes = volumes
 
 
-class PodSecurityPolicy(KubernetesBaseObject):
+class PodSecurityPolicy(Policy):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -397,27 +377,3 @@ class PodSecurityPolicy(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class PodSecurityPolicyList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: items is a list of schema objects.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[PodSecurityPolicy],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

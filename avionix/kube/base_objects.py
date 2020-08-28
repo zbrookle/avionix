@@ -157,5 +157,11 @@ class Scheduling(KubernetesBaseObject):
     _base_object_name = "Scheduling"
 
 
+class Policy(KubernetesBaseObject):
+
+    _version_prefix = "policy/"
+    _base_object_name = "Policy"
+
+
 class BaseSpec(HelmYaml):
     pass

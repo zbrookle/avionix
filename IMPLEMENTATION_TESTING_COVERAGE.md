@@ -54,7 +54,7 @@
 #### v1beta1
 
 - [X] Ingress
-- [ ] PodDisruptionBudget
+- [X] PodDisruptionBudget
 - [ ] Eviction
 - [ ] IngressClass
 - [ ] RuntimeClass

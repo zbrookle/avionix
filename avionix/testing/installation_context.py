@@ -14,6 +14,7 @@ class ChartInstallationContext:
     """
     Class to help with installing and uninstalling charts for testing
     """
+    chart_id = 0
 
     def __init__(
         self,
@@ -24,8 +25,12 @@ class ChartInstallationContext:
         status_field: str = "STATUS",
         uninstall_func: Optional[Callable] = None,
         extra_installation_args: Optional[Dict[str, str]] = None,
+        parallel: bool = True
     ):
         self.chart_builder = chart_builder
+        if parallel:
+            self.chart_builder.namespace = f"{self.chart_builder.namespace}-{self.chart_id}"
+            self.chart_id += 1
         self.status_resource = status_resource
         self.timeout = timeout
         if expected_status is None:

@@ -45,7 +45,7 @@ class ChartBuilder:
         self.__templates_directory = self.chart_folder_path / "templates"
         self.__chart_yaml = self.chart_folder_path / "Chart.yaml"
         self.__keep_chart = keep_chart
-        self.__namespace = namespace
+        self.namespace = namespace
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
                 self.__templates_directory
@@ -224,8 +224,8 @@ class ChartBuilder:
         self.__handle_uninstallation(options)
 
     def __handle_namespace(self, command: str):
-        if self.__namespace is not None:
-            return command + f" -n {self.__namespace}"
+        if self._namespace is not None:
+            return command + f" -n {self._namespace}"
         return command
 
     def __get_helm_upgrade_command(
@@ -284,7 +284,7 @@ class ChartBuilder:
         :return: True if chart with the given name is already installed in the chart \
             builders namespace, else False
         """
-        installations = get_helm_installations(self.__namespace)
+        installations = get_helm_installations(self._namespace)
         if not installations:
             return False
         return self.chart_info.name in installations["NAME"]

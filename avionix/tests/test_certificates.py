@@ -1,8 +1,8 @@
+from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.certificates import (
     CertificateSigningRequest,
     CertificateSigningRequestSpec,
 )
-from avionix import ChartBuilder, ObjectMeta
 from avionix.testing.helpers import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
 

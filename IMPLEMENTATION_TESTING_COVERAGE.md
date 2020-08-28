@@ -59,9 +59,9 @@
 - [X] IngressClass
 - [ ] RuntimeClass
 - [X] CertificateSigningRequest
-- [ ] EndpointSlice
+- [X] EndpointSlice
 - [X] CronJob
-- [ ] PodSecurityPolicy
+- [X] PodSecurityPolicy
 
 </details>
 

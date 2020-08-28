@@ -371,7 +371,13 @@ class SELinuxOptions(HelmYaml):
     :param user: User is a SELinux user label that applies to the container.
     """
 
-    def __init__(self, level: str, role: str, type: str, user: str):
+    def __init__(
+        self,
+        level: Optional[str] = None,
+        role: Optional[str] = None,
+        type: Optional[str] = None,
+        user: Optional[str] = None,
+    ):
         self.level = level
         self.role = role
         self.type = type

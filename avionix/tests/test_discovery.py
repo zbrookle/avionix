@@ -1,11 +1,11 @@
+from pandas import DataFrame
+import pytest
+
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kube.discovery import EndpointSlice, Endpoint, EndpointConditions
 from avionix.kube.core import EndpointPort
+from avionix.kube.discovery import Endpoint, EndpointConditions, EndpointSlice
 from avionix.testing.helpers import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
-
-import pytest
-from pandas import DataFrame
 
 
 def get_all_endpoint_ips(endpoint_slice: EndpointSlice) -> str:

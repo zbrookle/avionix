@@ -5,6 +5,8 @@ import pytest
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.meta import LabelSelector
 from avionix.kube.networking import (
+    IngressClass,
+    IngressClassSpec,
     IPBlock,
     NetworkPolicy,
     NetworkPolicyEgressRule,
@@ -12,8 +14,6 @@ from avionix.kube.networking import (
     NetworkPolicyPeer,
     NetworkPolicyPort,
     NetworkPolicySpec,
-    IngressClass,
-    IngressClassSpec,
 )
 from avionix.testing.helpers import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext

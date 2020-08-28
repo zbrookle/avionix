@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject, Certificates
+from avionix.kube.base_objects import Certificates, KubernetesBaseObject
 from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 

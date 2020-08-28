@@ -158,7 +158,7 @@ class RunAsUserStrategyOptions(HelmYaml):
         end. Required for MustRunAs.
     """
 
-    def __init__(self, rule: str, ranges: List[IDRange] = None):
+    def __init__(self, rule: str, ranges: Optional[List[IDRange]] = None):
         self.ranges = ranges
         self.rule = rule
 

@@ -108,7 +108,7 @@ def access_modes():
 
 
 @pytest.fixture
-def persistent_volume_spec():
+def persistent_volume_spec(access_modes):
     return PersistentVolumeSpec(
         access_modes,
         capacity={"storage": 1},

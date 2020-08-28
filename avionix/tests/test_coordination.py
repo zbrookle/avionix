@@ -1,8 +1,9 @@
+import pytest
+
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.coordination import Lease, LeaseSpec
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
-import pytest
 
 
 @pytest.mark.parametrize("holder_identity", [None, "someone"])

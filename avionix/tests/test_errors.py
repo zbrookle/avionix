@@ -3,9 +3,9 @@ import pytest
 from avionix import ChartBuilder
 from avionix.errors import (
     ChartAlreadyInstalledError,
-    NamespaceDoesNotExist,
     ChartNotInstalledError,
     HelmError,
+    NamespaceDoesNotExist,
 )
 
 

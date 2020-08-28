@@ -1,11 +1,11 @@
+from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.autoscaling import (
+    CrossVersionObjectReference,
     HorizontalPodAutoscaler,
     HorizontalPodAutoscalerSpec,
-    CrossVersionObjectReference,
 )
-from avionix.testing.installation_context import ChartInstallationContext
 from avionix.testing.helpers import kubectl_get
-from avionix import ChartBuilder, ObjectMeta
+from avionix.testing.installation_context import ChartInstallationContext
 
 
 def test_horizontal_pod_autoscaler(chart_info):

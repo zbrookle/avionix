@@ -1,14 +1,15 @@
+import pytest
+
+from avionix import ChartBuilder, ObjectMeta
+from avionix.errors import HelmError
 from avionix.kube.authentication import (
-    TokenReview,
-    TokenReviewSpec,
     TokenRequest,
     TokenRequestSpec,
+    TokenReview,
+    TokenReviewSpec,
 )
+from avionix.testing.helpers import KubectGetException, kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
-from avionix.testing.helpers import kubectl_get, KubectGetException
-from avionix import ChartBuilder, ObjectMeta
-import pytest
-from avionix.errors import HelmError
 
 
 @pytest.mark.xfail(

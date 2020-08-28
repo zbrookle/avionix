@@ -1,18 +1,20 @@
-from avionix.kube.networking import (
-    NetworkPolicy,
-    NetworkPolicySpec,
-    NetworkPolicyEgressRule,
-    NetworkPolicyIngressRule,
-    NetworkPolicyPort,
-    NetworkPolicyPeer,
-    IPBlock,
-)
-from avionix.testing.installation_context import ChartInstallationContext
-from avionix.testing.helpers import kubectl_get
+from typing import List, Optional
+
+import pytest
+
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.meta import LabelSelector
-from typing import Optional, List
-import pytest
+from avionix.kube.networking import (
+    IPBlock,
+    NetworkPolicy,
+    NetworkPolicyEgressRule,
+    NetworkPolicyIngressRule,
+    NetworkPolicyPeer,
+    NetworkPolicyPort,
+    NetworkPolicySpec,
+)
+from avionix.testing.helpers import kubectl_get
+from avionix.testing.installation_context import ChartInstallationContext
 
 SELECTOR = LabelSelector({"test": "test"})
 POLICY_PORT = NetworkPolicyPort(80, "TCP")

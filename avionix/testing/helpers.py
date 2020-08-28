@@ -1,8 +1,8 @@
 import re
+from subprocess import CalledProcessError
 from typing import Any, List, Optional, Tuple
 
 from avionix._process_utils import custom_check_output
-from subprocess import CalledProcessError
 
 
 def _space_split(output_line: str):

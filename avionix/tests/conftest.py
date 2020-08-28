@@ -3,7 +3,7 @@ import logging
 import pandas
 import pytest
 
-from avionix import ChartDependency, ChartInfo, ObjectMeta, ChartMaintainer
+from avionix import ChartDependency, ChartInfo, ChartMaintainer, ObjectMeta
 from avionix.kube.core import ConfigMap, Pod, PodSpec, PodTemplateSpec, ServiceAccount
 from avionix.kube.meta import LabelSelector
 from avionix.kube.reference import ObjectReference

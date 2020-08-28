@@ -1,20 +1,20 @@
+from pandas import DataFrame
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
+from avionix.kube.meta import LabelSelector
 from avionix.kube.rbac_authorization import (
+    AggregationRule,
+    ClusterRole,
+    ClusterRoleBinding,
     PolicyRule,
     Role,
     RoleBinding,
     RoleRef,
     Subject,
-    ClusterRole,
-    ClusterRoleBinding,
-    AggregationRule,
 )
-from avionix.kube.meta import LabelSelector
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
-from pandas import DataFrame
 
 
 @pytest.fixture(

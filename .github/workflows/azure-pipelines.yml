@@ -94,3 +94,9 @@ jobs:
         chmod +x ci/run_tests.sh
         ci/run_tests.sh
       if: always()
+
+    - name: Coveralls
+      shell: bash -l {0}
+      run: |
+        coveralls
+      if: always()

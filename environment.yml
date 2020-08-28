@@ -12,3 +12,4 @@ dependencies:
   - pandas
   - pytest
   - pytest-cov
+  - coveralls

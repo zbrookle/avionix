@@ -1,7 +1,7 @@
 from datetime import time
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject, Storage
+from avionix.kube.base_objects import Storage
 from avionix.kube.core import PersistentVolumeSpec, TopologySelectorTerm
 from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
@@ -146,7 +146,9 @@ class VolumeAttachmentSource(HelmYaml):
     """
 
     def __init__(
-        self, inline_volume_spec: PersistentVolumeSpec, persistent_volume_name: str
+        self,
+        inline_volume_spec: Optional[PersistentVolumeSpec] = None,
+        persistent_volume_name: Optional[str] = None,
     ):
         self.inlineVolumeSpec = inline_volume_spec
         self.persistentVolumeName = persistent_volume_name
@@ -161,17 +163,14 @@ class VolumeAttachmentSpec(HelmYaml):
     """
 
     def __init__(
-        self,
-        attacher: str,
-        source: VolumeAttachmentSource,
-        node_name: Optional[str] = None,
+        self, attacher: str, source: VolumeAttachmentSource, node_name: str,
     ):
         self.attacher = attacher
         self.source = source
         self.nodeName = node_name
 
 
-class VolumeAttachment(KubernetesBaseObject):
+class VolumeAttachment(Storage):
     """
     :param metadata: Standard object metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

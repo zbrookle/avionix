@@ -2,7 +2,13 @@ from pandas import DataFrame
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
-from avionix.kube.core import TopologySelectorLabelRequirement, TopologySelectorTerm
+from avionix.kube.core import (
+    TopologySelectorLabelRequirement,
+    TopologySelectorTerm,
+    PersistentVolumeSpec,
+    HostPathVolumeSource,
+    CSIPersistentVolumeSource,
+)
 from avionix.kube.storage import (
     CSIDriver,
     CSIDriverSpec,
@@ -12,6 +18,8 @@ from avionix.kube.storage import (
     StorageClass,
     VolumeAttachment,
     VolumeNodeResources,
+    VolumeAttachmentSpec,
+    VolumeAttachmentSource,
 )
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
@@ -92,3 +100,44 @@ def test_storage_class(chart_info, storage_class: StorageClass):
         ].reset_index()
         assert filtered["NAME"][0] == storage_class.metadata.name
         assert filtered["PROVISIONER"][0] == storage_class.provisioner
+
+
+@pytest.mark.parametrize(
+    "volume_attachment",
+    [
+        VolumeAttachment(
+            ObjectMeta(name="test-volume-attachment-source-name"),
+            VolumeAttachmentSpec(
+                "attacher",
+                VolumeAttachmentSource(persistent_volume_name="my-persistent-volume"),
+                "test-node",
+            ),
+        ),
+        VolumeAttachment(
+            ObjectMeta(name="test-volume-attachment-w-persistent-volume"),
+            VolumeAttachmentSpec(
+                "attacher",
+                VolumeAttachmentSource(
+                    PersistentVolumeSpec(
+                        ["ReadWriteMany"],
+                        csi=CSIPersistentVolumeSource("test-driver", "yes"),
+                    ),
+                    None,
+                ),
+                "test-node",
+            ),
+        ),
+    ],
+)
+def test_volume_attachment(chart_info, volume_attachment: VolumeAttachment):
+    builder = ChartBuilder(chart_info, [volume_attachment])
+    with ChartInstallationContext(builder):
+        volume_attachment_info = kubectl_get("volumeattachment")
+        assert volume_attachment_info["NAME"][0] == volume_attachment.metadata.name
+        assert volume_attachment_info["ATTACHER"][0] == volume_attachment.spec.attacher
+        source = volume_attachment.spec.source
+        assert volume_attachment_info["PV"][0] == (
+            source.persistentVolumeName
+            if source.persistentVolumeName is not None
+            else ""
+        )

@@ -3332,8 +3332,8 @@ class PersistentVolumeSpec(HelmYaml):
     def __init__(
         self,
         access_modes: List[str],
-        capacity: dict,
-        host_path: HostPathVolumeSource,
+        capacity: Optional[dict] = None,
+        host_path: Optional[HostPathVolumeSource] = None,
         aws_elastic_block_store: Optional[AWSElasticBlockStoreVolumeSource] = None,
         azure_disk: Optional[AzureDiskVolumeSource] = None,
         azure_file: Optional[AzureFilePersistentVolumeSource] = None,

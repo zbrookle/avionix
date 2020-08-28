@@ -4,7 +4,15 @@ import pandas
 import pytest
 
 from avionix import ChartDependency, ChartInfo, ChartMaintainer, ObjectMeta
-from avionix.kube.core import ConfigMap, Pod, PodSpec, PodTemplateSpec, ServiceAccount
+from avionix.kube.core import (
+    ConfigMap,
+    Pod,
+    PodSpec,
+    PodTemplateSpec,
+    ServiceAccount,
+    PersistentVolumeSpec,
+    HostPathVolumeSource,
+)
 from avionix.kube.meta import LabelSelector
 from avionix.kube.reference import ObjectReference
 from avionix.tests.utils import get_test_container, get_test_deployment
@@ -91,4 +99,19 @@ def dependency():
         "https://kubernetes-charts.storage.googleapis.com/",
         "stable",
         values={"resources": {"requests": {"memory": "100Mi"}}},
+    )
+
+
+@pytest.fixture
+def access_modes():
+    return ["ReadWriteMany"]
+
+
+@pytest.fixture
+def persistent_volume_spec():
+    return PersistentVolumeSpec(
+        access_modes,
+        capacity={"storage": 1},
+        host_path=HostPathVolumeSource("/home/test/tmp"),
+        storage_class_name="standard",
     )

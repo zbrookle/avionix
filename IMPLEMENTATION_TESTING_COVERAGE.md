@@ -38,7 +38,7 @@
 - [X] RoleBinding
 - [X] Role
 - [X] PriorityClass
-- [ ] CSIDriver
+- [X] CSIDriver
 - [ ] CSINode
 - [ ] StorageClass
 - [ ] VolumeAttachment

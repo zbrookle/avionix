@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from avionix.kube.base_objects import KubernetesBaseObject, Storage
 from avionix.kube.core import PersistentVolumeSpec, TopologySelectorTerm
-from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -121,28 +121,6 @@ class StorageClass(Storage):
         self.reclaimPolicy = reclaim_policy
 
 
-class StorageClassList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: Items is the list of StorageClasses
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[StorageClass],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class VolumeError(HelmYaml):
     """
     :param message: String detailing the error encountered during Attach or Detach \
@@ -216,28 +194,6 @@ class VolumeAttachment(KubernetesBaseObject):
         self.spec = spec
 
 
-class VolumeAttachmentList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: Items is the list of VolumeAttachments
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[VolumeAttachment],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class CSIDriverSpec(HelmYaml):
     """
     :param attach_required: attachRequired indicates this CSI volume driver requires an \
@@ -285,8 +241,8 @@ class CSIDriverSpec(HelmYaml):
 
     def __init__(
         self,
-        attach_required: bool,
-        volume_lifecycle_modes: List[str],
+        attach_required: Optional[bool] = None,
+        volume_lifecycle_modes: Optional[List[str]] = None,
         pod_info_on_mount: Optional[bool] = None,
     ):
         self.attachRequired = attach_required
@@ -312,29 +268,7 @@ class CSINode(KubernetesBaseObject):
         self.spec = spec
 
 
-class CSINodeList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: items is the list of CSINode
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[CSINode],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
-class CSIDriver(KubernetesBaseObject):
+class CSIDriver(Storage):
     """
     :param metadata: Standard object metadata. metadata.Name indicates the name of the \
         CSI driver that this object refers to; it MUST be the same name returned by \
@@ -358,25 +292,3 @@ class CSIDriver(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class CSIDriverList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: items is the list of CSIDriver
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[CSIDriver],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

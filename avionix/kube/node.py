@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject, Node
+from avionix.kube.base_objects import Node
 from avionix.kube.core import Toleration
 from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml

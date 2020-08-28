@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import Optional
 
 from avionix.kube.base_objects import Autoscaling, KubernetesBaseObject
-from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 

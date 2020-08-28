@@ -3,11 +3,10 @@ import pytest
 
 from avionix import ChartBuilder, ObjectMeta
 from avionix.kube.core import (
+    CSIPersistentVolumeSource,
+    PersistentVolumeSpec,
     TopologySelectorLabelRequirement,
     TopologySelectorTerm,
-    PersistentVolumeSpec,
-    HostPathVolumeSource,
-    CSIPersistentVolumeSource,
 )
 from avionix.kube.storage import (
     CSIDriver,
@@ -17,9 +16,9 @@ from avionix.kube.storage import (
     CSINodeSpec,
     StorageClass,
     VolumeAttachment,
-    VolumeNodeResources,
-    VolumeAttachmentSpec,
     VolumeAttachmentSource,
+    VolumeAttachmentSpec,
+    VolumeNodeResources,
 )
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext

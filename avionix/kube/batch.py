@@ -1,9 +1,9 @@
 from datetime import time
-from typing import List, Optional
+from typing import Optional
 
-from avionix.kube.base_objects import Batch, KubernetesBaseObject
+from avionix.kube.base_objects import Batch
 from avionix.kube.core import PodTemplateSpec
-from avionix.kube.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 

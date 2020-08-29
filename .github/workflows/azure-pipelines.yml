@@ -94,3 +94,11 @@ jobs:
         chmod +x ci/run_tests.sh
         ci/run_tests.sh
       if: always()
+
+    - name: CodeCov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      shell: bash -l {0}
+      run: |
+        bash <(curl -s https://codecov.io/bash)
+      if: success()

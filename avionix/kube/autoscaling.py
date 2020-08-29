@@ -1,11 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
-from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.base_objects import Autoscaling, KubernetesBaseObject
+from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class CrossVersionObjectReference(KubernetesBaseObject):
+class CrossVersionObjectReference(Autoscaling):
     """
     :param name: Name of the referent; More info: \
         http://kubernetes.io/docs/user-guide/identifiers#names
@@ -47,7 +47,7 @@ class HorizontalPodAutoscalerSpec(HelmYaml):
         self.targetCPUUtilizationPercentage = target_cpuutilization_percentage
 
 
-class HorizontalPodAutoscaler(KubernetesBaseObject):
+class HorizontalPodAutoscaler(Autoscaling):
     """
     :param metadata: Standard object metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -68,27 +68,6 @@ class HorizontalPodAutoscaler(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class HorizontalPodAutoscalerList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata.
-    :param items: list of horizontal pod autoscaler objects.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[HorizontalPodAutoscaler],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class Scale(KubernetesBaseObject):

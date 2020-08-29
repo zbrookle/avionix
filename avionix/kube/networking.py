@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Networking
 from avionix.kube.core import TypedLocalObjectReference
-from avionix.kube.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -15,7 +15,7 @@ class IPBlock(HelmYaml):
         will be rejected if they are outside the CIDR range
     """
 
-    def __init__(self, cidr: str, except_: List[str]):
+    def __init__(self, cidr: str, except_: Optional[List[str]] = None):
         self.cidr = cidr
         self["except"] = except_
 
@@ -41,8 +41,8 @@ class NetworkPolicyPeer(HelmYaml):
     def __init__(
         self,
         ip_block: IPBlock,
-        namespace_selector: LabelSelector,
-        pod_selector: LabelSelector,
+        namespace_selector: Optional[LabelSelector] = None,
+        pod_selector: Optional[LabelSelector] = None,
     ):
         self.ipBlock = ip_block
         self.namespaceSelector = namespace_selector
@@ -140,10 +140,10 @@ class NetworkPolicySpec(HelmYaml):
 
     def __init__(
         self,
-        egress: List[NetworkPolicyEgressRule],
-        ingress: List[NetworkPolicyIngressRule],
-        pod_selector: LabelSelector,
-        policy_types: List[str],
+        egress: Optional[List[NetworkPolicyEgressRule]],
+        ingress: Optional[List[NetworkPolicyIngressRule]],
+        pod_selector: Optional[LabelSelector],
+        policy_types: Optional[List[str]],
     ):
         self.egress = egress
         self.ingress = ingress
@@ -151,7 +151,7 @@ class NetworkPolicySpec(HelmYaml):
         self.policyTypes = policy_types
 
 
-class NetworkPolicy(KubernetesBaseObject):
+class NetworkPolicy(Networking):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -171,28 +171,6 @@ class NetworkPolicy(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class NetworkPolicyList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: Items is a list of schema objects.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[NetworkPolicy],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class IngressClassSpec(HelmYaml):
@@ -215,7 +193,7 @@ class IngressClassSpec(HelmYaml):
         self.parameters = parameters
 
 
-class IngressClass(KubernetesBaseObject):
+class IngressClass(Networking):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -238,26 +216,3 @@ class IngressClass(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class IngressClassList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata.
-    :param items: Items is the list of IngressClasses.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[IngressClass],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

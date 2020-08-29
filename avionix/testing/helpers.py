@@ -1,4 +1,5 @@
 import re
+from subprocess import CalledProcessError
 from typing import Any, List, Optional, Tuple
 
 from avionix._process_utils import custom_check_output
@@ -50,10 +51,18 @@ def parse_output_to_dict(output: str):
     return {names[i]: row for i, row in enumerate(zip(*value_rows))}
 
 
+class KubectGetException(Exception):
+    def __init__(self, msg: str):
+        super().__init__(msg)
+
+
 def kubectl_get(resource: str, namespace: Optional[str] = None, wide: bool = False):
-    command = f"kubectl get {resource}"
-    if namespace:
-        command += f" -n {namespace}"
-    if wide:
-        command += " -o wide"
-    return parse_output_to_dict(custom_check_output(command))
+    try:
+        command = f"kubectl get {resource}"
+        if namespace:
+            command += f" -n {namespace}"
+        if wide:
+            command += " -o wide"
+        return parse_output_to_dict(custom_check_output(command))
+    except CalledProcessError as err:
+        raise KubectGetException(err.output)

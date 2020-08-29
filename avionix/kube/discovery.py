@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Discovery
 from avionix.kube.core import EndpointPort
-from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.meta import ObjectMeta
 from avionix.kube.reference import ObjectReference
 from avionix.yaml.yaml_handling import HelmYaml
 
@@ -49,10 +49,10 @@ class Endpoint(HelmYaml):
     def __init__(
         self,
         addresses: List[str],
-        conditions: EndpointConditions,
-        hostname: str,
-        target_ref: ObjectReference,
-        topology: dict,
+        conditions: Optional[EndpointConditions] = None,
+        hostname: Optional[str] = None,
+        target_ref: Optional[ObjectReference] = None,
+        topology: Optional[dict] = None,
     ):
         self.addresses = addresses
         self.conditions = conditions
@@ -61,7 +61,7 @@ class Endpoint(HelmYaml):
         self.topology = topology
 
 
-class EndpointSlice(KubernetesBaseObject):
+class EndpointSlice(Discovery):
     """
     :param metadata: Standard object's metadata.
     :param address_type: addressType specifies the type of address carried by this \
@@ -89,7 +89,7 @@ class EndpointSlice(KubernetesBaseObject):
         metadata: ObjectMeta,
         address_type: str,
         endpoints: List[Endpoint],
-        ports: List[EndpointPort],
+        ports: Optional[List[EndpointPort]] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
@@ -97,26 +97,3 @@ class EndpointSlice(KubernetesBaseObject):
         self.addressType = address_type
         self.endpoints = endpoints
         self.ports = ports
-
-
-class EndpointSliceList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata.
-    :param items: List of endpoint slices
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[EndpointSlice],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

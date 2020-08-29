@@ -9,6 +9,8 @@ from avionix.kube.apps import (
     DeploymentSpec,
     ReplicaSet,
     ReplicaSetSpec,
+    StatefulSet,
+    StatefulSetSpec,
 )
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
@@ -76,3 +78,19 @@ def test_replica_set(chart_info, replica_set):
         assert replica_set_info["NAME"][0] == "test-replica-set"
         assert replica_set_info["DESIRED"][0] == "1"
         assert replica_set_info["CURRENT"][0] == "1"
+
+
+@pytest.fixture
+def stateful_set(pod_template_spec, selector):
+    return StatefulSet(
+        ObjectMeta(name="test-stateful-set"),
+        StatefulSetSpec(pod_template_spec, selector, "my-service"),
+    )
+
+
+def test_stateful_set(chart_info, stateful_set):
+    builder = ChartBuilder(chart_info, [stateful_set])
+    with ChartInstallationContext(builder):
+        stateful_set_info = kubectl_get("statefulsets")
+        assert stateful_set_info["NAME"][0] == "test-stateful-set"
+        assert stateful_set_info["READY"][0] == "1/1"

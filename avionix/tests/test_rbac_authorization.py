@@ -1,7 +1,12 @@
+from pandas import DataFrame
 import pytest
 
 from avionix import ChartBuilder, ObjectMeta
+from avionix.kube.meta import LabelSelector
 from avionix.kube.rbac_authorization import (
+    AggregationRule,
+    ClusterRole,
+    ClusterRoleBinding,
     PolicyRule,
     Role,
     RoleBinding,
@@ -13,7 +18,10 @@ from avionix.testing.installation_context import ChartInstallationContext
 
 
 @pytest.fixture(
-    params=[{}, {"resources": ["pods"], "verbs": ["get"], "api_groups": [""]}]
+    params=[
+        {"api_groups": [""], "resources": ["pods"], "verbs": ["get"]},
+        {"api_groups": ["apps"], "resources": ["deployments"], "verbs": ["get"]},
+    ]
 )
 def role(request):
     return Role(ObjectMeta(name="test-role"), [PolicyRule(**request.param)])
@@ -61,3 +69,46 @@ def test_role_binding_to_service_account(
         bindings = kubectl_get("rolebinding")
         assert bindings["NAME"][0] == "test-role-binding"
         assert bindings["ROLE"][0] == "Role/test-role"
+
+
+CLUSTER_ROLE = ClusterRole(
+    ObjectMeta(name="role-w-policu-rules"), rules=[PolicyRule([""], ["pods"], ["get"])],
+)
+
+
+@pytest.mark.parametrize(
+    "cluster_role",
+    [
+        ClusterRole(ObjectMeta(name="cluster-role")),
+        ClusterRole(
+            ObjectMeta(name="cluster-role-w-aggregation"),
+            AggregationRule([LabelSelector({"test": "test"})]),
+        ),
+        CLUSTER_ROLE,
+    ],
+)
+def test_cluster_role(chart_info, cluster_role: ClusterRole):
+    builder = ChartBuilder(chart_info, [cluster_role])
+    with ChartInstallationContext(builder):
+        cluster_role_info = kubectl_get("clusterrole")
+        assert cluster_role.metadata.name in cluster_role_info["NAME"]
+
+
+@pytest.fixture
+def cluster_role_binding():
+    return ClusterRoleBinding(
+        ObjectMeta(name="test-role-binding"),
+        RoleRef(CLUSTER_ROLE.metadata.name, "rbac.authorization.k8s.io", "ClusterRole"),
+    )
+
+
+def test_cluster_role_binding(chart_info, cluster_role_binding: ClusterRoleBinding):
+    builder = ChartBuilder(chart_info, [cluster_role_binding, CLUSTER_ROLE])
+    with ChartInstallationContext(builder):
+        cluster_role_binding_info = kubectl_get("clusterrolebinding")
+        info_frame = DataFrame(cluster_role_binding_info)
+        info_frame = info_frame[
+            info_frame["NAME"] == cluster_role_binding.metadata.name
+        ].reset_index()
+        assert info_frame["NAME"][0] == cluster_role_binding.metadata.name
+        assert info_frame["ROLE"][0] == f"ClusterRole/{CLUSTER_ROLE.metadata.name}"

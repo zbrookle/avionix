@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from avionix.kube.base_objects import Apps
 from avionix.kube.core import PersistentVolumeClaim, PodTemplateSpec
-from avionix.kube.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -65,6 +65,14 @@ class StatefulSetSpec(HelmYaml):
         if insufficient replicas are detected. Each pod stamped out by the StatefulSet \
         will fulfill this Template, but have a unique identity from the rest of the \
         StatefulSet.
+    :param selector: selector is a label query over pods that should match the replica \
+        count. It must match the pod template's labels. More info: \
+        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+    :param service_name: serviceName is the name of the service that governs this \
+        StatefulSet. This service must exist before the StatefulSet, and is \
+        responsible for the network identity of the set. Pods get DNS/hostnames that \
+        follow the pattern: pod-specific-string.serviceName.default.svc.cluster.local \
+        where "pod-specific-string" is managed by the StatefulSet controller.
     :param pod_management_policy: podManagementPolicy controls how pods are created \
         during initial scale up, when replacing pods on nodes, or when scaling down. \
         The default policy is `OrderedReady`, where pods are created in increasing \
@@ -77,14 +85,6 @@ class StatefulSetSpec(HelmYaml):
         revisions that will be maintained in the StatefulSet's revision history. The \
         revision history consists of all revisions not represented by a currently \
         applied StatefulSetSpec version. The default value is 10.
-    :param selector: selector is a label query over pods that should match the replica \
-        count. It must match the pod template's labels. More info: \
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
-    :param service_name: serviceName is the name of the service that governs this \
-        StatefulSet. This service must exist before the StatefulSet, and is \
-        responsible for the network identity of the set. Pods get DNS/hostnames that \
-        follow the pattern: pod-specific-string.serviceName.default.svc.cluster.local \
-        where "pod-specific-string" is managed by the StatefulSet controller.
     :param volume_claim_templates: volumeClaimTemplates is a list of claims that pods \
         are allowed to reference. The StatefulSet controller is responsible for \
         mapping network identities to claims in a way that maintains the identity of a \
@@ -103,11 +103,11 @@ class StatefulSetSpec(HelmYaml):
     def __init__(
         self,
         template: PodTemplateSpec,
-        pod_management_policy: str,
-        revision_history_limit: int,
         selector: LabelSelector,
         service_name: str,
-        volume_claim_templates: List[PersistentVolumeClaim],
+        pod_management_policy: Optional[str] = None,
+        revision_history_limit: Optional[int] = None,
+        volume_claim_templates: Optional[List[PersistentVolumeClaim]] = None,
         replicas: Optional[int] = None,
         update_strategy: Optional[StatefulSetUpdateStrategy] = None,
     ):
@@ -160,27 +160,6 @@ class StatefulSet(Apps):
         self.spec = spec
 
 
-class StatefulSetList(Apps):
-    """
-    :param metadata: None
-    :param items: None
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[StatefulSet],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class ControllerRevision(Apps):
     """
     :param metadata: Standard object's metadata. More info: \
@@ -204,28 +183,6 @@ class ControllerRevision(Apps):
         self.metadata = metadata
         self.data = data
         self.revision = revision
-
-
-class ControllerRevisionList(Apps):
-    """
-    :param metadata: More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: Items is the list of ControllerRevisions
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[ControllerRevision],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class RollingUpdateDeployment(HelmYaml):
@@ -372,28 +329,6 @@ class DaemonSet(Apps):
         self.spec = spec
 
 
-class DaemonSetList(Apps):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: A list of daemon sets.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[DaemonSet],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class ReplicaSetCondition(HelmYaml):
     """
     :param last_transition_time: The last time the condition transitioned from one \
@@ -467,29 +402,6 @@ class ReplicaSet(Apps):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class ReplicaSetList(Apps):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of ReplicaSets. More info: \
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller  # noqa
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[ReplicaSet],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class DeploymentStrategy(HelmYaml):
@@ -575,24 +487,3 @@ class Deployment(Apps):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class DeploymentList(Apps):
-    """
-    :param metadata: Standard list metadata.
-    :param items: Items is the list of Deployments.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[Deployment],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

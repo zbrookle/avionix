@@ -10,7 +10,6 @@ from avionix.kube.core import (
     EndpointSubset,
     Event,
     ExecAction,
-    HostPathVolumeSource,
     HTTPGetAction,
     LimitRange,
     LimitRangeItem,
@@ -22,7 +21,6 @@ from avionix.kube.core import (
     PersistentVolumeClaim,
     PersistentVolumeClaimSpec,
     PersistentVolumeClaimVolumeSource,
-    PersistentVolumeSpec,
     Pod,
     PodSecurityContext,
     PodTemplate,
@@ -186,24 +184,13 @@ def test_create_non_empty_node(chart_info, node):
         assert node_info["VERSION"][0] == ""
 
 
-@pytest.fixture
-def access_modes():
-    return ["ReadWriteMany"]
-
-
 modes_expected_value = "RWX"
 
 
 @pytest.fixture
-def persistent_volume(access_modes):
+def persistent_volume(persistent_volume_spec):
     return PersistentVolume(
-        ObjectMeta(name="test-persistent-volume"),
-        PersistentVolumeSpec(
-            access_modes,
-            capacity={"storage": 1},
-            host_path=HostPathVolumeSource("/home/test/tmp"),
-            storage_class_name="standard",
-        ),
+        ObjectMeta(name="test-persistent-volume"), persistent_volume_spec,
     )
 
 

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from avionix.kube.apiextensions import WebhookClientConfig
 from avionix.kube.base_objects import AdmissionRegistration
-from avionix.kube.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -308,47 +308,3 @@ class MutatingWebhookConfiguration(AdmissionRegistration):
         super().__init__(api_version)
         self.metadata = metadata
         self.webhooks = webhooks
-
-
-class MutatingWebhookConfigurationList(AdmissionRegistration):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of MutatingWebhookConfiguration.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[MutatingWebhookConfiguration],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
-class ValidatingWebhookConfigurationList(AdmissionRegistration):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of ValidatingWebhookConfiguration.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[ValidatingWebhookConfiguration],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

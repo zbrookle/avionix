@@ -1,32 +1,32 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Policy
 from avionix.kube.core import SELinuxOptions
-from avionix.kube.meta import DeleteOptions, LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import DeleteOptions, LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
 class IDRange(HelmYaml):
     """
-    :param max: max is the end of the range, inclusive.
     :param min: min is the start of the range, inclusive.
+    :param max: max is the end of the range, inclusive.
     """
 
-    def __init__(self, max: int, min: int):
+    def __init__(self, min: int, max: int):
         self.max = max
         self.min = min
 
 
 class SupplementalGroupsStrategyOptions(HelmYaml):
     """
+    :param rule: rule is the strategy that will dictate what supplemental groups is \
+        used in the SecurityContext.
     :param ranges: ranges are the allowed ranges of supplemental groups.  If you would \
         like to force a single supplemental group then supply a single range with the \
         same start and end. Required for MustRunAs.
-    :param rule: rule is the strategy that will dictate what supplemental groups is \
-        used in the SecurityContext.
     """
 
-    def __init__(self, ranges: List[IDRange], rule: str):
+    def __init__(self, rule: str, ranges: Optional[List[IDRange]] = None):
         self.ranges = ranges
         self.rule = rule
 
@@ -43,7 +43,9 @@ class RuntimeClassStrategyOptions(HelmYaml):
     """
 
     def __init__(
-        self, allowed_runtime_class_names: List[str], default_runtime_class_name: str
+        self,
+        allowed_runtime_class_names: List[str],
+        default_runtime_class_name: Optional[str] = None,
     ):
         self.allowedRuntimeClassNames = allowed_runtime_class_names
         self.defaultRuntimeClassName = default_runtime_class_name
@@ -65,14 +67,17 @@ class PodDisruptionBudgetSpec(HelmYaml):
     """
 
     def __init__(
-        self, max_unavailable: str, min_available: LabelSelector, selector: str
+        self,
+        max_unavailable: Optional[Union[int, str]] = None,
+        min_available: Optional[Union[int, str]] = None,
+        selector: Optional[LabelSelector] = None,
     ):
         self.maxUnavailable = max_unavailable
         self.minAvailable = min_available
         self.selector = selector
 
 
-class PodDisruptionBudget(KubernetesBaseObject):
+class PodDisruptionBudget(Policy):
     """
     :param metadata: None
     :param spec: Specification of the desired behavior of the PodDisruptionBudget.
@@ -95,7 +100,7 @@ class PodDisruptionBudget(KubernetesBaseObject):
         self.spec = spec
 
 
-class Eviction(KubernetesBaseObject):
+class Eviction(Policy):
     """
     :param metadata: ObjectMeta describes the pod that is being evicted.
     :param delete_options: DeleteOptions may be provided
@@ -116,29 +121,6 @@ class Eviction(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.deleteOptions = delete_options
-
-
-class PodDisruptionBudgetList(KubernetesBaseObject):
-    """
-    :param metadata: None
-    :param items: None
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[PodDisruptionBudget],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class HostPortRange(HelmYaml):
@@ -162,21 +144,21 @@ class AllowedHostPath(HelmYaml):
         only if all volume mounts are readOnly.
     """
 
-    def __init__(self, path_prefix: str, read_only: bool):
+    def __init__(self, path_prefix: str, read_only: Optional[bool] = None):
         self.pathPrefix = path_prefix
         self.readOnly = read_only
 
 
 class RunAsUserStrategyOptions(HelmYaml):
     """
+    :param rule: rule is the strategy that will dictate the allowable RunAsUser values \
+        that may be set.
     :param ranges: ranges are the allowed ranges of uids that may be used. If you would \
         like to force a single uid then supply a single range with the same start and \
         end. Required for MustRunAs.
-    :param rule: rule is the strategy that will dictate the allowable RunAsUser values \
-        that may be set.
     """
 
-    def __init__(self, ranges: List[IDRange], rule: str):
+    def __init__(self, rule: str, ranges: Optional[List[IDRange]] = None):
         self.ranges = ranges
         self.rule = rule
 
@@ -199,7 +181,7 @@ class SELinuxStrategyOptions(HelmYaml):
         https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
     """
 
-    def __init__(self, rule: str, se_linux_options: SELinuxOptions):
+    def __init__(self, rule: str, se_linux_options: Optional[SELinuxOptions] = None):
         self.rule = rule
         self.seLinuxOptions = se_linux_options
 
@@ -215,34 +197,40 @@ class AllowedFlexVolume(HelmYaml):
 
 class FSGroupStrategyOptions(HelmYaml):
     """
+    :param rule: rule is the strategy that will dictate what FSGroup is used in the \
+        SecurityContext.
     :param ranges: ranges are the allowed ranges of fs groups.  If you would like to \
         force a single fs group then supply a single range with the same start and \
         end. Required for MustRunAs.
-    :param rule: rule is the strategy that will dictate what FSGroup is used in the \
-        SecurityContext.
     """
 
-    def __init__(self, ranges: List[IDRange], rule: str):
+    def __init__(self, rule: str, ranges: Optional[List[IDRange]] = None):
         self.ranges = ranges
         self.rule = rule
 
 
 class RunAsGroupStrategyOptions(HelmYaml):
     """
+    :param rule: rule is the strategy that will dictate the allowable RunAsGroup values \
+        that may be set.
     :param ranges: ranges are the allowed ranges of gids that may be used. If you would \
         like to force a single gid then supply a single range with the same start and \
         end. Required for MustRunAs.
-    :param rule: rule is the strategy that will dictate the allowable RunAsGroup values \
-        that may be set.
     """
 
-    def __init__(self, ranges: List[IDRange], rule: str):
+    def __init__(self, rule: str, ranges: Optional[List[IDRange]] = None):
         self.ranges = ranges
         self.rule = rule
 
 
 class PodSecurityPolicySpec(HelmYaml):
     """
+    :param fs_group: fsGroup is the strategy that will dictate what fs group is used by \
+        the SecurityContext.
+    :param run_as_user: runAsUser is the strategy that will dictate the allowable \
+        RunAsUser values that may be set.
+    :param se_linux: seLinux is the strategy that will dictate the allowable labels \
+        that may be set.
     :param allowed_csidrivers: AllowedCSIDrivers is a whitelist of inline CSI drivers \
         that must be explicitly set to be embedded within a pod spec. An empty value \
         indicates that any CSI driver can be used for inline ephemeral volumes. This \
@@ -270,8 +258,6 @@ class PodSecurityPolicySpec(HelmYaml):
     :param default_allow_privilege_escalation: defaultAllowPrivilegeEscalation controls \
         the default setting for whether a process can gain more privileges than its \
         parent process.
-    :param fs_group: fsGroup is the strategy that will dictate what fs group is used by \
-        the SecurityContext.
     :param host_ipc: hostIPC determines if the policy allows the use of HostIPC in the \
         pod spec.
     :param host_pid: hostPID determines if the policy allows the use of HostPID in the \
@@ -292,14 +278,10 @@ class PodSecurityPolicySpec(HelmYaml):
         RunAsGroup values that may be set. If this field is omitted, the pod's \
         RunAsGroup can take any value. This field requires the RunAsGroup feature gate \
         to be enabled.
-    :param run_as_user: runAsUser is the strategy that will dictate the allowable \
-        RunAsUser values that may be set.
     :param runtime_class: runtimeClass is the strategy that will dictate the allowable \
         RuntimeClasses for a pod. If this field is omitted, the pod's runtimeClassName \
         field is unrestricted. Enforcement of this field depends on the RuntimeClass \
         feature gate being enabled.
-    :param se_linux: seLinux is the strategy that will dictate the allowable labels \
-        that may be set.
     :param supplemental_groups: supplementalGroups is the strategy that will dictate \
         what supplemental groups are used by the SecurityContext.
     :param allow_privilege_escalation: allowPrivilegeEscalation determines if a pod can \
@@ -324,25 +306,25 @@ class PodSecurityPolicySpec(HelmYaml):
 
     def __init__(
         self,
-        allowed_csidrivers: List[AllowedCSIDriver],
-        allowed_capabilities: List[str],
-        allowed_flex_volumes: List[AllowedFlexVolume],
-        allowed_host_paths: List[AllowedHostPath],
-        allowed_proc_mount_types: List[str],
-        default_add_capabilities: List[str],
-        default_allow_privilege_escalation: bool,
         fs_group: FSGroupStrategyOptions,
-        host_ipc: bool,
-        host_pid: bool,
-        host_ports: List[HostPortRange],
-        privileged: bool,
-        read_only_root_filesystem: bool,
-        required_drop_capabilities: List[str],
-        run_as_group: RunAsGroupStrategyOptions,
         run_as_user: RunAsUserStrategyOptions,
-        runtime_class: RuntimeClassStrategyOptions,
         se_linux: SELinuxStrategyOptions,
         supplemental_groups: SupplementalGroupsStrategyOptions,
+        allowed_csidrivers: Optional[List[AllowedCSIDriver]] = None,
+        allowed_capabilities: Optional[List[str]] = None,
+        allowed_flex_volumes: Optional[List[AllowedFlexVolume]] = None,
+        allowed_host_paths: Optional[List[AllowedHostPath]] = None,
+        allowed_proc_mount_types: Optional[List[str]] = None,
+        default_add_capabilities: Optional[List[str]] = None,
+        default_allow_privilege_escalation: Optional[bool] = None,
+        host_ipc: Optional[bool] = None,
+        host_pid: Optional[bool] = None,
+        host_ports: Optional[List[HostPortRange]] = None,
+        privileged: Optional[bool] = None,
+        read_only_root_filesystem: Optional[bool] = None,
+        required_drop_capabilities: Optional[List[str]] = None,
+        run_as_group: Optional[RunAsGroupStrategyOptions] = None,
+        runtime_class: Optional[RuntimeClassStrategyOptions] = None,
         allow_privilege_escalation: Optional[bool] = None,
         allowed_unsafe_sysctls: Optional[List[str]] = None,
         forbidden_sysctls: Optional[List[str]] = None,
@@ -375,7 +357,7 @@ class PodSecurityPolicySpec(HelmYaml):
         self.volumes = volumes
 
 
-class PodSecurityPolicy(KubernetesBaseObject):
+class PodSecurityPolicy(Policy):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -397,27 +379,3 @@ class PodSecurityPolicy(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class PodSecurityPolicyList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: items is a list of schema objects.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[PodSecurityPolicy],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

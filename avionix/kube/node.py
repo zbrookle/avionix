@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Node
 from avionix.kube.core import Toleration
-from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -35,7 +35,7 @@ class Scheduling(HelmYaml):
         self.nodeSelector = node_selector
 
 
-class RuntimeClass(KubernetesBaseObject):
+class RuntimeClass(Node):
     """
     :param metadata: More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -67,7 +67,7 @@ class RuntimeClass(KubernetesBaseObject):
         self,
         metadata: ObjectMeta,
         handler: str,
-        scheduling: Scheduling,
+        scheduling: Optional[Scheduling] = None,
         overhead: Optional[Overhead] = None,
         api_version: Optional[str] = None,
     ):
@@ -76,27 +76,3 @@ class RuntimeClass(KubernetesBaseObject):
         self.handler = handler
         self.scheduling = scheduling
         self.overhead = overhead
-
-
-class RuntimeClassList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
-    :param items: Items is a list of schema objects.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    _non_standard_version = "v1beta1"
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[RuntimeClass],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

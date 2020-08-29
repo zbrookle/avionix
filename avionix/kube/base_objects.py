@@ -115,5 +115,65 @@ class Storage(KubernetesBaseObject):
     _base_object_name = "Storage"
 
 
+class Authentication(KubernetesBaseObject):
+
+    _version_prefix = "authentication.k8s.io/"
+    _base_object_name = "Authentication"
+
+
+class Authorization(KubernetesBaseObject):
+
+    _version_prefix = "authorization.k8s.io/"
+    _base_object_name = "Authorization"
+
+
+class Autoscaling(KubernetesBaseObject):
+
+    _version_prefix = "autoscaling/"
+    _base_object_name = "Autoscaling"
+
+
+class Coordination(KubernetesBaseObject):
+
+    _version_prefix = "coordination.k8s.io/"
+    _base_object_name = "Coordination"
+
+
+class Networking(KubernetesBaseObject):
+
+    _version_prefix = "networking.k8s.io/"
+    _base_object_name = "Networking"
+
+
+class Node(KubernetesBaseObject):
+
+    _version_prefix = "node.k8s.io/"
+    _base_object_name = "Node"
+
+
+class Scheduling(KubernetesBaseObject):
+
+    _version_prefix = "scheduling.k8s.io/"
+    _base_object_name = "Scheduling"
+
+
+class Policy(KubernetesBaseObject):
+
+    _version_prefix = "policy/"
+    _base_object_name = "Policy"
+
+
+class Certificates(KubernetesBaseObject):
+
+    _version_prefix = "certificates.k8s.io/"
+    _base_object_name = "Certificates"
+
+
+class Discovery(KubernetesBaseObject):
+
+    _version_prefix = "discovery.k8s.io/"
+    _base_object_name = "Discovery"
+
+
 class BaseSpec(HelmYaml):
     pass

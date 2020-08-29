@@ -27,41 +27,41 @@
 - [X] DaemonSet
 - [X] Deployment
 - [X] ReplicaSet
-- [ ] StatefulSet
+- [X] StatefulSet
+- [X] HorizontalPodAutoscaler
+- [X] Job
+- [X] Lease
+- [X] NetworkPolicy
+- [X] RuntimeClass
+- [X] ClusterRoleBinding
+- [X] ClusterRole
+- [X] RoleBinding
+- [X] Role
+- [X] PriorityClass
+- [X] CSIDriver
+- [X] CSINode
+- [X] StorageClass
+- [X] VolumeAttachment
+
+# Likely won't implement
+
 - [ ] TokenReview
 - [ ] LocalSubjectAccessReview
 - [ ] SelfSubjectAccessReview
 - [ ] SelfSubjectRulesReview
 - [ ] SubjectAccessReview
-- [ ] HorizontalPodAutoscaler
-- [ ] Job
-- [ ] CertificateSigningRequest
-- [ ] Lease
-- [ ] NetworkPolicy
-- [ ] RuntimeClass
-- [ ] PodDisruptionBudget
-- [ ] PodSecurityPolicy
-- [ ] ClusterRoleBinding
-- [ ] ClusterRole
-- [ ] RoleBinding
-- [X] Role
-- [ ] PriorityClass
-- [ ] CSIDriver
-- [ ] CSINode
-- [ ] StorageClass
-- [ ] VolumeAttachment
 
 #### v1beta1
 
 - [X] Ingress
-- [ ] PodDisruptionBudget
+- [X] PodDisruptionBudget
 - [ ] Eviction
-- [ ] IngressClass
+- [X] IngressClass
 - [ ] RuntimeClass
-- [ ] CertificateSigningRequest
-- [ ] EndpointSlice
+- [X] CertificateSigningRequest
+- [X] EndpointSlice
 - [X] CronJob
-- [ ] PodSecurityPolicy
+- [X] PodSecurityPolicy
 
 </details>
 

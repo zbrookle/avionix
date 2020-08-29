@@ -18,7 +18,9 @@ class ScopedResourceSelectorRequirement(HelmYaml):
         patch.
     """
 
-    def __init__(self, operator: str, scope_name: str, values: List[str]):
+    def __init__(
+        self, operator: str, scope_name: str, values: Optional[List[str]] = None
+    ):
         self.operator = operator
         self.scopeName = scope_name
         self.values = values

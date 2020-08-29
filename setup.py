@@ -23,7 +23,7 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),
     long_description="Coming soon...",
-    maintainer="Varun Rao and Zach Brookler",
+    maintainer="Zach Brookler",
     maintainer_email="zachb1996@yahoo.com",
     description="A package for soldifying kubernetes structure and development by "
     "using objects and code rather than yaml",
@@ -38,12 +38,13 @@ setup(
     download_url="https://github.com/zbrookle/avionix/archive/master.zip",
     keywords=["kubernetes", "helm", "yaml", "docker", "infrastructure", "devops"],
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Typing :: Typed",
         "Operating System :: OS Independent",
     ],

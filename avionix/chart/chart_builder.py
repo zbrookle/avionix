@@ -224,8 +224,8 @@ class ChartBuilder:
         self.__handle_uninstallation(options)
 
     def __handle_namespace(self, command: str):
-        if self._namespace is not None:
-            return command + f" -n {self._namespace}"
+        if self.namespace is not None:
+            return command + f" -n {self.namespace}"
         return command
 
     def __get_helm_upgrade_command(
@@ -284,7 +284,7 @@ class ChartBuilder:
         :return: True if chart with the given name is already installed in the chart \
             builders namespace, else False
         """
-        installations = get_helm_installations(self._namespace)
+        installations = get_helm_installations(self.namespace)
         if not installations:
             return False
         return self.chart_info.name in installations["NAME"]

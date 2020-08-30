@@ -5,18 +5,23 @@ from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kube.core import (
     Binding,
     ConfigMap,
+    ConfigMapProjection,
+    DownwardAPIProjection,
+    DownwardAPIVolumeFile,
     EndpointAddress,
     Endpoints,
     EndpointSubset,
     Event,
     ExecAction,
     HTTPGetAction,
+    KeyToPath,
     LimitRange,
     LimitRangeItem,
     LimitRangeSpec,
     Namespace,
     Node,
     NodeSpec,
+    ObjectFieldSelector,
     PersistentVolume,
     PersistentVolumeClaim,
     PersistentVolumeClaimSpec,
@@ -25,6 +30,7 @@ from avionix.kube.core import (
     PodSecurityContext,
     PodTemplate,
     Probe,
+    ProjectedVolumeSource,
     ReplicationController,
     ReplicationControllerSpec,
     ResourceQuota,
@@ -33,12 +39,14 @@ from avionix.kube.core import (
     ScopedResourceSelectorRequirement,
     ScopeSelector,
     Secret,
+    SecretProjection,
     Service,
     ServiceAccount,
     ServicePort,
     ServiceSpec,
     TCPSocketAction,
     Volume,
+    VolumeProjection,
 )
 from avionix.kube.reference import ObjectReference
 from avionix.testing import kubectl_get
@@ -457,6 +465,60 @@ def test_pod_w_persistent_volume(
         assert claim_info["STATUS"][0] == "Bound"
         assert claim_info["CAPACITY"][0] == "1"
         assert claim_info["ACCESS MODES"][0] == "RWX"
+
+
+@pytest.mark.parametrize(
+    "volume",
+    [
+        Volume(
+            name="config-map-projection",
+            projected=ProjectedVolumeSource(
+                [
+                    VolumeProjection(
+                        ConfigMapProjection(
+                            "test", True, items=[KeyToPath("test", "tmp/")]
+                        ),
+                    )
+                ],
+            ),
+        ),
+        Volume(
+            name="project-downward-api",
+            projected=ProjectedVolumeSource(
+                [
+                    VolumeProjection(
+                        downward_api=DownwardAPIProjection(
+                            [
+                                DownwardAPIVolumeFile(
+                                    "labels", ObjectFieldSelector("metadata.labels")
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+        ),
+        Volume(
+            name="project-secret",
+            projected=ProjectedVolumeSource(
+                [VolumeProjection(secret=SecretProjection("my-secret", True))]
+            ),
+        ),
+        # Volume(
+        #     name="project-service-account-token",
+        #     projected=ProjectedVolumeSource(
+        #         [VolumeProjection(
+        #             service_account_token=ServiceAccountTokenProjection("vault-token"))]
+        #     )
+        # )
+    ],
+)
+def test_projected_volumes(chart_info, volume: Volume):
+    builder = ChartBuilder(chart_info, [get_pod_with_options(volume)])
+    with ChartInstallationContext(builder):
+        pod_info = kubectl_get("pods", wide=True)
+        assert pod_info["NAME"][0] == "test-pod"
+        assert pod_info["READY"][0] == "1/1"
 
 
 @pytest.fixture

@@ -10,7 +10,8 @@ For development you will need
 - helm_
 - kubectl_
 
-# Starting the development environment
+Starting the development environment
+------------------------------------
 
 Be sure that docker is running, then run the following command
 

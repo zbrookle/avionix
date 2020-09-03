@@ -16,6 +16,10 @@
 
 
 # -- Project information -----------------------------------------------------
+"""
+isort:skip_file
+"""
+
 from pathlib import Path
 import sys
 
@@ -25,12 +29,12 @@ sys.path.insert(0, module_path)
 import avionix
 
 project = "Avionix"
-copyright = "2020, Zach Brookler, Varun Rao"
-author = "Zach Brookler, Varun Rao"
+copyright = "2020, Zach Brookler"
+author = "Zach Brookler"
 version = avionix.__version__
 
 # The full version, including alpha/beta/rc tags
-release = "0.2.0"
+release = "0.3.1"
 
 
 # -- General configuration ---------------------------------------------------

@@ -4,7 +4,7 @@ Warnings
 Note that you currently cannot use public instance variables when implementing a
 child class one of the kubernetes components.
 
-For example in the provided :ref:`inheritance` example code, this would break the helm
+For example, in the provided :ref:`inheritance` example code, this would break the helm
 output,
 
 .. code-block:: python
@@ -26,7 +26,7 @@ output,
                 readiness_probe=AvionixAirflowProbe("/airflow", 8080, "0.0.0.0"),
             )
 
-However, instead using a variable
+However, instead using a private variable such as
 
 .. code-block:: python
 

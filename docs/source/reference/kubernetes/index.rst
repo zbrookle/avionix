@@ -28,7 +28,6 @@ Sections
    networking
    node
    policy
-   rbac
    rbac_authorization
    reference
    scheduling

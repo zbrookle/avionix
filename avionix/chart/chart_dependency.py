@@ -18,7 +18,6 @@ class ChartDependency(HelmYaml):
     :param repository: The url of the repository that this chart originates from
     :param values: A dictionary representing the yaml to be output in the values.yaml \
         file for this dependency
-    :param values: Optional[dict]
     """
 
     def __init__(

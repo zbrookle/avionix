@@ -3,7 +3,7 @@
 
 ![CI](https://github.com/zbrookle/avionix/workflows/CI/badge.svg)
 [![Downloads](https://pepy.tech/badge/avionix)](https://pepy.tech/project/avionix)
-[![PyPI license](https://img.shields.io/pypi/l/avionix.svg)](https://github.com/zbrookle/dataframe_sql/blob/master/LICENSE.txt)
+[![PyPI license](https://img.shields.io/pypi/l/avionix.svg)](https://github.com/zbrookle/avionix/blob/master/LICENSE.txt)
 [![PyPI status](https://img.shields.io/pypi/status/avionix.svg)](https://pypi.python.org/pypi/avionix/)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/avionix.svg)](https://pypi.python.org/pypi/avionix/)
 [![codecov](https://codecov.io/gh/zbrookle/avionix/branch/master/graph/badge.svg)](https://codecov.io/gh/zbrookle/avionix)

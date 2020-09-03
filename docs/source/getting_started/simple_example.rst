@@ -1,7 +1,7 @@
 Simple Example
 ==============
 
-With avionix, you can build with the typical kubernetes components
+With :mod:`avionix`, you can build with the typical kubernetes components
 
 For example for a deployment:
 
@@ -20,9 +20,9 @@ if you want to install the chart directly and let avionix handle it or you can u
 
     builder.generate_chart()
 
-to generate the chart and template yaml files
+to generate the chart and template yaml files.
 
-Additionally
+Additionally,
 
 .. code-block:: python
 
@@ -39,7 +39,7 @@ are included.
 For more specifics about chart builder see the :ref:`chart` documentation.
 
 These are all directly equivalent to their corresponding helm commands and also
- support passing in command line by passing a dictionary in with the options needed.
+support passing in command line by passing a dictionary in with the options needed.
 
 For example,
 
@@ -49,4 +49,4 @@ For example,
 
 
 If a command line option takes an argument in helm, then that value should be given
- as the value in the corresponding dictionary key in the options dictionary.
+as the value in the corresponding dictionary key in the options dictionary.

@@ -3,7 +3,7 @@ Using External Helm Charts
 
 External helm charts can be included by placing them in the dependencies parameter of
 the :any:`ChartInfo` object that must be passed to :any:`ChartBuilder`.
-Additionally the values that would normally be passed to the chart dependency in
+Additionally, the values that would normally be passed to the chart dependency in
 *values.yaml* can be passed in the :any:`ChartDependency` object's *values* parameter.
 
 For example, this is how you could use the
@@ -20,7 +20,7 @@ chart:
     helm repo add stable https://kubernetes-charts.storage.googleapis.com/
     helm install <path_to_my_chart> --dependency-update
 
-The *value.yaml* will end up as:
+The *values.yaml* will end up as:
 
 .. code-block:: yaml
 

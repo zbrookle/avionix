@@ -1,16 +1,22 @@
+from typing import List
+
 from pandas import DataFrame
 import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
+from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.kube.core import (
     Binding,
     ConfigMap,
+    ConfigMapKeySelector,
     ConfigMapProjection,
     DownwardAPIProjection,
     DownwardAPIVolumeFile,
     EndpointAddress,
     Endpoints,
     EndpointSubset,
+    EnvVar,
+    EnvVarSource,
     Event,
     ExecAction,
     HTTPGetAction,
@@ -33,12 +39,14 @@ from avionix.kube.core import (
     ProjectedVolumeSource,
     ReplicationController,
     ReplicationControllerSpec,
+    ResourceFieldSelector,
     ResourceQuota,
     ResourceQuotaSpec,
     ResourceRequirements,
     ScopedResourceSelectorRequirement,
     ScopeSelector,
     Secret,
+    SecretKeySelector,
     SecretProjection,
     Service,
     ServiceAccount,
@@ -230,15 +238,6 @@ def test_empty_persistent_volume_claim(chart_info, empty_persistent_volume_claim
         assert volume_info["NAME"][0] == "test-persistent-volume-claim"
         assert volume_info["CAPACITY"][0] == "1"
         assert volume_info["ACCESS MODES"][0] == modes_expected_value
-
-
-def test_create_pod(chart_info: ChartInfo, pod: Pod):
-    builder = ChartBuilder(chart_info, [pod])
-    with ChartInstallationContext(builder):
-        pods_info = kubectl_get("pods")
-        assert pods_info["NAME"][0] == "test-pod"
-        assert pods_info["READY"][0] == "1/1"
-        assert pods_info["STATUS"][0] == "Running"
 
 
 @pytest.fixture
@@ -438,7 +437,7 @@ def pod_w_persistent_volume(persistent_volume_claim):
     return get_pod_with_options(volume)
 
 
-def test_pod_w_persistent_volume(
+def test_persistent_volume_on_pod(
     chart_info, pod_w_persistent_volume, persistent_volume, persistent_volume_claim
 ):
     builder = ChartBuilder(
@@ -521,14 +520,61 @@ def test_projected_volumes(chart_info, volume: Volume):
         assert pod_info["READY"][0] == "1/1"
 
 
-@pytest.fixture
-def pod_w_security_context():
-    security_context = PodSecurityContext(1000)
-    return get_pod_with_options(security_context=security_context)
-
-
-def test_pod_security_context(pod_w_security_context, chart_info):
-    builder = ChartBuilder(chart_info, [pod_w_security_context])
+@pytest.mark.parametrize(
+    "pod,other_resources",
+    [
+        (get_pod_with_options(), None),
+        (get_pod_with_options(security_context=PodSecurityContext(10000)), None),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_config_map",
+                    value_from=EnvVarSource(ConfigMapKeySelector("config-map", "key")),
+                )
+            ),
+            [ConfigMap(ObjectMeta(name="config-map"), {"key": "value"})],
+        ),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_field_selector",
+                    value_from=EnvVarSource(
+                        field_ref=ObjectFieldSelector("metadata.name")
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_resource_field_selector",
+                    value_from=EnvVarSource(
+                        resource_field_ref=ResourceFieldSelector(
+                            "test-container-0", "requests.memory"
+                        )
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_resource_field_selector",
+                    value_from=EnvVarSource(
+                        secret_key_ref=SecretKeySelector("test-secret", "secret_key")
+                    ),
+                )
+            ),
+            [Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"})],
+        ),
+    ],
+)
+def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
+    if other_resources is None:
+        other_resources = []
+    builder = ChartBuilder(chart_info, [pod] + other_resources)
     with ChartInstallationContext(builder):
         pod_info = kubectl_get("pods")
         assert pod_info["NAME"][0] == "test-pod"

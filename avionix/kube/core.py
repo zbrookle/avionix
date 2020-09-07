@@ -281,7 +281,7 @@ class ConfigMapKeySelector(HelmYaml):
     :param optional: Specify whether the ConfigMap or its key must be defined
     """
 
-    def __init__(self, name: str, key: str, optional: bool):
+    def __init__(self, name: str, key: str, optional: Optional[bool] = None):
         self.name = name
         self.key = key
         self.optional = optional
@@ -295,7 +295,7 @@ class SecretKeySelector(HelmYaml):
     :param optional: Specify whether the Secret or its key must be defined
     """
 
-    def __init__(self, name: str, key: str, optional: bool):
+    def __init__(self, name: str, key: str, optional: Optional[bool] = None):
         self.name = name
         self.key = key
         self.optional = optional
@@ -316,10 +316,10 @@ class EnvVarSource(HelmYaml):
 
     def __init__(
         self,
-        config_map_key_ref: ConfigMapKeySelector,
-        field_ref: ObjectFieldSelector,
-        resource_field_ref: ResourceFieldSelector,
-        secret_key_ref: SecretKeySelector,
+        config_map_key_ref: Optional[ConfigMapKeySelector] = None,
+        field_ref: Optional[ObjectFieldSelector] = None,
+        resource_field_ref: Optional[ResourceFieldSelector] = None,
+        secret_key_ref: Optional[SecretKeySelector] = None,
     ):
         self.configMapKeyRef = config_map_key_ref
         self.fieldRef = field_ref

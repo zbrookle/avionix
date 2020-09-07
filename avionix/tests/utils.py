@@ -19,11 +19,13 @@ from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.testing.helpers import kubectl_get
 
 
-def get_test_container(number: int):
+def get_test_container(number: int, env_var: Optional[EnvVar] = None):
+    if env_var is None:
+        env_var = EnvVar("test", "test-value")
     return Container(
         name=f"test-container-{number}",
         image="k8s.gcr.io/echoserver:1.4",
-        env=[EnvVar("test", "test-value")],
+        env=[env_var],
         ports=[ContainerPort(8080)],
     )
 
@@ -55,8 +57,9 @@ def get_pod_with_options(
     volume: Optional[Volume] = None,
     security_context: Optional[PodSecurityContext] = None,
     readiness_probe: Optional[Probe] = None,
+    environment_var: Optional[EnvVar] = None,
 ):
-    container = get_test_container(0)
+    container = get_test_container(0, environment_var)
     if volume is not None:
         container.volumeMounts = [VolumeMount(volume.name, "~/tmp")]
     if readiness_probe is not None:
@@ -65,5 +68,5 @@ def get_pod_with_options(
         container.startupProbe = readiness_probe
     return Pod(
         ObjectMeta(name="test-pod"),
-        PodSpec([container], volumes=[volume], security_context=security_context),
+        PodSpec([container], volumes=[volume], security_context=security_context,),
     )

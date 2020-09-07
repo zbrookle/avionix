@@ -299,35 +299,20 @@ def test_resource_quota(chart_info, resource_quota):
         assert quota_info["REQUEST"][0] == "cpu: 0/1"
 
 
-@pytest.fixture
-def empty_secret():
-    return Secret(ObjectMeta(name="test-secret"))
-
-
-@pytest.fixture
-def non_empty_secret():
-    return Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"})
-
-
 def get_secret_info():
     info = DataFrame(kubectl_get("secrets"))
     return info[info["NAME"] == "test-secret"].reset_index(drop=True)
 
 
-def test_empty_secret(chart_info, empty_secret):
-    builder = ChartBuilder(chart_info, [empty_secret])
+@pytest.mark.parametrize("secret_data", [{"secret_key": "test"}, None, {}])
+def test_secret(chart_info, secret_data: dict):
+    builder = ChartBuilder(
+        chart_info, [Secret(ObjectMeta(name="test-secret"), secret_data)]
+    )
     with ChartInstallationContext(builder):
         secret_info = get_secret_info()
         assert secret_info["NAME"][0] == "test-secret"
-        assert secret_info["DATA"][0] == "0"
-
-
-def test_non_empty_secret(chart_info, non_empty_secret):
-    builder = ChartBuilder(chart_info, [non_empty_secret])
-    with ChartInstallationContext(builder):
-        secret_info = get_secret_info()
-        assert secret_info["NAME"][0] == "test-secret"
-        assert secret_info["DATA"][0] == "1"
+        assert secret_info["DATA"][0] == str(len(secret_data)) if secret_data else "0"
 
 
 def get_service_info():

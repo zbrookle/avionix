@@ -1,5 +1,5 @@
 from datetime import time
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from avionix.kube.base_objects import Apps
 from avionix.kube.core import PersistentVolumeClaim, PodTemplateSpec
@@ -165,7 +165,9 @@ class RollingUpdateDeployment(HelmYaml):
     """
 
     def __init__(
-        self, max_surge: Optional[str] = None, max_unavailable: Optional[str] = None
+        self,
+        max_surge: Optional[Union[int, str]] = None,
+        max_unavailable: Optional[Union[int, str]] = None,
     ):
         self.maxSurge = max_surge
         self.maxUnavailable = max_unavailable

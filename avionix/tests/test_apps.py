@@ -9,8 +9,10 @@ from avionix.kube.apps import (
     DaemonSetSpec,
     Deployment,
     DeploymentSpec,
+    DeploymentStrategy,
     ReplicaSet,
     ReplicaSetSpec,
+    RollingUpdateDeployment,
     RollingUpdateStatefulSetStrategy,
     StatefulSet,
     StatefulSetSpec,
@@ -51,16 +53,35 @@ def test_daemon_set(chart_info, daemon_set):
         assert daemon_set_info["CURRENT"][0] == "1"
 
 
-@pytest.fixture
-def deployment(test_labels, pod_template_spec, selector):
-    return Deployment(
-        metadata=ObjectMeta(name="test-deployment", labels=test_labels),
-        spec=DeploymentSpec(replicas=1, template=pod_template_spec, selector=selector,),
+@pytest.mark.parametrize(
+    "deployment_strategy",
+    [
+        None,
+        DeploymentStrategy(type="Recreate"),
+        DeploymentStrategy(RollingUpdateDeployment(2)),
+    ],
+)
+def test_deployment(
+    chart_info,
+    test_labels,
+    pod_template_spec,
+    selector,
+    deployment_strategy: Optional[DeploymentStrategy],
+):
+    builder = ChartBuilder(
+        chart_info,
+        [
+            Deployment(
+                metadata=ObjectMeta(name="test-deployment", labels=test_labels),
+                spec=DeploymentSpec(
+                    replicas=1,
+                    template=pod_template_spec,
+                    selector=selector,
+                    strategy=deployment_strategy,
+                ),
+            )
+        ],
     )
-
-
-def test_deployment(chart_info, deployment):
-    builder = ChartBuilder(chart_info, [deployment])
     with ChartInstallationContext(builder):
         deployment_info = kubectl_get("deployments")
         assert deployment_info["NAME"][0] == "test-deployment"

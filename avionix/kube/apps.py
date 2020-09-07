@@ -27,7 +27,7 @@ class StatefulSetUpdateStrategy(HelmYaml):
 
     def __init__(
         self,
-        rolling_update: RollingUpdateStatefulSetStrategy,
+        rolling_update: Optional[RollingUpdateStatefulSetStrategy] = None,
         type: Optional[str] = None,
     ):
         self.rollingUpdate = rolling_update

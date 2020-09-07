@@ -18,7 +18,9 @@ class ScopedResourceSelectorRequirement(HelmYaml):
         patch.
     """
 
-    def __init__(self, operator: str, scope_name: str, values: List[str]):
+    def __init__(
+        self, operator: str, scope_name: str, values: Optional[List[str]] = None
+    ):
         self.operator = operator
         self.scopeName = scope_name
         self.values = values
@@ -67,11 +69,11 @@ class ResourceFieldSelector(HelmYaml):
 
 class DownwardAPIVolumeFile(HelmYaml):
     """
-    :param field_ref: Required: Selects a field of the pod: only annotations, labels, \
-        name and namespace are supported.
     :param path: Required: Path is  the relative path name of the file to be created. \
         Must not be absolute or contain the '..' path. Must be utf-8 encoded. The \
         first item of the relative path must not start with '..'
+    :param field_ref: Required: Selects a field of the pod: only annotations, labels, \
+        name and namespace are supported.
     :param resource_field_ref: Selects a resource of the container: only resources \
         limits and requests (limits.cpu, limits.memory, requests.cpu and \
         requests.memory) are currently supported.
@@ -83,9 +85,9 @@ class DownwardAPIVolumeFile(HelmYaml):
 
     def __init__(
         self,
-        field_ref: ObjectFieldSelector,
         path: str,
-        resource_field_ref: ResourceFieldSelector,
+        field_ref: Optional[ObjectFieldSelector] = None,
+        resource_field_ref: Optional[ResourceFieldSelector] = None,
         mode: Optional[int] = None,
     ):
         self.fieldRef = field_ref
@@ -235,7 +237,10 @@ class SecretProjection(HelmYaml):
     """
 
     def __init__(
-        self, name: str, optional: bool, items: Optional[List[KeyToPath]] = None
+        self,
+        name: str,
+        optional: Optional[bool],
+        items: Optional[List[KeyToPath]] = None,
     ):
         self.name = name
         self.optional = optional
@@ -1665,7 +1670,10 @@ class ConfigMapProjection(HelmYaml):
     """
 
     def __init__(
-        self, name: str, optional: bool, items: Optional[List[KeyToPath]] = None
+        self,
+        name: str,
+        optional: Optional[bool] = None,
+        items: Optional[List[KeyToPath]] = None,
     ):
         self.name = name
         self.optional = optional
@@ -1683,10 +1691,10 @@ class VolumeProjection(HelmYaml):
 
     def __init__(
         self,
-        config_map: ConfigMapProjection,
-        downward_api: DownwardAPIProjection,
-        secret: SecretProjection,
-        service_account_token: ServiceAccountTokenProjection,
+        config_map: Optional[ConfigMapProjection] = None,
+        downward_api: Optional[DownwardAPIProjection] = None,
+        secret: Optional[SecretProjection] = None,
+        service_account_token: Optional[ServiceAccountTokenProjection] = None,
     ):
         self.configMap = config_map
         self.downwardAPI = downward_api
@@ -1696,14 +1704,16 @@ class VolumeProjection(HelmYaml):
 
 class ProjectedVolumeSource(HelmYaml):
     """
+    :param sources: list of volume projections
     :param default_mode: Mode bits to use on created files by default. Must be a value \
         between 0 and 0777. Directories within the path are not affected by this \
         setting. This might be in conflict with other options that affect the file \
         mode, like fsGroup, and the result can be other mode bits set.
-    :param sources: list of volume projections
     """
 
-    def __init__(self, default_mode: int, sources: List[VolumeProjection]):
+    def __init__(
+        self, sources: List[VolumeProjection], default_mode: Optional[int] = None
+    ):
         self.defaultMode = default_mode
         self.sources = sources
 

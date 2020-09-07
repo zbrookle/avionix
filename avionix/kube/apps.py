@@ -193,24 +193,6 @@ class RollingUpdateDaemonSet(HelmYaml):
         self.maxUnavailable = max_unavailable
 
 
-class DaemonSetCondition(HelmYaml):
-    """
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of DaemonSet condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class DaemonSetUpdateStrategy(HelmYaml):
     """
     :param rolling_update: Rolling update config params. Present only if type = \

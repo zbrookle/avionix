@@ -7,31 +7,6 @@ from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class DeploymentCondition(HelmYaml):
-    """
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param last_update_time: The last time this condition was updated.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of deployment condition.
-    """
-
-    def __init__(
-        self,
-        last_transition_time: time,
-        last_update_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.lastUpdateTime = last_update_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class RollingUpdateStatefulSetStrategy(HelmYaml):
     """
     :param partition: Partition indicates the ordinal at which the StatefulSet should \

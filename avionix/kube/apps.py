@@ -1,35 +1,9 @@
-from datetime import time
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from avionix.kube.base_objects import Apps
 from avionix.kube.core import PersistentVolumeClaim, PodTemplateSpec
 from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
-
-
-class DeploymentCondition(HelmYaml):
-    """
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param last_update_time: The last time this condition was updated.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of deployment condition.
-    """
-
-    def __init__(
-        self,
-        last_transition_time: time,
-        last_update_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.lastUpdateTime = last_update_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class RollingUpdateStatefulSetStrategy(HelmYaml):
@@ -52,7 +26,7 @@ class StatefulSetUpdateStrategy(HelmYaml):
 
     def __init__(
         self,
-        rolling_update: RollingUpdateStatefulSetStrategy,
+        rolling_update: Optional[RollingUpdateStatefulSetStrategy] = None,
         type: Optional[str] = None,
     ):
         self.rollingUpdate = rolling_update
@@ -119,24 +93,6 @@ class StatefulSetSpec(HelmYaml):
         self.volumeClaimTemplates = volume_claim_templates
         self.replicas = replicas
         self.updateStrategy = update_strategy
-
-
-class StatefulSetCondition(HelmYaml):
-    """
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of statefulset condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class StatefulSet(Apps):
@@ -208,7 +164,9 @@ class RollingUpdateDeployment(HelmYaml):
     """
 
     def __init__(
-        self, max_surge: Optional[str] = None, max_unavailable: Optional[str] = None
+        self,
+        max_surge: Optional[Union[int, str]] = None,
+        max_unavailable: Optional[Union[int, str]] = None,
     ):
         self.maxSurge = max_surge
         self.maxUnavailable = max_unavailable
@@ -230,26 +188,8 @@ class RollingUpdateDaemonSet(HelmYaml):
         during the update.
     """
 
-    def __init__(self, max_unavailable: str):
+    def __init__(self, max_unavailable: Union[int, str]):
         self.maxUnavailable = max_unavailable
-
-
-class DaemonSetCondition(HelmYaml):
-    """
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of DaemonSet condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class DaemonSetUpdateStrategy(HelmYaml):
@@ -327,24 +267,6 @@ class DaemonSet(Apps):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class ReplicaSetCondition(HelmYaml):
-    """
-    :param last_transition_time: The last time the condition transitioned from one \
-        status to another.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of replica set condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class ReplicaSetSpec(HelmYaml):

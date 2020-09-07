@@ -7,6 +7,7 @@ from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.kube.core import (
     Binding,
+    ClientIPConfig,
     ConfigMap,
     ConfigMapKeySelector,
     ConfigMapProjection,
@@ -52,6 +53,7 @@ from avionix.kube.core import (
     ServiceAccount,
     ServicePort,
     ServiceSpec,
+    SessionAffinityConfig,
     TCPSocketAction,
     Volume,
     VolumeProjection,
@@ -328,15 +330,15 @@ def test_non_empty_secret(chart_info, non_empty_secret):
         assert secret_info["DATA"][0] == "1"
 
 
-@pytest.fixture
-def empty_service():
-    return Service(ObjectMeta(name="test-service"), ServiceSpec([ServicePort(80)]))
+def get_service_info():
+    info = DataFrame(kubectl_get("services"))
+    return info[info["NAME"] != "kubernetes"].reset_index(drop=True)
 
 
-@pytest.fixture
-def nonempty_service():
-    return Service(
-        ObjectMeta(name="test-service"),
+@pytest.mark.parametrize(
+    "service_spec",
+    [
+        ServiceSpec([ServicePort(80)]),
         ServiceSpec(
             [
                 ServicePort(80, name="port1"),
@@ -344,29 +346,28 @@ def nonempty_service():
             ],
             external_ips=["152.0.0.0"],
         ),
+        ServiceSpec(
+            [ServicePort(80)],
+            session_affinity_config=SessionAffinityConfig(ClientIPConfig(10)),
+        ),
+    ],
+)
+def test_service(chart_info, service_spec: ServiceSpec):
+    builder = ChartBuilder(
+        chart_info, [Service(ObjectMeta(name="test-service"), service_spec)]
     )
-
-
-def get_service_info():
-    info = DataFrame(kubectl_get("services"))
-    return info[info["NAME"] != "kubernetes"].reset_index(drop=True)
-
-
-def test_empty_service(chart_info, empty_service):
-    builder = ChartBuilder(chart_info, [empty_service])
     with ChartInstallationContext(builder):
         service_info = get_service_info()
         assert service_info["NAME"][0] == "test-service"
-        assert service_info["PORT(S)"][0] == "80/TCP"
-
-
-def test_nonempty_service(chart_info, nonempty_service):
-    builder = ChartBuilder(chart_info, [nonempty_service])
-    with ChartInstallationContext(builder):
-        service_info = get_service_info()
-        assert service_info["NAME"][0] == "test-service"
-        assert service_info["PORT(S)"][0] == "80/TCP,8080/UDP"
-        assert service_info["EXTERNAL-IP"][0] == "152.0.0.0"
+        assert service_info["PORT(S)"][0] == ",".join(
+            [
+                f"{port.port}/{port.protocol if port.protocol else 'TCP'}"
+                for port in service_spec.ports
+            ]
+        )
+        assert service_info["EXTERNAL-IP"][0] == (
+            service_spec.externalIPs[0] if service_spec.externalIPs else "<none>"
+        )
 
 
 @pytest.fixture

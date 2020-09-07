@@ -189,7 +189,7 @@ class RollingUpdateDaemonSet(HelmYaml):
         during the update.
     """
 
-    def __init__(self, max_unavailable: str):
+    def __init__(self, max_unavailable: Union[int, str]):
         self.maxUnavailable = max_unavailable
 
 

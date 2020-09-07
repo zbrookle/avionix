@@ -7,11 +7,13 @@ from avionix.kube.apps import (
     ControllerRevision,
     DaemonSet,
     DaemonSetSpec,
+    DaemonSetUpdateStrategy,
     Deployment,
     DeploymentSpec,
     DeploymentStrategy,
     ReplicaSet,
     ReplicaSetSpec,
+    RollingUpdateDaemonSet,
     RollingUpdateDeployment,
     RollingUpdateStatefulSetStrategy,
     StatefulSet,
@@ -37,15 +39,31 @@ def test_controller_revision(chart_info, controller_revision):
         assert controller_revision_info["REVISION"][0] == "1"
 
 
-@pytest.fixture
-def daemon_set(pod_template_spec, selector):
-    return DaemonSet(
-        ObjectMeta(name="test-daemon-set"), DaemonSetSpec(pod_template_spec, selector),
+@pytest.mark.parametrize(
+    "update_strategy",
+    [
+        None,
+        DaemonSetUpdateStrategy(type="OnDelete"),
+        DaemonSetUpdateStrategy(RollingUpdateDaemonSet(2)),
+    ],
+)
+def test_daemon_set(
+    chart_info,
+    pod_template_spec,
+    selector,
+    update_strategy: Optional[DaemonSetUpdateStrategy],
+):
+    builder = ChartBuilder(
+        chart_info,
+        [
+            DaemonSet(
+                ObjectMeta(name="test-daemon-set"),
+                DaemonSetSpec(
+                    pod_template_spec, selector, update_strategy=update_strategy
+                ),
+            )
+        ],
     )
-
-
-def test_daemon_set(chart_info, daemon_set):
-    builder = ChartBuilder(chart_info, [daemon_set])
     with ChartInstallationContext(builder):
         daemon_set_info = kubectl_get("daemonsets")
         assert daemon_set_info["NAME"][0] == "test-daemon-set"

@@ -1,8 +1,7 @@
-from datetime import time
-from typing import List, Optional
+from typing import Optional
 
 from avionix.kube.base_objects import ApiRegistration
-from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -21,25 +20,6 @@ class ServiceReference(HelmYaml):
         self.name = name
         self.namespace = namespace
         self.port = port
-
-
-class APIServiceCondition(HelmYaml):
-    """
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: Human-readable message indicating details about last transition.
-    :param reason: Unique, one-word, CamelCase reason for the condition's last \
-        transition.
-    :param type: Type is the type of the condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class APIServiceSpec(HelmYaml):
@@ -118,24 +98,3 @@ class APIService(ApiRegistration):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class APIServiceList(ApiRegistration):
-    """
-    :param metadata: None
-    :param items: None
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[APIService],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

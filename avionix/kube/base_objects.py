@@ -177,7 +177,7 @@ class Discovery(KubernetesBaseObject):
 
 class Meta(KubernetesBaseObject):
 
-    _version_prefix = "meta/"
+    _version_prefix = "meta.k8s.io/"
     _base_object_name = "Meta"
 
 

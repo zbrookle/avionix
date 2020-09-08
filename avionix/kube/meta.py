@@ -1,64 +1,65 @@
 from datetime import datetime
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import KubernetesBaseObject, Meta
 from avionix.yaml.yaml_handling import HelmYaml
 
-# class APIResource(KubernetesBaseObject):
-#     """
-#     :param name: name is the plural name of the resource.
-#     :param categories: categories is a list of the grouped resources this resource \
-#         belongs to (e.g. 'all')
-#     :param group: group is the preferred group of the resource.  Empty implies the \
-#         group of the containing resource list. For subresources, this may have a \
-#         different value, for example: Scale".
-#     :param namespaced: namespaced indicates if a resource is namespaced or not.
-#     :param short_names: shortNames is a list of suggested short names of the resource.
-#     :param singular_name: singularName is the singular name of the resource.  This \
-#         allows clients to handle plural and singular opaquely. The singularName is \
-#         more correct for reporting status on a single item and both singular and \
-#         plural are allowed from the kubectl CLI interface.
-#     :param storage_version_hash: The hash value of the storage version, the version \
-#         this resource is converted to when written to the data store. Value must be \
-#         treated as opaque by clients. Only equality comparison on the value is valid. \
-#         This is an alpha feature and may change or be removed in the future. The field \
-#         is populated by the apiserver only if the StorageVersionHash feature gate is \
-#         enabled. This field will remain optional even if it graduates.
-#     :param verbs: verbs is a list of supported kube verbs (this includes get, list, \
-#         watch, create, update, patch, delete, deletecollection, and proxy)
-#     :param version: version is the preferred version of the resource.  Empty implies \
-#         the version of the containing resource list For subresources, this may have a \
-#         different value, for example: v1 (while inside a v1beta1 version of the core \
-#         resource's group)".
-#     """
-#
-#     def __init__(
-#         self,
-#         name: str,
-#         categories: List[str],
-#         group: str,
-#         namespaced: bool,
-#         short_names: List[str],
-#         singular_name: str,
-#         storage_version_hash: str,
-#         verbs: List[str],
-#         version: str,
-#     ):
-#         super().__init__()
-#         self.name = name
-#         self.categories = categories
-#         self.group = group
-#         self.namespaced = namespaced
-#         self.shortNames = short_names
-#         self.singularName = singular_name
-#         self.storageVersionHash = storage_version_hash
-#         self.verbs = verbs
-#         self.version = version
-#
-#     def to_dict(self):
-#         dictionary = super().to_dict()
-#         del dictionary["apiVersion"]
-#         return dictionary
+
+class APIResource(Meta):
+    """
+    :param name: name is the plural name of the resource.
+    :param categories: categories is a list of the grouped resources this resource \
+        belongs to (e.g. 'all')
+    :param group: group is the preferred group of the resource.  Empty implies the \
+        group of the containing resource list. For subresources, this may have a \
+        different value, for example: Scale".
+    :param namespaced: namespaced indicates if a resource is namespaced or not.
+    :param short_names: shortNames is a list of suggested short names of the resource.
+    :param singular_name: singularName is the singular name of the resource.  This \
+        allows clients to handle plural and singular opaquely. The singularName is \
+        more correct for reporting status on a single item and both singular and \
+        plural are allowed from the kubectl CLI interface.
+    :param storage_version_hash: The hash value of the storage version, the version \
+        this resource is converted to when written to the data store. Value must be \
+        treated as opaque by clients. Only equality comparison on the value is valid. \
+        This is an alpha feature and may change or be removed in the future. The field \
+        is populated by the apiserver only if the StorageVersionHash feature gate is \
+        enabled. This field will remain optional even if it graduates.
+    :param verbs: verbs is a list of supported kube verbs (this includes get, list, \
+        watch, create, update, patch, delete, deletecollection, and proxy)
+    :param version: version is the preferred version of the resource.  Empty implies \
+        the version of the containing resource list For subresources, this may have a \
+        different value, for example: v1 (while inside a v1beta1 version of the core \
+        resource's group)".
+    """
+
+    def __init__(
+        self,
+        name: str,
+        categories: List[str],
+        group: str,
+        namespaced: bool,
+        short_names: List[str],
+        singular_name: str,
+        storage_version_hash: str,
+        verbs: List[str],
+        version: str,
+    ):
+        super().__init__()
+        self.name = name
+        self.categories = categories
+        self.group = group
+        self.namespaced = namespaced
+        self.shortNames = short_names
+        self.singularName = singular_name
+        self.storageVersionHash = storage_version_hash
+        self.verbs = verbs
+        self.version = version
+
+    # def to_dict(self):
+    #     dictionary = super().to_dict()
+    #     del dictionary["apiVersion"]
+    #     return dictionary
 
 
 class ManagedFieldsEntry(HelmYaml):
@@ -302,7 +303,7 @@ class StatusCause(HelmYaml):
         self.reason = reason
 
 
-class StatusDetails(KubernetesBaseObject):
+class StatusDetails(Meta):
     """
     :param name: The name attribute of the resource associated with the status \
         StatusReason (when there is a single name which can be described).
@@ -326,6 +327,7 @@ class StatusDetails(KubernetesBaseObject):
         retry_after_seconds: Optional[int] = None,
         uid: Optional[str] = None,
     ):
+        super().__init__()
         self.name = name
         self.causes = causes
         self.group = group
@@ -359,7 +361,7 @@ class GroupVersionForDiscovery(HelmYaml):
         self.version = version
 
 
-class APIGroup(KubernetesBaseObject):
+class APIGroup(Meta):
     """
     :param name: name is the name of the group.
     :param preferred_version: preferredVersion is the version preferred by the API \

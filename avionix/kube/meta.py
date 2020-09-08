@@ -1,66 +1,64 @@
-from datetime import time
+from datetime import datetime
 from typing import List, Optional
 
 from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.yaml.yaml_handling import HelmYaml
 
-
-class APIResource(KubernetesBaseObject):
-    """
-    :param name: name is the plural name of the resource.
-    :param categories: categories is a list of the grouped resources this resource \
-        belongs to (e.g. 'all')
-    :param group: group is the preferred group of the resource.  Empty implies the \
-        group of the containing resource list. For subresources, this may have a \
-        different value, for example: Scale".
-    :param namespaced: namespaced indicates if a resource is namespaced or not.
-    :param short_names: shortNames is a list of suggested short names of the resource.
-    :param singular_name: singularName is the singular name of the resource.  This \
-        allows clients to handle plural and singular opaquely. The singularName is \
-        more correct for reporting status on a single item and both singular and \
-        plural are allowed from the kubectl CLI interface.
-    :param storage_version_hash: The hash value of the storage version, the version \
-        this resource is converted to when written to the data store. Value must be \
-        treated as opaque by clients. Only equality comparison on the value is valid. \
-        This is an alpha feature and may change or be removed in the future. The field \
-        is populated by the apiserver only if the StorageVersionHash feature gate is \
-        enabled. This field will remain optional even if it graduates.
-    :param verbs: verbs is a list of supported kube verbs (this includes get, list, \
-        watch, create, update, patch, delete, deletecollection, and proxy)
-    :param version: version is the preferred version of the resource.  Empty implies \
-        the version of the containing resource list For subresources, this may have a \
-        different value, for example: v1 (while inside a v1beta1 version of the core \
-        resource's group)".
-    """
-
-    def __init__(
-        self,
-        name: str,
-        categories: List[str],
-        group: str,
-        namespaced: bool,
-        short_names: List[str],
-        singular_name: str,
-        storage_version_hash: str,
-        verbs: List[str],
-        version: str,
-    ):
-        self.name = name
-        self.categories = categories
-        self.group = group
-        self.namespaced = namespaced
-        self.shortNames = short_names
-        self.singularName = singular_name
-        self.storageVersionHash = storage_version_hash
-        self.verbs = verbs
-        self.version = version
-
-
-class FieldsV1(HelmYaml):
-    """
-    """
-
-    pass
+# class APIResource(KubernetesBaseObject):
+#     """
+#     :param name: name is the plural name of the resource.
+#     :param categories: categories is a list of the grouped resources this resource \
+#         belongs to (e.g. 'all')
+#     :param group: group is the preferred group of the resource.  Empty implies the \
+#         group of the containing resource list. For subresources, this may have a \
+#         different value, for example: Scale".
+#     :param namespaced: namespaced indicates if a resource is namespaced or not.
+#     :param short_names: shortNames is a list of suggested short names of the resource.
+#     :param singular_name: singularName is the singular name of the resource.  This \
+#         allows clients to handle plural and singular opaquely. The singularName is \
+#         more correct for reporting status on a single item and both singular and \
+#         plural are allowed from the kubectl CLI interface.
+#     :param storage_version_hash: The hash value of the storage version, the version \
+#         this resource is converted to when written to the data store. Value must be \
+#         treated as opaque by clients. Only equality comparison on the value is valid. \
+#         This is an alpha feature and may change or be removed in the future. The field \
+#         is populated by the apiserver only if the StorageVersionHash feature gate is \
+#         enabled. This field will remain optional even if it graduates.
+#     :param verbs: verbs is a list of supported kube verbs (this includes get, list, \
+#         watch, create, update, patch, delete, deletecollection, and proxy)
+#     :param version: version is the preferred version of the resource.  Empty implies \
+#         the version of the containing resource list For subresources, this may have a \
+#         different value, for example: v1 (while inside a v1beta1 version of the core \
+#         resource's group)".
+#     """
+#
+#     def __init__(
+#         self,
+#         name: str,
+#         categories: List[str],
+#         group: str,
+#         namespaced: bool,
+#         short_names: List[str],
+#         singular_name: str,
+#         storage_version_hash: str,
+#         verbs: List[str],
+#         version: str,
+#     ):
+#         super().__init__()
+#         self.name = name
+#         self.categories = categories
+#         self.group = group
+#         self.namespaced = namespaced
+#         self.shortNames = short_names
+#         self.singularName = singular_name
+#         self.storageVersionHash = storage_version_hash
+#         self.verbs = verbs
+#         self.version = version
+#
+#     def to_dict(self):
+#         dictionary = super().to_dict()
+#         del dictionary["apiVersion"]
+#         return dictionary
 
 
 class ManagedFieldsEntry(HelmYaml):
@@ -83,18 +81,18 @@ class ManagedFieldsEntry(HelmYaml):
 
     def __init__(
         self,
-        fields_type: str,
-        fields_v1: FieldsV1,
-        manager: str,
-        operation: str,
-        time: time,
+        fields_type: Optional[str] = None,
+        fields_v1: Optional[dict] = None,
+        manager: Optional[str] = None,
+        operation: Optional[str] = None,
+        time: Optional[datetime] = None,
         api_version: Optional[str] = None,
     ):
         self.fieldsType = fields_type
         self.fieldsV1 = fields_v1
         self.manager = manager
         self.operation = operation
-        self.time = time
+        self.time = time.strftime("%Y-%m-%dT%H:%M:%SZ%Z") if time else time
         self.apiVersion = api_version
 
 
@@ -102,23 +100,23 @@ class OwnerReference(KubernetesBaseObject):
     """
     :param name: Name of the referent. More info: \
         http://kubernetes.io/docs/user-guide/identifiers#names
+    :param uid: UID of the referent. More info: \
+        http://kubernetes.io/docs/user-guide/identifiers#uids
     :param controller: If true, this reference points to the managing controller.
     :param block_owner_deletion: If true, AND if the owner has the "foregroundDeletion" \
         finalizer, then the owner cannot be deleted from the key-value store until \
         this reference is removed. Defaults to false. To set this field, a user needs \
         "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be \
         returned.
-    :param uid: UID of the referent. More info: \
-        http://kubernetes.io/docs/user-guide/identifiers#uids
     :param api_version: API version of the referent.
     """
 
     def __init__(
         self,
         name: str,
-        controller: bool,
+        uid: str,
+        controller: Optional[bool] = None,
         block_owner_deletion: Optional[bool] = None,
-        uid: Optional[str] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)

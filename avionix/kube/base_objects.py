@@ -175,5 +175,11 @@ class Discovery(KubernetesBaseObject):
     _base_object_name = "Discovery"
 
 
+class Meta(KubernetesBaseObject):
+
+    _version_prefix = "meta/"
+    _base_object_name = "Meta"
+
+
 class BaseSpec(HelmYaml):
     pass

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pandas import DataFrame
 
@@ -13,6 +13,7 @@ from avionix.kube.core import (
     PodTemplateSpec,
     Probe,
     Volume,
+    VolumeDevice,
     VolumeMount,
 )
 from avionix.kube.meta import LabelSelector, ObjectMeta
@@ -55,17 +56,23 @@ def get_event_info():
 
 def get_pod_with_options(
     volume: Optional[Volume] = None,
+    volume_mount: Optional[VolumeMount] = None,
     security_context: Optional[PodSecurityContext] = None,
     readiness_probe: Optional[Probe] = None,
     environment_var: Optional[EnvVar] = None,
+    volume_device: Optional[VolumeDevice] = None,
+    command: Optional[List[str]] = None,
 ):
     container = get_test_container(0, environment_var)
-    if volume is not None:
-        container.volumeMounts = [VolumeMount(volume.name, "~/tmp")]
+    if volume_mount is not None:
+        container.volumeMounts = [volume_mount]
+    if volume_device is not None:
+        container.volumeDevices = [volume_device]
     if readiness_probe is not None:
         container.readinessProbe = readiness_probe
         container.livenessProbe = readiness_probe
         container.startupProbe = readiness_probe
+    container.command = command
     return Pod(
         ObjectMeta(name="test-pod"),
         PodSpec([container], volumes=[volume], security_context=security_context,),

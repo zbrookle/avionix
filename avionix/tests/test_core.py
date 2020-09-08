@@ -20,6 +20,7 @@ from avionix.kube.core import (
     EnvVarSource,
     Event,
     ExecAction,
+    HostPathVolumeSource,
     HTTPGetAction,
     KeyToPath,
     LimitRange,
@@ -33,6 +34,7 @@ from avionix.kube.core import (
     PersistentVolumeClaim,
     PersistentVolumeClaimSpec,
     PersistentVolumeClaimVolumeSource,
+    PersistentVolumeSpec,
     Pod,
     PodSecurityContext,
     PodTemplate,
@@ -56,6 +58,7 @@ from avionix.kube.core import (
     SessionAffinityConfig,
     TCPSocketAction,
     Volume,
+    VolumeMount,
     VolumeProjection,
 )
 from avionix.kube.reference import ObjectReference
@@ -208,9 +211,15 @@ modes_expected_value = "RWX"
 
 
 @pytest.fixture
-def persistent_volume(persistent_volume_spec):
+def persistent_volume(access_modes):
     return PersistentVolume(
-        ObjectMeta(name="test-persistent-volume"), persistent_volume_spec,
+        ObjectMeta(name="test-persistent-volume"),
+        PersistentVolumeSpec(
+            access_modes,
+            capacity={"storage": 1},
+            host_path=HostPathVolumeSource("/home/test/tmp"),
+            storage_class_name="standard",
+        ),
     )
 
 
@@ -408,27 +417,37 @@ def persistent_volume_claim(persistent_volume):
             resources=ResourceRequirements(
                 requests={"storage": persistent_volume.spec.capacity["storage"]}
             ),
+            # volume_mode="Block"
         ),
     )
 
 
-@pytest.fixture
-def pod_w_persistent_volume(persistent_volume_claim):
-    volume = Volume(
-        "test-volume",
-        persistent_volume_claim=PersistentVolumeClaimVolumeSource(
-            persistent_volume_claim.metadata.name, read_only=True
-        ),
-    )
-    return get_pod_with_options(volume)
-
-
+@pytest.mark.parametrize(
+    "mounts_or_devices",
+    [
+        {"volume_mount": VolumeMount("test-volume", "~/tmp")},
+        # {"volume_device": VolumeDevice("test-volume", "~/tmp")},
+    ],
+)
 def test_persistent_volume_on_pod(
-    chart_info, pod_w_persistent_volume, persistent_volume, persistent_volume_claim
+    chart_info, persistent_volume, persistent_volume_claim, mounts_or_devices: dict
 ):
     builder = ChartBuilder(
         chart_info,
-        [persistent_volume, pod_w_persistent_volume, persistent_volume_claim],
+        [
+            persistent_volume,
+            get_pod_with_options(
+                Volume(
+                    "test-volume",
+                    persistent_volume_claim=PersistentVolumeClaimVolumeSource(
+                        persistent_volume_claim.metadata.name, read_only=True
+                    ),
+                ),
+                # command=["bash", "-c", "mkdir ~/tmp; nginx -g 'daemon off;'"],
+                **mounts_or_devices,
+            ),
+            persistent_volume_claim,
+        ],
     )
     with ChartInstallationContext(builder):
         # Check pod ready

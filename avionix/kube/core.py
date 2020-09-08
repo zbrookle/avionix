@@ -420,7 +420,9 @@ class Capabilities(HelmYaml):
     :param drop: Removed capabilities
     """
 
-    def __init__(self, add: List[str], drop: List[str]):
+    def __init__(
+        self, add: Optional[List[str]] = None, drop: Optional[List[str]] = None
+    ):
         self.add = add
         self.drop = drop
 
@@ -469,11 +471,11 @@ class SecurityContext(HelmYaml):
 
     def __init__(
         self,
-        allow_privilege_escalation: bool,
-        run_as_group: int,
-        run_as_non_root: bool,
-        se_linux_options: SELinuxOptions,
-        windows_options: WindowsSecurityContextOptions,
+        allow_privilege_escalation: Optional[bool] = None,
+        run_as_group: Optional[int] = None,
+        run_as_non_root: Optional[bool] = None,
+        se_linux_options: Optional[SELinuxOptions] = None,
+        windows_options: Optional[WindowsSecurityContextOptions] = None,
         capabilities: Optional[Capabilities] = None,
         privileged: Optional[bool] = None,
         proc_mount: Optional[str] = None,

@@ -12,6 +12,7 @@ from avionix.kube.core import (
     PodSpec,
     PodTemplateSpec,
     Probe,
+    SecurityContext,
     Volume,
     VolumeDevice,
     VolumeMount,
@@ -57,11 +58,12 @@ def get_event_info():
 def get_pod_with_options(
     volume: Optional[Volume] = None,
     volume_mount: Optional[VolumeMount] = None,
-    security_context: Optional[PodSecurityContext] = None,
+    pod_security_context: Optional[PodSecurityContext] = None,
     readiness_probe: Optional[Probe] = None,
     environment_var: Optional[EnvVar] = None,
     volume_device: Optional[VolumeDevice] = None,
     command: Optional[List[str]] = None,
+    container_security_context: Optional[SecurityContext] = None,
 ):
     container = get_test_container(0, environment_var)
     if volume_mount is not None:
@@ -72,8 +74,9 @@ def get_pod_with_options(
         container.readinessProbe = readiness_probe
         container.livenessProbe = readiness_probe
         container.startupProbe = readiness_probe
+    container.securityContext = container_security_context
     container.command = command
     return Pod(
         ObjectMeta(name="test-pod"),
-        PodSpec([container], volumes=[volume], security_context=security_context,),
+        PodSpec([container], volumes=[volume], security_context=pod_security_context),
     )

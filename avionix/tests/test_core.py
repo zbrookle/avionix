@@ -7,6 +7,7 @@ from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.kube.core import (
     Binding,
+    Capabilities,
     ClientIPConfig,
     ConfigMap,
     ConfigMapKeySelector,
@@ -51,6 +52,8 @@ from avionix.kube.core import (
     Secret,
     SecretKeySelector,
     SecretProjection,
+    SecurityContext,
+    SELinuxOptions,
     Service,
     ServiceAccount,
     ServicePort,
@@ -529,7 +532,7 @@ def test_projected_volumes(chart_info, volume: Volume):
     "pod,other_resources",
     [
         (get_pod_with_options(), None),
-        (get_pod_with_options(security_context=PodSecurityContext(10000)), None),
+        (get_pod_with_options(pod_security_context=PodSecurityContext(10000)), None),
         (
             get_pod_with_options(
                 environment_var=EnvVar(
@@ -573,6 +576,30 @@ def test_projected_volumes(chart_info, volume: Volume):
                 )
             ),
             [Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"})],
+        ),
+        (
+            get_pod_with_options(
+                container_security_context=SecurityContext(
+                    capabilities=Capabilities(["ALL"])
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                container_security_context=SecurityContext(
+                    capabilities=Capabilities(drop=["CHOWN"])
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                container_security_context=SecurityContext(
+                    se_linux_options=SELinuxOptions(level="2")
+                )
+            ),
+            None,
         ),
     ],
 )

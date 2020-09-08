@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 from avionix.kube.apiregistration import ServiceReference
 from avionix.kube.base_objects import ApiExtensions
-from avionix.kube.meta import ListMeta, ObjectMeta
+from avionix.kube.meta import ObjectMeta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
@@ -573,24 +573,3 @@ class CustomResourceDefinition(ApiExtensions):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class CustomResourceDefinitionList(ApiExtensions):
-    """
-    :param metadata: None
-    :param items: items list individual CustomResourceDefinition objects
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[CustomResourceDefinition],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items

@@ -2,7 +2,7 @@ from datetime import time
 from typing import List, Optional
 
 from avionix.kube.base_objects import KubernetesBaseObject
-from avionix.kube.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.kube.reference import ObjectReference
 from avionix.yaml.yaml_handling import HelmYaml
 
@@ -3781,25 +3781,6 @@ class Node(KubernetesBaseObject):
         self.spec = spec
 
 
-class NodeList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of nodes
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self, metadata: ListMeta, items: List[Node], api_version: Optional[str] = None
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class LimitRangeSpec(HelmYaml):
     """
     :param limits: Limits is the list of LimitRangeItem objects that are enforced.
@@ -3967,28 +3948,6 @@ class Namespace(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class EndpointsList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of endpoints.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[Endpoints],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class EventSeries(HelmYaml):

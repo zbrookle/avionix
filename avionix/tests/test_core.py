@@ -601,7 +601,7 @@ def test_projected_volumes(chart_info, volume: Volume):
         (
             get_pod_with_options(
                 container_security_context=SecurityContext(
-                    capabilities=Capabilities(drop=["CHOWN"])
+                    capabilities=Capabilities(drop=["NET_BIND_SERVICE"])
                 )
             ),
             None,

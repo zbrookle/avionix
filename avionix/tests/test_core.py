@@ -22,6 +22,7 @@ from avionix.kube.core import (
     Event,
     ExecAction,
     Handler,
+    HostAlias,
     HostPathVolumeSource,
     HTTPGetAction,
     HTTPHeader,
@@ -62,6 +63,7 @@ from avionix.kube.core import (
     ServicePort,
     ServiceSpec,
     SessionAffinityConfig,
+    Sysctl,
     TCPSocketAction,
     Volume,
     VolumeMount,
@@ -538,6 +540,14 @@ def test_projected_volumes(chart_info, volume: Volume):
         (get_pod_with_options(pod_security_context=PodSecurityContext(10000)), None),
         (
             get_pod_with_options(
+                pod_security_context=PodSecurityContext(
+                    sysctls=[Sysctl("kernel.shm_rmid_forced", "0")]
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
                 environment_var=EnvVar(
                     "from_config_map",
                     value_from=EnvVarSource(ConfigMapKeySelector("config-map", "key")),
@@ -624,6 +634,7 @@ def test_projected_volumes(chart_info, volume: Volume):
             ),
             None,
         ),
+        (get_pod_with_options(host_alias=HostAlias(["test.com"], "129.0.0.0")), None),
     ],
 )
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):

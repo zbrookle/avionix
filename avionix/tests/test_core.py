@@ -21,9 +21,12 @@ from avionix.kube.core import (
     EnvVarSource,
     Event,
     ExecAction,
+    Handler,
     HostPathVolumeSource,
     HTTPGetAction,
+    HTTPHeader,
     KeyToPath,
+    Lifecycle,
     LimitRange,
     LimitRangeItem,
     LimitRangeSpec,
@@ -601,6 +604,26 @@ def test_projected_volumes(chart_info, volume: Volume):
             ),
             None,
         ),
+        (
+            get_pod_with_options(
+                lifecycle=Lifecycle(pre_stop=Handler(tcp_socket=TCPSocketAction(8080)))
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                lifecycle=Lifecycle(post_start=Handler(ExecAction(["echo", "yes"])))
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                lifecycle=Lifecycle(
+                    post_start=Handler(http_get=HTTPGetAction("/my/path", 8080))
+                )
+            ),
+            None,
+        ),
     ],
 )
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
@@ -617,6 +640,11 @@ def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
 @pytest.mark.parametrize(
     "probe",
     [
+        Probe(
+            http_get=HTTPGetAction("/", 8080, [HTTPHeader("GET", "yes")]),
+            period_seconds=1,
+            failure_threshold=10,
+        ),
         Probe(
             http_get=HTTPGetAction("/", 8080), period_seconds=1, failure_threshold=10
         ),

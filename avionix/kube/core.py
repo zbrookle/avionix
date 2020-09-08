@@ -597,7 +597,10 @@ class Handler(HelmYaml):
     """
 
     def __init__(
-        self, exec: ExecAction, http_get: HTTPGetAction, tcp_socket: TCPSocketAction
+        self,
+        exec: Optional[ExecAction] = None,
+        http_get: Optional[HTTPGetAction] = None,
+        tcp_socket: Optional[TCPSocketAction] = None,
     ):
         self.exec = exec
         self.httpGet = http_get
@@ -623,7 +626,9 @@ class Lifecycle(HelmYaml):
         https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks  # noqa
     """
 
-    def __init__(self, post_start: Handler, pre_stop: Handler):
+    def __init__(
+        self, post_start: Optional[Handler] = None, pre_stop: Optional[Handler] = None
+    ):
         self.postStart = post_start
         self.preStop = pre_stop
 

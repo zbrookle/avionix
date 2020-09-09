@@ -1031,7 +1031,7 @@ class PodDNSConfigOption(HelmYaml):
     :param value: None
     """
 
-    def __init__(self, name: str, value: str):
+    def __init__(self, name: str, value: Optional[str] = None):
         self.name = name
         self.value = value
 
@@ -1052,9 +1052,9 @@ class PodDNSConfig(HelmYaml):
 
     def __init__(
         self,
-        nameservers: List[str],
-        options: List[PodDNSConfigOption],
-        searches: List[str],
+        nameservers: Optional[List[str]] = None,
+        options: Optional[List[PodDNSConfigOption]] = None,
+        searches: Optional[List[str]] = None,
     ):
         self.nameservers = nameservers
         self.options = options

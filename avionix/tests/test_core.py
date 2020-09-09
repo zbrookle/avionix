@@ -43,6 +43,8 @@ from avionix.kube.core import (
     PersistentVolumeClaimVolumeSource,
     PersistentVolumeSpec,
     Pod,
+    PodDNSConfig,
+    PodDNSConfigOption,
     PodSecurityContext,
     PodTemplate,
     Probe,
@@ -666,7 +668,13 @@ def test_projected_volumes(chart_info, volume: Volume):
             ),
             None,
         ),
-        # (get_pod_with_options(), None)
+        (
+            get_pod_with_options(
+                dns_config=PodDNSConfig(None, [PodDNSConfigOption("test")], None)
+            ),
+            None,
+        ),
+        (get_pod_with_options(dns_config=PodDNSConfig(["1.1.1.1"])), None,),
     ],
 )
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):

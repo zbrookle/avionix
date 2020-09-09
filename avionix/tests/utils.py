@@ -11,6 +11,7 @@ from avionix.kube.core import (
     HostAlias,
     Lifecycle,
     Pod,
+    PodDNSConfig,
     PodSecurityContext,
     PodSpec,
     PodTemplateSpec,
@@ -72,6 +73,7 @@ def get_pod_with_options(
     host_alias: Optional[HostAlias] = None,
     env_from: Optional[List[EnvFromSource]] = None,
     topology_spread: Optional[TopologySpreadConstraint] = None,
+    dns_config: Optional[PodDNSConfig] = None,
 ):
     container = get_test_container(0, environment_var)
     if volume_mount is not None:
@@ -94,5 +96,6 @@ def get_pod_with_options(
             security_context=pod_security_context,
             host_aliases=[host_alias],
             topology_spread_constraints=[topology_spread],
+            dns_config=dns_config,
         ),
     )

@@ -1,4 +1,3 @@
-from datetime import time
 from typing import Optional
 
 from avionix.kube.base_objects import Batch
@@ -70,31 +69,6 @@ class JobSpec(HelmYaml):
         self.ttlSecondsAfterFinished = ttl_seconds_after_finished
         self.activeDeadlineSeconds = active_deadline_seconds
         self.backoffLimit = backoff_limit
-
-
-class JobCondition(HelmYaml):
-    """
-    :param last_probe_time: Last time the condition was checked.
-    :param last_transition_time: Last time the condition transit from one status to \
-        another.
-    :param message: Human readable message indicating details about last transition.
-    :param reason: (brief) reason for the condition's last transition.
-    :param type: Type of job condition, Complete or Failed.
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class Job(Batch):

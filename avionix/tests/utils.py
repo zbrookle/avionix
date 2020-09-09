@@ -16,6 +16,7 @@ from avionix.kube.core import (
     PodTemplateSpec,
     Probe,
     SecurityContext,
+    TopologySpreadConstraint,
     Volume,
     VolumeDevice,
     VolumeMount,
@@ -70,6 +71,7 @@ def get_pod_with_options(
     lifecycle: Optional[Lifecycle] = None,
     host_alias: Optional[HostAlias] = None,
     env_from: Optional[List[EnvFromSource]] = None,
+    topology_spread: Optional[TopologySpreadConstraint] = None,
 ):
     container = get_test_container(0, environment_var)
     if volume_mount is not None:

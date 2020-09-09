@@ -68,6 +68,7 @@ from avionix.kube.core import (
     SessionAffinityConfig,
     Sysctl,
     TCPSocketAction,
+    TopologySpreadConstraint,
     Volume,
     VolumeMount,
     VolumeProjection,
@@ -658,6 +659,16 @@ def test_projected_volumes(chart_info, volume: Volume):
                 ConfigMap(ObjectMeta(name="config-map"), {"key": "value"}),
                 Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"}),
             ],
+        ),
+        (
+            get_pod_with_options(topology_spread=TopologySpreadConstraint(max_skew=1)),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                topology_spread=TopologySpreadConstraint(topology_key="t")
+            ),
+            None,
         ),
     ],
 )

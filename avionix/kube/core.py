@@ -1014,10 +1014,10 @@ class TopologySpreadConstraint(HelmYaml):
 
     def __init__(
         self,
-        label_selector: LabelSelector,
-        max_skew: int,
-        topology_key: str,
-        when_unsatisfiable: str,
+        label_selector: Optional[LabelSelector] = None,
+        max_skew: Optional[int] = None,
+        topology_key: Optional[str] = None,
+        when_unsatisfiable: Optional[str] = None,
     ):
         self.labelSelector = label_selector
         self.maxSkew = max_skew

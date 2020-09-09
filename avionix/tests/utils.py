@@ -8,6 +8,7 @@ from avionix.kube.core import (
     ContainerPort,
     EnvFromSource,
     EnvVar,
+    EphemeralContainer,
     HostAlias,
     Lifecycle,
     Pod,
@@ -26,10 +27,15 @@ from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.testing.helpers import kubectl_get
 
 
-def get_test_container(number: int, env_var: Optional[EnvVar] = None):
+def get_test_container(
+    number: int, env_var: Optional[EnvVar] = None, ephemeral: bool = False
+):
+    container_class = Container
+    if ephemeral:
+        container_class = EphemeralContainer
     if env_var is None:
         env_var = EnvVar("test", "test-value")
-    return Container(
+    return container_class(
         name=f"test-container-{number}",
         image="k8s.gcr.io/echoserver:1.4",
         env=[env_var],
@@ -74,8 +80,9 @@ def get_pod_with_options(
     env_from: Optional[List[EnvFromSource]] = None,
     topology_spread: Optional[TopologySpreadConstraint] = None,
     dns_config: Optional[PodDNSConfig] = None,
+    ephemeral: bool = False,
 ):
-    container = get_test_container(0, environment_var)
+    container = get_test_container(0, environment_var, ephemeral)
     if volume_mount is not None:
         container.volumeMounts = [volume_mount]
     if volume_device is not None:

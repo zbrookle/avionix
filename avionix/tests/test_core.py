@@ -661,15 +661,12 @@ def test_projected_volumes(chart_info, volume: Volume):
             ],
         ),
         (
-            get_pod_with_options(topology_spread=TopologySpreadConstraint(max_skew=1)),
-            None,
-        ),
-        (
             get_pod_with_options(
-                topology_spread=TopologySpreadConstraint(topology_key="t")
+                topology_spread=TopologySpreadConstraint(1, "ScheduleAnyway", "t")
             ),
             None,
         ),
+        # (get_pod_with_options(), None)
     ],
 )
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):

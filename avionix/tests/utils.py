@@ -93,5 +93,6 @@ def get_pod_with_options(
             volumes=[volume],
             security_context=pod_security_context,
             host_aliases=[host_alias],
+            topology_spread_constraints=[topology_spread],
         ),
     )

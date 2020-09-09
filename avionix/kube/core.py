@@ -982,9 +982,6 @@ class PodSecurityContext(HelmYaml):
 
 class TopologySpreadConstraint(HelmYaml):
     """
-    :param label_selector: LabelSelector is used to find matching pods. Pods that match \
-        this label selector are counted to determine the number of pods in their \
-        corresponding topology domain.
     :param max_skew: MaxSkew describes the degree to which pods may be unevenly \
         distributed. It's the maximum permitted difference between the number of \
         matching pods in any two topology domains of a given topology type. For \
@@ -1010,14 +1007,17 @@ class TopologySpreadConstraint(HelmYaml):
         3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other \
         words, the cluster can still be imbalanced, but scheduler won't make it *more* \
         imbalanced. It's a required field.
+    :param label_selector: LabelSelector is used to find matching pods. Pods that match \
+        this label selector are counted to determine the number of pods in their \
+        corresponding topology domain.
     """
 
     def __init__(
         self,
+        max_skew: int,
+        topology_key: str,
+        when_unsatisfiable: str,
         label_selector: Optional[LabelSelector] = None,
-        max_skew: Optional[int] = None,
-        topology_key: Optional[str] = None,
-        when_unsatisfiable: Optional[str] = None,
     ):
         self.labelSelector = label_selector
         self.maxSkew = max_skew

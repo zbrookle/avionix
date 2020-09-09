@@ -1,4 +1,3 @@
-from datetime import time
 from typing import List, Optional
 
 from avionix.kube.base_objects import Certificates
@@ -31,21 +30,6 @@ class CertificateSigningRequestSpec(HelmYaml):
         self.request = request
         self.signerName = signer_name
         self.usages = usages
-
-
-class CertificateSigningRequestCondition(HelmYaml):
-    """
-    :param last_update_time: timestamp for the last update to this condition
-    :param message: human readable message with details about the request state
-    :param reason: brief reason for the request state
-    :param type: request approval state, currently Approved or Denied.
-    """
-
-    def __init__(self, last_update_time: time, message: str, reason: str, type: str):
-        self.lastUpdateTime = last_update_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class CertificateSigningRequest(Certificates):

@@ -2174,10 +2174,10 @@ class Toleration(HelmYaml):
 
     def __init__(
         self,
-        effect: str,
-        key: str,
-        toleration_seconds: int,
-        value: str,
+        effect: Optional[str] = None,
+        key: Optional[str] = None,
+        toleration_seconds: Optional[int] = None,
+        value: Optional[str] = None,
         operator: Optional[str] = None,
     ):
         self.effect = effect

@@ -664,7 +664,7 @@ def test_projected_volumes(chart_info, volume: Volume):
         ),
         (
             get_pod_with_options(
-                topology_spread=TopologySpreadConstraint(1, "ScheduleAnyway", "t")
+                topology_spread=TopologySpreadConstraint(1, "t", "ScheduleAnyway")
             ),
             None,
         ),

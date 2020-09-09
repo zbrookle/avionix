@@ -1,11 +1,11 @@
-from datetime import time
+from datetime import datetime
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import KubernetesBaseObject, Meta
 from avionix.yaml.yaml_handling import HelmYaml
 
 
-class APIResource(KubernetesBaseObject):
+class APIResource(Meta):
     """
     :param name: name is the plural name of the resource.
     :param categories: categories is a list of the grouped resources this resource \
@@ -45,6 +45,7 @@ class APIResource(KubernetesBaseObject):
         verbs: List[str],
         version: str,
     ):
+        super().__init__()
         self.name = name
         self.categories = categories
         self.group = group
@@ -55,12 +56,10 @@ class APIResource(KubernetesBaseObject):
         self.verbs = verbs
         self.version = version
 
-
-class FieldsV1(HelmYaml):
-    """
-    """
-
-    pass
+    # def to_dict(self):
+    #     dictionary = super().to_dict()
+    #     del dictionary["apiVersion"]
+    #     return dictionary
 
 
 class ManagedFieldsEntry(HelmYaml):
@@ -83,18 +82,18 @@ class ManagedFieldsEntry(HelmYaml):
 
     def __init__(
         self,
-        fields_type: str,
-        fields_v1: FieldsV1,
-        manager: str,
-        operation: str,
-        time: time,
+        fields_type: Optional[str] = None,
+        fields_v1: Optional[dict] = None,
+        manager: Optional[str] = None,
+        operation: Optional[str] = None,
+        time: Optional[datetime] = None,
         api_version: Optional[str] = None,
     ):
         self.fieldsType = fields_type
         self.fieldsV1 = fields_v1
         self.manager = manager
         self.operation = operation
-        self.time = time
+        self.time = time.strftime("%Y-%m-%dT%H:%M:%SZ%Z") if time else time
         self.apiVersion = api_version
 
 
@@ -102,23 +101,23 @@ class OwnerReference(KubernetesBaseObject):
     """
     :param name: Name of the referent. More info: \
         http://kubernetes.io/docs/user-guide/identifiers#names
+    :param uid: UID of the referent. More info: \
+        http://kubernetes.io/docs/user-guide/identifiers#uids
     :param controller: If true, this reference points to the managing controller.
     :param block_owner_deletion: If true, AND if the owner has the "foregroundDeletion" \
         finalizer, then the owner cannot be deleted from the key-value store until \
         this reference is removed. Defaults to false. To set this field, a user needs \
         "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be \
         returned.
-    :param uid: UID of the referent. More info: \
-        http://kubernetes.io/docs/user-guide/identifiers#uids
     :param api_version: API version of the referent.
     """
 
     def __init__(
         self,
         name: str,
-        controller: bool,
+        uid: str,
+        controller: Optional[bool] = None,
         block_owner_deletion: Optional[bool] = None,
-        uid: Optional[str] = None,
         api_version: Optional[str] = None,
     ):
         super().__init__(api_version)
@@ -304,7 +303,7 @@ class StatusCause(HelmYaml):
         self.reason = reason
 
 
-class StatusDetails(KubernetesBaseObject):
+class StatusDetails(Meta):
     """
     :param name: The name attribute of the resource associated with the status \
         StatusReason (when there is a single name which can be described).
@@ -328,6 +327,7 @@ class StatusDetails(KubernetesBaseObject):
         retry_after_seconds: Optional[int] = None,
         uid: Optional[str] = None,
     ):
+        super().__init__()
         self.name = name
         self.causes = causes
         self.group = group
@@ -361,7 +361,7 @@ class GroupVersionForDiscovery(HelmYaml):
         self.version = version
 
 
-class APIGroup(KubernetesBaseObject):
+class APIGroup(Meta):
     """
     :param name: name is the name of the group.
     :param preferred_version: preferredVersion is the version preferred by the API \

@@ -2,7 +2,7 @@ from datetime import time
 from typing import List, Optional
 
 from avionix.kube.base_objects import KubernetesBaseObject
-from avionix.kube.meta import LabelSelector, ListMeta, ObjectMeta
+from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.kube.reference import ObjectReference
 from avionix.yaml.yaml_handling import HelmYaml
 
@@ -281,7 +281,7 @@ class ConfigMapKeySelector(HelmYaml):
     :param optional: Specify whether the ConfigMap or its key must be defined
     """
 
-    def __init__(self, name: str, key: str, optional: bool):
+    def __init__(self, name: str, key: str, optional: Optional[bool] = None):
         self.name = name
         self.key = key
         self.optional = optional
@@ -295,7 +295,7 @@ class SecretKeySelector(HelmYaml):
     :param optional: Specify whether the Secret or its key must be defined
     """
 
-    def __init__(self, name: str, key: str, optional: bool):
+    def __init__(self, name: str, key: str, optional: Optional[bool] = None):
         self.name = name
         self.key = key
         self.optional = optional
@@ -316,10 +316,10 @@ class EnvVarSource(HelmYaml):
 
     def __init__(
         self,
-        config_map_key_ref: ConfigMapKeySelector,
-        field_ref: ObjectFieldSelector,
-        resource_field_ref: ResourceFieldSelector,
-        secret_key_ref: SecretKeySelector,
+        config_map_key_ref: Optional[ConfigMapKeySelector] = None,
+        field_ref: Optional[ObjectFieldSelector] = None,
+        resource_field_ref: Optional[ResourceFieldSelector] = None,
+        secret_key_ref: Optional[SecretKeySelector] = None,
     ):
         self.configMapKeyRef = config_map_key_ref
         self.fieldRef = field_ref
@@ -420,7 +420,9 @@ class Capabilities(HelmYaml):
     :param drop: Removed capabilities
     """
 
-    def __init__(self, add: List[str], drop: List[str]):
+    def __init__(
+        self, add: Optional[List[str]] = None, drop: Optional[List[str]] = None
+    ):
         self.add = add
         self.drop = drop
 
@@ -469,11 +471,11 @@ class SecurityContext(HelmYaml):
 
     def __init__(
         self,
-        allow_privilege_escalation: bool,
-        run_as_group: int,
-        run_as_non_root: bool,
-        se_linux_options: SELinuxOptions,
-        windows_options: WindowsSecurityContextOptions,
+        allow_privilege_escalation: Optional[bool] = None,
+        run_as_group: Optional[int] = None,
+        run_as_non_root: Optional[bool] = None,
+        se_linux_options: Optional[SELinuxOptions] = None,
+        windows_options: Optional[WindowsSecurityContextOptions] = None,
         capabilities: Optional[Capabilities] = None,
         privileged: Optional[bool] = None,
         proc_mount: Optional[str] = None,
@@ -595,7 +597,10 @@ class Handler(HelmYaml):
     """
 
     def __init__(
-        self, exec: ExecAction, http_get: HTTPGetAction, tcp_socket: TCPSocketAction
+        self,
+        exec: Optional[ExecAction] = None,
+        http_get: Optional[HTTPGetAction] = None,
+        tcp_socket: Optional[TCPSocketAction] = None,
     ):
         self.exec = exec
         self.httpGet = http_get
@@ -621,7 +626,9 @@ class Lifecycle(HelmYaml):
         https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks  # noqa
     """
 
-    def __init__(self, post_start: Handler, pre_stop: Handler):
+    def __init__(
+        self, post_start: Optional[Handler] = None, pre_stop: Optional[Handler] = None
+    ):
         self.postStart = post_start
         self.preStop = pre_stop
 
@@ -2167,10 +2174,10 @@ class Toleration(HelmYaml):
 
     def __init__(
         self,
-        effect: str,
-        key: str,
-        toleration_seconds: int,
-        value: str,
+        effect: Optional[str] = None,
+        key: Optional[str] = None,
+        toleration_seconds: Optional[int] = None,
+        value: Optional[str] = None,
         operator: Optional[str] = None,
     ):
         self.effect = effect
@@ -3774,25 +3781,6 @@ class Node(KubernetesBaseObject):
         self.spec = spec
 
 
-class NodeList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of nodes
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self, metadata: ListMeta, items: List[Node], api_version: Optional[str] = None
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
-
-
 class LimitRangeSpec(HelmYaml):
     """
     :param limits: Limits is the list of LimitRangeItem objects that are enforced.
@@ -3960,28 +3948,6 @@ class Namespace(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class EndpointsList(KubernetesBaseObject):
-    """
-    :param metadata: Standard list metadata. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
-    :param items: List of endpoints.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
-    """
-
-    def __init__(
-        self,
-        metadata: ListMeta,
-        items: List[Endpoints],
-        api_version: Optional[str] = None,
-    ):
-        super().__init__(api_version)
-        self.metadata = metadata
-        self.items = items
 
 
 class EventSeries(HelmYaml):

@@ -1,20 +1,33 @@
+from typing import List
+
 from pandas import DataFrame
 import pytest
 
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
+from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.kube.core import (
     Binding,
+    Capabilities,
+    ClientIPConfig,
     ConfigMap,
+    ConfigMapKeySelector,
     ConfigMapProjection,
     DownwardAPIProjection,
     DownwardAPIVolumeFile,
     EndpointAddress,
     Endpoints,
     EndpointSubset,
+    EnvVar,
+    EnvVarSource,
     Event,
     ExecAction,
+    Handler,
+    HostAlias,
+    HostPathVolumeSource,
     HTTPGetAction,
+    HTTPHeader,
     KeyToPath,
+    Lifecycle,
     LimitRange,
     LimitRangeItem,
     LimitRangeSpec,
@@ -26,6 +39,7 @@ from avionix.kube.core import (
     PersistentVolumeClaim,
     PersistentVolumeClaimSpec,
     PersistentVolumeClaimVolumeSource,
+    PersistentVolumeSpec,
     Pod,
     PodSecurityContext,
     PodTemplate,
@@ -33,19 +47,26 @@ from avionix.kube.core import (
     ProjectedVolumeSource,
     ReplicationController,
     ReplicationControllerSpec,
+    ResourceFieldSelector,
     ResourceQuota,
     ResourceQuotaSpec,
     ResourceRequirements,
     ScopedResourceSelectorRequirement,
     ScopeSelector,
     Secret,
+    SecretKeySelector,
     SecretProjection,
+    SecurityContext,
+    SELinuxOptions,
     Service,
     ServiceAccount,
     ServicePort,
     ServiceSpec,
+    SessionAffinityConfig,
+    Sysctl,
     TCPSocketAction,
     Volume,
+    VolumeMount,
     VolumeProjection,
 )
 from avionix.kube.reference import ObjectReference
@@ -198,9 +219,15 @@ modes_expected_value = "RWX"
 
 
 @pytest.fixture
-def persistent_volume(persistent_volume_spec):
+def persistent_volume(access_modes):
     return PersistentVolume(
-        ObjectMeta(name="test-persistent-volume"), persistent_volume_spec,
+        ObjectMeta(name="test-persistent-volume"),
+        PersistentVolumeSpec(
+            access_modes,
+            capacity={"storage": 1},
+            host_path=HostPathVolumeSource("/home/test/tmp"),
+            storage_class_name="standard",
+        ),
     )
 
 
@@ -230,15 +257,6 @@ def test_empty_persistent_volume_claim(chart_info, empty_persistent_volume_claim
         assert volume_info["NAME"][0] == "test-persistent-volume-claim"
         assert volume_info["CAPACITY"][0] == "1"
         assert volume_info["ACCESS MODES"][0] == modes_expected_value
-
-
-def test_create_pod(chart_info: ChartInfo, pod: Pod):
-    builder = ChartBuilder(chart_info, [pod])
-    with ChartInstallationContext(builder):
-        pods_info = kubectl_get("pods")
-        assert pods_info["NAME"][0] == "test-pod"
-        assert pods_info["READY"][0] == "1/1"
-        assert pods_info["STATUS"][0] == "Running"
 
 
 @pytest.fixture
@@ -298,54 +316,20 @@ def test_resource_quota(chart_info, resource_quota):
         assert quota_info["REQUEST"][0] == "cpu: 0/1"
 
 
-@pytest.fixture
-def empty_secret():
-    return Secret(ObjectMeta(name="test-secret"))
-
-
-@pytest.fixture
-def non_empty_secret():
-    return Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"})
-
-
 def get_secret_info():
     info = DataFrame(kubectl_get("secrets"))
     return info[info["NAME"] == "test-secret"].reset_index(drop=True)
 
 
-def test_empty_secret(chart_info, empty_secret):
-    builder = ChartBuilder(chart_info, [empty_secret])
-    with ChartInstallationContext(builder):
-        secret_info = get_secret_info()
-        assert secret_info["NAME"][0] == "test-secret"
-        assert secret_info["DATA"][0] == "0"
-
-
-def test_non_empty_secret(chart_info, non_empty_secret):
-    builder = ChartBuilder(chart_info, [non_empty_secret])
-    with ChartInstallationContext(builder):
-        secret_info = get_secret_info()
-        assert secret_info["NAME"][0] == "test-secret"
-        assert secret_info["DATA"][0] == "1"
-
-
-@pytest.fixture
-def empty_service():
-    return Service(ObjectMeta(name="test-service"), ServiceSpec([ServicePort(80)]))
-
-
-@pytest.fixture
-def nonempty_service():
-    return Service(
-        ObjectMeta(name="test-service"),
-        ServiceSpec(
-            [
-                ServicePort(80, name="port1"),
-                ServicePort(8080, protocol="UDP", name="port2"),
-            ],
-            external_ips=["152.0.0.0"],
-        ),
+@pytest.mark.parametrize("secret_data", [{"secret_key": "test"}, None, {}])
+def test_secret(chart_info, secret_data: dict):
+    builder = ChartBuilder(
+        chart_info, [Secret(ObjectMeta(name="test-secret"), secret_data)]
     )
+    with ChartInstallationContext(builder):
+        secret_info = get_secret_info()
+        assert secret_info["NAME"][0] == "test-secret"
+        assert secret_info["DATA"][0] == str(len(secret_data)) if secret_data else "0"
 
 
 def get_service_info():
@@ -353,21 +337,39 @@ def get_service_info():
     return info[info["NAME"] != "kubernetes"].reset_index(drop=True)
 
 
-def test_empty_service(chart_info, empty_service):
-    builder = ChartBuilder(chart_info, [empty_service])
+@pytest.mark.parametrize(
+    "service_spec",
+    [
+        ServiceSpec([ServicePort(80)]),
+        ServiceSpec(
+            [
+                ServicePort(80, name="port1"),
+                ServicePort(8080, protocol="UDP", name="port2"),
+            ],
+            external_ips=["152.0.0.0"],
+        ),
+        ServiceSpec(
+            [ServicePort(80)],
+            session_affinity_config=SessionAffinityConfig(ClientIPConfig(10)),
+        ),
+    ],
+)
+def test_service(chart_info, service_spec: ServiceSpec):
+    builder = ChartBuilder(
+        chart_info, [Service(ObjectMeta(name="test-service"), service_spec)]
+    )
     with ChartInstallationContext(builder):
         service_info = get_service_info()
         assert service_info["NAME"][0] == "test-service"
-        assert service_info["PORT(S)"][0] == "80/TCP"
-
-
-def test_nonempty_service(chart_info, nonempty_service):
-    builder = ChartBuilder(chart_info, [nonempty_service])
-    with ChartInstallationContext(builder):
-        service_info = get_service_info()
-        assert service_info["NAME"][0] == "test-service"
-        assert service_info["PORT(S)"][0] == "80/TCP,8080/UDP"
-        assert service_info["EXTERNAL-IP"][0] == "152.0.0.0"
+        assert service_info["PORT(S)"][0] == ",".join(
+            [
+                f"{port.port}/{port.protocol if port.protocol else 'TCP'}"
+                for port in service_spec.ports
+            ]
+        )
+        assert service_info["EXTERNAL-IP"][0] == (
+            service_spec.externalIPs[0] if service_spec.externalIPs else "<none>"
+        )
 
 
 @pytest.fixture
@@ -423,27 +425,37 @@ def persistent_volume_claim(persistent_volume):
             resources=ResourceRequirements(
                 requests={"storage": persistent_volume.spec.capacity["storage"]}
             ),
+            # volume_mode="Block"
         ),
     )
 
 
-@pytest.fixture
-def pod_w_persistent_volume(persistent_volume_claim):
-    volume = Volume(
-        "test-volume",
-        persistent_volume_claim=PersistentVolumeClaimVolumeSource(
-            persistent_volume_claim.metadata.name, read_only=True
-        ),
-    )
-    return get_pod_with_options(volume)
-
-
-def test_pod_w_persistent_volume(
-    chart_info, pod_w_persistent_volume, persistent_volume, persistent_volume_claim
+@pytest.mark.parametrize(
+    "mounts_or_devices",
+    [
+        {"volume_mount": VolumeMount("test-volume", "~/tmp")},
+        # {"volume_device": VolumeDevice("test-volume", "~/tmp")},
+    ],
+)
+def test_persistent_volume_on_pod(
+    chart_info, persistent_volume, persistent_volume_claim, mounts_or_devices: dict
 ):
     builder = ChartBuilder(
         chart_info,
-        [persistent_volume, pod_w_persistent_volume, persistent_volume_claim],
+        [
+            persistent_volume,
+            get_pod_with_options(
+                Volume(
+                    "test-volume",
+                    persistent_volume_claim=PersistentVolumeClaimVolumeSource(
+                        persistent_volume_claim.metadata.name, read_only=True
+                    ),
+                ),
+                # command=["bash", "-c", "mkdir ~/tmp; nginx -g 'daemon off;'"],
+                **mounts_or_devices,
+            ),
+            persistent_volume_claim,
+        ],
     )
     with ChartInstallationContext(builder):
         # Check pod ready
@@ -521,14 +533,114 @@ def test_projected_volumes(chart_info, volume: Volume):
         assert pod_info["READY"][0] == "1/1"
 
 
-@pytest.fixture
-def pod_w_security_context():
-    security_context = PodSecurityContext(1000)
-    return get_pod_with_options(security_context=security_context)
-
-
-def test_pod_security_context(pod_w_security_context, chart_info):
-    builder = ChartBuilder(chart_info, [pod_w_security_context])
+@pytest.mark.parametrize(
+    "pod,other_resources",
+    [
+        (get_pod_with_options(), None),
+        (get_pod_with_options(pod_security_context=PodSecurityContext(10000)), None),
+        (
+            get_pod_with_options(
+                pod_security_context=PodSecurityContext(
+                    sysctls=[Sysctl("kernel.shm_rmid_forced", "0")]
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_config_map",
+                    value_from=EnvVarSource(ConfigMapKeySelector("config-map", "key")),
+                )
+            ),
+            [ConfigMap(ObjectMeta(name="config-map"), {"key": "value"})],
+        ),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_field_selector",
+                    value_from=EnvVarSource(
+                        field_ref=ObjectFieldSelector("metadata.name")
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_resource_field_selector",
+                    value_from=EnvVarSource(
+                        resource_field_ref=ResourceFieldSelector(
+                            "test-container-0", "requests.memory"
+                        )
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                environment_var=EnvVar(
+                    "from_resource_field_selector",
+                    value_from=EnvVarSource(
+                        secret_key_ref=SecretKeySelector("test-secret", "secret_key")
+                    ),
+                )
+            ),
+            [Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"})],
+        ),
+        (
+            get_pod_with_options(
+                container_security_context=SecurityContext(
+                    capabilities=Capabilities(["ALL"])
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                container_security_context=SecurityContext(
+                    capabilities=Capabilities(drop=["NET_BIND_SERVICE"])
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                container_security_context=SecurityContext(
+                    se_linux_options=SELinuxOptions(level="2")
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                lifecycle=Lifecycle(pre_stop=Handler(tcp_socket=TCPSocketAction(8080)))
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                lifecycle=Lifecycle(post_start=Handler(ExecAction(["echo", "yes"])))
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                lifecycle=Lifecycle(
+                    post_start=Handler(http_get=HTTPGetAction("/my/path", 8080))
+                )
+            ),
+            None,
+        ),
+        (get_pod_with_options(host_alias=HostAlias(["test.com"], "129.0.0.0")), None),
+    ],
+)
+def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
+    if other_resources is None:
+        other_resources = []
+    builder = ChartBuilder(chart_info, [pod] + other_resources)
     with ChartInstallationContext(builder):
         pod_info = kubectl_get("pods")
         assert pod_info["NAME"][0] == "test-pod"
@@ -539,6 +651,11 @@ def test_pod_security_context(pod_w_security_context, chart_info):
 @pytest.mark.parametrize(
     "probe",
     [
+        Probe(
+            http_get=HTTPGetAction("/", 8080, [HTTPHeader("GET", "yes")]),
+            period_seconds=1,
+            failure_threshold=10,
+        ),
         Probe(
             http_get=HTTPGetAction("/", 8080), period_seconds=1, failure_threshold=10
         ),

@@ -8,12 +8,12 @@ from avionix.kube.authentication import (
     TokenReview,
     TokenReviewSpec,
 )
-from avionix.testing.helpers import KubectGetException, kubectl_get
+from avionix.testing.helpers import KubectlGetException, kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
 
 
 @pytest.mark.xfail(
-    raises=KubectGetException, reason="Cannot use kubectl get on " "tokenreview"
+    raises=KubectlGetException, reason="Cannot use kubectl get on tokenreview"
 )
 def test_token_review(chart_info):
     builder = ChartBuilder(
@@ -33,7 +33,7 @@ def test_token_review(chart_info):
         assert token_review_info["CURRENT"][0] == "1"
 
 
-@pytest.mark.xfail(raises=HelmError, reason="Helm does not support token request")
+@pytest.mark.xfail(raises=HelmError, reason="Minikube does not support token request")
 def test_token_request(chart_info):
     builder = ChartBuilder(
         chart_info,
@@ -41,6 +41,7 @@ def test_token_request(chart_info):
             TokenRequest(
                 ObjectMeta(name="token-request"),
                 TokenRequestSpec(["audience1", "audience2"], None, None),
+                "v1",
             )
         ],
     )

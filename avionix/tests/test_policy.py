@@ -127,6 +127,9 @@ def get_base_pod_security_policy(
         get_base_pod_security_policy(
             "se-linux-options", se_linux_options=SELinuxOptions("None")
         ),
+        get_base_pod_security_policy(
+            "host-port-range", host_ports=[HostPortRange(4, 1)]
+        ),
     ],
 )
 def test_pod_security_policy(chart_info, pod_security_policy: PodSecurityPolicy):

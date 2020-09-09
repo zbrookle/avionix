@@ -1,4 +1,3 @@
-from datetime import time
 from typing import List, Optional
 
 from avionix.kube.base_objects import Storage
@@ -119,19 +118,6 @@ class StorageClass(Storage):
         self.volumeBindingMode = volume_binding_mode
         self.mountOptions = mount_options
         self.reclaimPolicy = reclaim_policy
-
-
-class VolumeError(HelmYaml):
-    """
-    :param message: String detailing the error encountered during Attach or Detach \
-        operation. This string may be logged, so it should not contain sensitive \
-        information.
-    :param time: Time the error was encountered.
-    """
-
-    def __init__(self, message: str, time: time):
-        self.message = message
-        self.time = time
 
 
 class VolumeAttachmentSource(HelmYaml):

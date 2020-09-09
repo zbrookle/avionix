@@ -6,6 +6,7 @@ from avionix.kube.apps import Deployment, DeploymentSpec
 from avionix.kube.core import (
     Container,
     ContainerPort,
+    EnvFromSource,
     EnvVar,
     HostAlias,
     Lifecycle,
@@ -68,6 +69,7 @@ def get_pod_with_options(
     container_security_context: Optional[SecurityContext] = None,
     lifecycle: Optional[Lifecycle] = None,
     host_alias: Optional[HostAlias] = None,
+    env_from: Optional[List[EnvFromSource]] = None,
 ):
     container = get_test_container(0, environment_var)
     if volume_mount is not None:
@@ -81,6 +83,7 @@ def get_pod_with_options(
     container.securityContext = container_security_context
     container.command = command
     container.lifecycle = lifecycle
+    container.envFrom = env_from
     return Pod(
         ObjectMeta(name="test-pod"),
         PodSpec(

@@ -501,7 +501,7 @@ class SecretEnvSource(HelmYaml):
     :param optional: Specify whether the Secret must be defined
     """
 
-    def __init__(self, name: str, optional: bool):
+    def __init__(self, name: str, optional: Optional[bool] = None):
         self.name = name
         self.optional = optional
 
@@ -513,7 +513,7 @@ class ConfigMapEnvSource(HelmYaml):
     :param optional: Specify whether the ConfigMap must be defined
     """
 
-    def __init__(self, name: str, optional: bool):
+    def __init__(self, name: str, optional: Optional[bool] = None):
         self.name = name
         self.optional = optional
 
@@ -528,9 +528,9 @@ class EnvFromSource(HelmYaml):
 
     def __init__(
         self,
-        config_map_ref: Optional[ConfigMapEnvSource],
-        prefix: Optional[str],
-        secret_ref: Optional[SecretEnvSource],
+        config_map_ref: Optional[ConfigMapEnvSource] = None,
+        prefix: Optional[str] = None,
+        secret_ref: Optional[SecretEnvSource] = None,
     ):
         self.configMapRef = config_map_ref
         self.prefix = prefix

@@ -10,6 +10,7 @@ from avionix.kube.core import (
     Capabilities,
     ClientIPConfig,
     ConfigMap,
+    ConfigMapEnvSource,
     ConfigMapKeySelector,
     ConfigMapProjection,
     DownwardAPIProjection,
@@ -17,6 +18,7 @@ from avionix.kube.core import (
     EndpointAddress,
     Endpoints,
     EndpointSubset,
+    EnvFromSource,
     EnvVar,
     EnvVarSource,
     Event,
@@ -54,6 +56,7 @@ from avionix.kube.core import (
     ScopedResourceSelectorRequirement,
     ScopeSelector,
     Secret,
+    SecretEnvSource,
     SecretKeySelector,
     SecretProjection,
     SecurityContext,
@@ -68,6 +71,7 @@ from avionix.kube.core import (
     Volume,
     VolumeMount,
     VolumeProjection,
+    WindowsSecurityContextOptions,
 )
 from avionix.kube.reference import ObjectReference
 from avionix.testing import kubectl_get
@@ -635,6 +639,26 @@ def test_projected_volumes(chart_info, volume: Volume):
             None,
         ),
         (get_pod_with_options(host_alias=HostAlias(["test.com"], "129.0.0.0")), None),
+        (
+            get_pod_with_options(
+                container_security_context=SecurityContext(
+                    windows_options=WindowsSecurityContextOptions("test", "test")
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                env_from=[
+                    EnvFromSource(ConfigMapEnvSource("config-map")),
+                    EnvFromSource(secret_ref=SecretEnvSource("test-secret")),
+                ]
+            ),
+            [
+                ConfigMap(ObjectMeta(name="config-map"), {"key": "value"}),
+                Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"}),
+            ],
+        ),
     ],
 )
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):

@@ -1,4 +1,3 @@
-from datetime import time
 from typing import List, Optional, Union
 
 from avionix.kube.apiregistration import ServiceReference
@@ -48,27 +47,6 @@ class WebhookClientConfig(HelmYaml):
         self.caBundle = ca_bundle
         self.service = service
         self.url = url
-
-
-class CustomResourceDefinitionCondition(HelmYaml):
-    """
-    :param last_transition_time: lastTransitionTime last time the condition \
-        transitioned from one status to another.
-    :param message: message is a human-readable message indicating details about last \
-        transition.
-    :param reason: reason is a unique, one-word, CamelCase reason for the condition's \
-        last transition.
-    :param type: type is the type of the condition. Types include Established, \
-        NamesAccepted and Terminating.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class JSON(HelmYaml):
@@ -351,16 +329,6 @@ class CustomResourceColumnDefinition(HelmYaml):
 
 class CustomResourceSubresourceScale(HelmYaml):
     """
-    :param label_selector_path: labelSelectorPath defines the JSON path inside of a \
-        custom resource that corresponds to Scale `status.selector`. Only JSON paths \
-        without the array notation are allowed. Must be a JSON Path under `.status` or \
-        `.spec`. Must be set to work with HorizontalPodAutoscaler. The field pointed \
-        by this JSON path must be a string field (not a complex selector struct) which \
-        contains a serialized label selector in string form. More info: \
-        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions#scale-subresource  # noqa \
-        If there is no value under the given path in the custom resource, the \
-        `status.selector` value in the `/scale` subresource will default to the empty \
-        string.
     :param spec_replicas_path: specReplicasPath defines the JSON path inside of a \
         custom resource that corresponds to Scale `spec.replicas`. Only JSON paths \
         without the array notation are allowed. Must be a JSON Path under `.spec`. If \
@@ -371,13 +339,23 @@ class CustomResourceSubresourceScale(HelmYaml):
         without the array notation are allowed. Must be a JSON Path under `.status`. \
         If there is no value under the given path in the custom resource, the \
         `status.replicas` value in the `/scale` subresource will default to 0.
+    :param label_selector_path: labelSelectorPath defines the JSON path inside of a \
+        custom resource that corresponds to Scale `status.selector`. Only JSON paths \
+        without the array notation are allowed. Must be a JSON Path under `.status` or \
+        `.spec`. Must be set to work with HorizontalPodAutoscaler. The field pointed \
+        by this JSON path must be a string field (not a complex selector struct) which \
+        contains a serialized label selector in string form. More info: \
+        https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions#scale-subresource  # noqa \
+        If there is no value under the given path in the custom resource, the \
+        `status.selector` value in the `/scale` subresource will default to the empty \
+        string.
     """
 
     def __init__(
         self,
-        label_selector_path: str,
         spec_replicas_path: str,
         status_replicas_path: str,
+        label_selector_path: Optional[str] = None,
     ):
         self.labelSelectorPath = label_selector_path
         self.specReplicasPath = spec_replicas_path
@@ -457,14 +435,16 @@ class CustomResourceConversion(HelmYaml):
     :param webhook: webhook describes how to call the conversion webhook. Required when \
         `strategy` is set to `Webhook`.
     :param strategy: strategy specifies how custom resources are converted between \
-        versions. Allowed values are: - `None`: The converter only change the \
-        apiVersion and would not touch any other field in the custom resource. - \
-        `Webhook`: API Server will call to an external webhook to do the conversion. \
-        Additional information   is needed for this option. This requires \
+        versions. Allowed values are:
+            - `None`: The converter only change the apiVersion and would not touch any
+            other field in the custom resource.
+            - `Webhook`: API Server will call to an external webhook to do the
+            conversion.
+        Additional information is needed for this option. This requires \
         spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
     """
 
-    def __init__(self, webhook: WebhookConversion, strategy: Optional[str] = None):
+    def __init__(self, webhook: WebhookConversion, strategy: str):
         self.webhook = webhook
         self.strategy = strategy
 

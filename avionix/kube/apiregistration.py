@@ -14,9 +14,7 @@ class ServiceReference(HelmYaml):
         inclusive).
     """
 
-    def __init__(
-        self, name: str, namespace: Optional[str] = None, port: Optional[int] = None
-    ):
+    def __init__(self, name: str, namespace: str, port: Optional[int] = None):
         self.name = name
         self.namespace = namespace
         self.port = port

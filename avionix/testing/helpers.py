@@ -51,7 +51,7 @@ def parse_output_to_dict(output: str):
     return {names[i]: row for i, row in enumerate(zip(*value_rows))}
 
 
-class KubectGetException(Exception):
+class KubectlGetException(Exception):
     def __init__(self, msg: str):
         super().__init__(msg)
 
@@ -65,4 +65,4 @@ def kubectl_get(resource: str, namespace: Optional[str] = None, wide: bool = Fal
             command += " -o wide"
         return parse_output_to_dict(custom_check_output(command))
     except CalledProcessError as err:
-        raise KubectGetException(err.output)
+        raise KubectlGetException(err.output)

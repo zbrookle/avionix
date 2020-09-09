@@ -8,12 +8,12 @@ from avionix.kube.authentication import (
     TokenReview,
     TokenReviewSpec,
 )
-from avionix.testing.helpers import KubectGetException, kubectl_get
+from avionix.testing.helpers import KubectlGetException, kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
 
 
 @pytest.mark.xfail(
-    raises=KubectGetException, reason="Cannot use kubectl get on " "tokenreview"
+    raises=KubectlGetException, reason="Cannot use kubectl get on " "tokenreview"
 )
 def test_token_review(chart_info):
     builder = ChartBuilder(

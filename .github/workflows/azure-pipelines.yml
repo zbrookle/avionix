@@ -25,7 +25,7 @@ jobs:
         key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
     - uses: goanpeca/setup-miniconda@v1
       with:
-        activate-environment: avionix_airflow
+        activate-environment: avionix
         python-version: 3.8
         channel-priority: strict
         environment-file: environment.yml

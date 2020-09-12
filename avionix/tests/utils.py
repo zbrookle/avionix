@@ -4,6 +4,7 @@ from pandas import DataFrame
 
 from avionix.kube.apps import Deployment, DeploymentSpec
 from avionix.kube.core import (
+    Affinity,
     Container,
     ContainerPort,
     EnvFromSource,
@@ -81,6 +82,7 @@ def get_pod_with_options(
     topology_spread: Optional[TopologySpreadConstraint] = None,
     dns_config: Optional[PodDNSConfig] = None,
     ephemeral: bool = False,
+    affinity: Optional[Affinity] = None,
 ):
     container = get_test_container(0, environment_var, ephemeral)
     if volume_mount is not None:

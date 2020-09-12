@@ -41,9 +41,9 @@ class ChartInstallationContext:
         self.__temp_dir = Path.cwd() / "tmp"
         self.__status_field = status_field
         self.__uninstall_func = uninstall_func
-        self.extra_installation_args: Dict[
-            str, str
-        ] = {} if extra_installation_args is None else {}
+        self.extra_installation_args: Dict[str, str] = (
+            {} if extra_installation_args is None else {}
+        )
 
     def get_status_resources(self) -> Dict[str, Tuple[str]]:
         resources = kubectl_get(self.status_resource)

@@ -6,6 +6,7 @@ import pytest
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.kube.core import (
+    Affinity,
     Binding,
     Capabilities,
     ClientIPConfig,
@@ -35,6 +36,10 @@ from avionix.kube.core import (
     LimitRangeSpec,
     Namespace,
     Node,
+    NodeAffinity,
+    NodeSelector,
+    NodeSelectorRequirement,
+    NodeSelectorTerm,
     NodeSpec,
     ObjectFieldSelector,
     PersistentVolume,
@@ -43,10 +48,14 @@ from avionix.kube.core import (
     PersistentVolumeClaimVolumeSource,
     PersistentVolumeSpec,
     Pod,
+    PodAffinity,
+    PodAffinityTerm,
+    PodAntiAffinity,
     PodDNSConfig,
     PodDNSConfigOption,
     PodSecurityContext,
     PodTemplate,
+    PreferredSchedulingTerm,
     Probe,
     ProjectedVolumeSource,
     ReplicationController,
@@ -74,6 +83,7 @@ from avionix.kube.core import (
     Volume,
     VolumeMount,
     VolumeProjection,
+    WeightedPodAffinityTerm,
     WindowsSecurityContextOptions,
 )
 from avionix.kube.reference import ObjectReference
@@ -674,8 +684,95 @@ def test_projected_volumes(chart_info, volume: Volume):
             ),
             None,
         ),
-        (get_pod_with_options(dns_config=PodDNSConfig(["1.1.1.1"])), None,),
-        (get_pod_with_options(ephemeral=True), None,),
+        (get_pod_with_options(dns_config=PodDNSConfig(["1.1.1.1"])), None),
+        (get_pod_with_options(ephemeral=True), None),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    PodAffinity(
+                        [
+                            WeightedPodAffinityTerm(
+                                PodAffinityTerm(namespaces=["default"])
+                            ),
+                            WeightedPodAffinityTerm(PodAffinityTerm(topology_key="T")),
+                            WeightedPodAffinityTerm(weight=2),
+                        ],
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    PodAffinity(
+                        required_during_scheduling_ignored_during_execution=[
+                            PodAffinityTerm(topology_key="t")
+                        ]
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    pod_anti_affinity=PodAntiAffinity(
+                        [WeightedPodAffinityTerm(weight=2)],
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    pod_anti_affinity=PodAntiAffinity(
+                        required_during_scheduling_ignored_during_execution=[
+                            PodAffinityTerm(topology_key="t")
+                        ],
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    node_affinity=NodeAffinity(
+                        required_during_scheduling_ignored_during_execution=NodeSelector(
+                            [NodeSelectorTerm([NodeSelectorRequirement("test")])]
+                        )
+                    )
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    node_affinity=NodeAffinity(
+                        [
+                            PreferredSchedulingTerm(
+                                NodeSelectorTerm(
+                                    [
+                                        NodeSelectorRequirement("test"),
+                                        NodeSelectorRequirement(operator="Equal"),
+                                    ]
+                                ),
+                            ),
+                            PreferredSchedulingTerm(
+                                NodeSelectorTerm(
+                                    match_expressions=[NodeSelectorRequirement("test")],
+                                ),
+                            ),
+                            PreferredSchedulingTerm(weight=2),
+                        ],
+                    )
+                )
+            ),
+            None,
+        ),
     ],
 )
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):

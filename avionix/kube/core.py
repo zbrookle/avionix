@@ -2202,7 +2202,10 @@ class PodAffinityTerm(HelmYaml):
     """
 
     def __init__(
-        self, label_selector: LabelSelector, namespaces: List[str], topology_key: str
+        self,
+        label_selector: Optional[LabelSelector] = None,
+        namespaces: Optional[List[str]] = None,
+        topology_key: Optional[str] = None,
     ):
         self.labelSelector = label_selector
         self.namespaces = namespaces
@@ -2217,7 +2220,11 @@ class WeightedPodAffinityTerm(HelmYaml):
         in the range 1-100.
     """
 
-    def __init__(self, pod_affinity_term: PodAffinityTerm, weight: int):
+    def __init__(
+        self,
+        pod_affinity_term: Optional[PodAffinityTerm] = None,
+        weight: Optional[int] = None,
+    ):
         self.podAffinityTerm = pod_affinity_term
         self.weight = weight
 
@@ -2246,10 +2253,12 @@ class PodAffinity(HelmYaml):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ],
-        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
+        preferred_during_scheduling_ignored_during_execution: Optional[
+            List[WeightedPodAffinityTerm]
+        ] = None,
+        required_during_scheduling_ignored_during_execution: Optional[
+            List[PodAffinityTerm]
+        ] = None,
     ):
         self.preferredDuringSchedulingIgnoredDuringExecution = (
             preferred_during_scheduling_ignored_during_execution
@@ -2283,10 +2292,12 @@ class PodAntiAffinity(HelmYaml):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ],
-        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
+        preferred_during_scheduling_ignored_during_execution: Optional[
+            List[WeightedPodAffinityTerm]
+        ] = None,
+        required_during_scheduling_ignored_during_execution: Optional[
+            List[PodAffinityTerm]
+        ] = None,
     ):
         self.preferredDuringSchedulingIgnoredDuringExecution = (
             preferred_during_scheduling_ignored_during_execution
@@ -2308,7 +2319,12 @@ class NodeSelectorRequirement(HelmYaml):
         replaced during a strategic merge patch.
     """
 
-    def __init__(self, key: str, operator: str, values: List[str]):
+    def __init__(
+        self,
+        key: Optional[str] = None,
+        operator: Optional[str] = None,
+        values: Optional[List[str]] = None,
+    ):
         self.key = key
         self.operator = operator
         self.values = values
@@ -2322,7 +2338,7 @@ class NodeSelectorTerm(HelmYaml):
 
     def __init__(
         self,
-        match_fields: List[NodeSelectorRequirement],
+        match_fields: Optional[List[NodeSelectorRequirement]] = None,
         match_expressions: Optional[List[NodeSelectorRequirement]] = None,
     ):
         self.matchFields = match_fields
@@ -2336,7 +2352,11 @@ class PreferredSchedulingTerm(HelmYaml):
         in the range 1-100.
     """
 
-    def __init__(self, preference: NodeSelectorTerm, weight: int):
+    def __init__(
+        self,
+        preference: Optional[NodeSelectorTerm] = None,
+        weight: Optional[int] = None,
+    ):
         self.preference = preference
         self.weight = weight
 
@@ -2372,10 +2392,12 @@ class NodeAffinity(HelmYaml):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            PreferredSchedulingTerm
-        ],
-        required_during_scheduling_ignored_during_execution: NodeSelector,
+        preferred_during_scheduling_ignored_during_execution: Optional[
+            List[PreferredSchedulingTerm]
+        ] = None,
+        required_during_scheduling_ignored_during_execution: Optional[
+            NodeSelector
+        ] = None,
     ):
         self.preferredDuringSchedulingIgnoredDuringExecution = (
             preferred_during_scheduling_ignored_during_execution
@@ -2396,8 +2418,8 @@ class Affinity(HelmYaml):
 
     def __init__(
         self,
-        pod_affinity: PodAffinity,
-        pod_anti_affinity: PodAntiAffinity,
+        pod_affinity: Optional[PodAffinity] = None,
+        pod_anti_affinity: Optional[PodAntiAffinity] = None,
         node_affinity: Optional[NodeAffinity] = None,
     ):
         self.podAffinity = pod_affinity

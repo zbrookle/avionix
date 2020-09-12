@@ -277,8 +277,7 @@ class ListMeta(HelmYaml):
 
 
 class Patch(HelmYaml):
-    """
-    """
+    """"""
 
     pass
 
@@ -523,8 +522,7 @@ class Status(KubernetesBaseObject):
 
 
 class MicroTime(HelmYaml):
-    """
-    """
+    """"""
 
     pass
 
@@ -546,7 +544,6 @@ class WatchEvent(HelmYaml):
 
 
 class Time(HelmYaml):
-    """
-    """
+    """"""
 
     pass

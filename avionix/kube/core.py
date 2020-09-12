@@ -3625,31 +3625,6 @@ class AttachedVolume(HelmYaml):
         self.devicePath = device_path
 
 
-class NodeCondition(HelmYaml):
-    """
-    :param last_heartbeat_time: Last time we got an update on a given condition.
-    :param last_transition_time: Last time the condition transit from one status to \
-        another.
-    :param message: Human readable message indicating details about last transition.
-    :param reason: (brief) reason for the condition's last transition.
-    :param type: Type of node condition.
-    """
-
-    def __init__(
-        self,
-        last_heartbeat_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastHeartbeatTime = last_heartbeat_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class DaemonEndpoint(HelmYaml):
     """
     :param port: Port number of the given endpoint.
@@ -3675,76 +3650,6 @@ class NodeConfigSource(HelmYaml):
 
     def __init__(self, config_map: ConfigMapNodeConfigSource):
         self.configMap = config_map
-
-
-class ContainerImage(HelmYaml):
-    """
-    :param names: Names by which this image is known. e.g. \
-        ["k8s.gcr.io/hyperkube:v1.0.7", \
-        "dockerhub.io/google_containers/hyperkube:v1.0.7"]
-    :param size_bytes: The size of the image in bytes.
-    """
-
-    def __init__(self, names: List[str], size_bytes: int):
-        self.names = names
-        self.sizeBytes = size_bytes
-
-
-class NodeAddress(HelmYaml):
-    """
-    :param address: The node address.
-    :param type: Node address type, one of Hostname, ExternalIP or InternalIP.
-    """
-
-    def __init__(self, address: str, type: str):
-        self.address = address
-        self.type = type
-
-
-class NodeSystemInfo(HelmYaml):
-    """
-    :param architecture: The Architecture reported by the node
-    :param boot_id: Boot ID reported by the node.
-    :param container_runtime_version: ContainerRuntime Version reported by the node \
-        through runtime remote API (e.g. docker://1.5.0).
-    :param kernel_version: Kernel Version reported by the node from 'uname -r' (e.g. \
-        3.16.0-0.bpo.4-amd64).
-    :param kube_proxy_version: KubeProxy Version reported by the node.
-    :param kubelet_version: Kubelet Version reported by the node.
-    :param machine_id: MachineID reported by the node. For unique machine \
-        identification in the cluster this field is preferred. Learn more from man(5) \
-        machine-id: http://man7.org/linux/man-pages/man5/machine-id.5.html
-    :param operating_system: The Operating System reported by the node
-    :param os_image: OS Image reported by the node from /etc/os-release (e.g. Debian \
-        GNU/Linux 7 (wheezy)).
-    :param system_uuid: SystemUUID reported by the node. For unique machine \
-        identification MachineID is preferred. This field is specific to Red Hat hosts \
-        https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/getting-system-uuid.html  # noqa
-    """
-
-    def __init__(
-        self,
-        architecture: str,
-        boot_id: str,
-        container_runtime_version: str,
-        kernel_version: str,
-        kube_proxy_version: str,
-        kubelet_version: str,
-        machine_id: str,
-        operating_system: str,
-        os_image: str,
-        system_uuid: str,
-    ):
-        self.architecture = architecture
-        self.bootID = boot_id
-        self.containerRuntimeVersion = container_runtime_version
-        self.kernelVersion = kernel_version
-        self.kubeProxyVersion = kube_proxy_version
-        self.kubeletVersion = kubelet_version
-        self.machineID = machine_id
-        self.operatingSystem = operating_system
-        self.osImage = os_image
-        self.systemUUID = system_uuid
 
 
 class NodeSpec(HelmYaml):
@@ -3835,109 +3740,6 @@ class LimitRange(KubernetesBaseObject):
         super().__init__(api_version)
         self.metadata = metadata
         self.spec = spec
-
-
-class NamespaceCondition(HelmYaml):
-    """
-    :param last_transition_time: None
-    :param message: None
-    :param reason: None
-    :param type: Type of namespace controller condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
-class ContainerStateWaiting(HelmYaml):
-    """
-    :param message: Message regarding why the container is not yet running.
-    :param reason: (brief) reason the container is not yet running.
-    """
-
-    def __init__(self, message: str, reason: str):
-        self.message = message
-        self.reason = reason
-
-
-class ReplicationControllerCondition(HelmYaml):
-    """
-    :param last_transition_time: The last time the condition transitioned from one \
-        status to another.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of replication controller condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
-class ContainerStateRunning(HelmYaml):
-    """
-    :param started_at: Time at which the container was last (re-)started
-    """
-
-    def __init__(self, started_at: time):
-        self.startedAt = started_at
-
-
-class ContainerStateTerminated(HelmYaml):
-    """
-    :param container_id: Container's ID in the format 'docker://<container_id>'
-    :param exit_code: Exit status from the last termination of the container
-    :param finished_at: Time at which the container last terminated
-    :param message: Message regarding the last termination of the container
-    :param reason: (brief) reason from the last termination of the container
-    :param signal: Signal from the last termination of the container
-    :param started_at: Time at which previous execution of the container started
-    """
-
-    def __init__(
-        self,
-        container_id: str,
-        exit_code: int,
-        finished_at: time,
-        message: str,
-        reason: str,
-        signal: int,
-        started_at: time,
-    ):
-        self.containerID = container_id
-        self.exitCode = exit_code
-        self.finishedAt = finished_at
-        self.message = message
-        self.reason = reason
-        self.signal = signal
-        self.startedAt = started_at
-
-
-class ContainerState(HelmYaml):
-    """
-    :param running: Details about a running container
-    :param terminated: Details about a terminated container
-    :param waiting: Details about a waiting container
-    """
-
-    def __init__(
-        self,
-        running: ContainerStateRunning,
-        terminated: ContainerStateTerminated,
-        waiting: ContainerStateWaiting,
-    ):
-        self.running = running
-        self.terminated = terminated
-        self.waiting = waiting
 
 
 class NamespaceSpec(HelmYaml):
@@ -4053,42 +3855,6 @@ class Event(KubernetesBaseObject):
         self.reportingInstance = reporting_instance
         self.series = series
         self.source = source
-        self.type = type
-
-
-class PodIP(HelmYaml):
-    """
-    :param ip: ip is an IP address (IPv4 or IPv6) assigned to the pod
-    """
-
-    def __init__(self, ip: str):
-        self.ip = ip
-
-
-class PodCondition(HelmYaml):
-    """
-    :param last_probe_time: Last time we probed the condition.
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: Human-readable message indicating details about last transition.
-    :param reason: Unique, one-word, CamelCase reason for the condition's last \
-        transition.
-    :param type: Type is the type of the condition. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions  # noqa
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
         self.type = type
 
 

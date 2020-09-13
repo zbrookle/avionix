@@ -14,6 +14,7 @@ from avionix.kube.core import (
     ConfigMap,
     ConfigMapEnvSource,
     ConfigMapKeySelector,
+    ConfigMapNodeConfigSource,
     ConfigMapProjection,
     DownwardAPIProjection,
     DownwardAPIVolumeFile,
@@ -42,6 +43,7 @@ from avionix.kube.core import (
     NamespaceSpec,
     Node,
     NodeAffinity,
+    NodeConfigSource,
     NodeSelector,
     NodeSelectorRequirement,
     NodeSelectorTerm,
@@ -83,6 +85,7 @@ from avionix.kube.core import (
     ServiceSpec,
     SessionAffinityConfig,
     Sysctl,
+    Taint,
     TCPSocketAction,
     TopologySpreadConstraint,
     Volume,
@@ -242,27 +245,61 @@ def test_namespace(chart_info, namespace: Namespace):
         assert "test-namespace" in namespace_info["NAME"]
 
 
-@pytest.fixture
-def node_metadata():
-    return ObjectMeta(name="test-node")
-
-
-@pytest.fixture
-def node(node_metadata):
-    return Node(node_metadata, NodeSpec(external_id="12345", pod_cidr="10.0.0.0/24"))
-
-
 def get_node_info():
     node_info = DataFrame(kubectl_get("nodes"))
     return node_info[node_info["NAME"] != "minikube"].reset_index(drop=True)
 
 
-def test_create_non_empty_node(chart_info, node):
+class NodeInstallationContext(ChartInstallationContext):
+    def wait_for_uninstall(self):
+        pass
+
+
+@pytest.mark.parametrize(
+    "node",
+    [
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(external_id="12345", pod_cidr="10.0.0.0/24"),
+        ),
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(
+                external_id="12345",
+                pod_cidr="10.0.0.0/24",
+                config_source=NodeConfigSource(
+                    ConfigMapNodeConfigSource("test", "test", "default")
+                ),
+            ),
+        ),
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(
+                external_id="12345",
+                pod_cidr="10.0.0.0/24",
+                taints=[Taint("NoSchedule", "test")],
+            ),
+        ),
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(
+                external_id="12345",
+                pod_cidr="10.0.0.0/24",
+                taints=[Taint("NoSchedule", "test", datetime.now())],
+            ),
+        ),
+    ],
+)
+def test_node(chart_info, node: Node):
     builder = ChartBuilder(chart_info, [node])
-    with ChartInstallationContext(builder):
+    with NodeInstallationContext(
+        builder,
+        status_resource="node",
+        expected_status={"Ready", "Unknown", "NotReady"},
+    ):
         node_info = get_node_info()
-        assert node_info["NAME"][0] == "test-node"
-        assert node_info["STATUS"][0] == "Unknown"
+        assert node_info["NAME"][0] == node.metadata.name
+        assert node_info["STATUS"][0] in {"NotReady", "Unknown"}
         assert node_info["VERSION"][0] == ""
 
 

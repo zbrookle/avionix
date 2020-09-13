@@ -3430,11 +3430,25 @@ class Taint(HelmYaml):
     :param value: The taint value corresponding to the taint key.
     """
 
-    def __init__(self, effect: str, key: str, time_added: datetime, value: str):
+    def __init__(
+        self,
+        effect: str,
+        key: str,
+        time_added: Optional[datetime] = None,
+        value: Optional[str] = None,
+    ):
         self.effect = effect
         self.key = key
-        self.timeAdded = time_added
+        self.timeAdded = self._get_kube_date_string(time_added)
         self.value = value
+
+    @staticmethod
+    def _get_kube_date_string(datetime_obj: Optional[datetime]):
+        return (
+            datetime_obj.strftime("%Y-%m-%dT%H:%M:%SZ%Z")
+            if datetime_obj
+            else datetime_obj
+        )
 
 
 class ConfigMapNodeConfigSource(HelmYaml):
@@ -3457,7 +3471,7 @@ class ConfigMapNodeConfigSource(HelmYaml):
         self,
         name: str,
         kubelet_config_key: str,
-        namespace: Optional[str] = None,
+        namespace: str,
         resource_version: Optional[str] = None,
         uid: Optional[str] = None,
     ):

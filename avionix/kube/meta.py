@@ -93,8 +93,16 @@ class ManagedFieldsEntry(HelmYaml):
         self.fieldsV1 = fields_v1
         self.manager = manager
         self.operation = operation
-        self.time = time.strftime("%Y-%m-%dT%H:%M:%SZ%Z") if time else time
+        self.time = self._get_kube_date_string(time)
         self.apiVersion = api_version
+
+    @staticmethod
+    def _get_kube_date_string(datetime_obj: Optional[datetime]):
+        return (
+            datetime_obj.strftime("%Y-%m-%dT%H:%M:%SZ%Z")
+            if datetime_obj
+            else datetime_obj
+        )
 
 
 class OwnerReference(KubernetesBaseObject):

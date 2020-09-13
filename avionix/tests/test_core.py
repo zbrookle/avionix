@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from pandas import DataFrame
@@ -23,6 +24,8 @@ from avionix.kube.core import (
     EnvVar,
     EnvVarSource,
     Event,
+    EventSeries,
+    EventSource,
     ExecAction,
     Handler,
     HostAlias,
@@ -36,6 +39,7 @@ from avionix.kube.core import (
     LimitRangeItem,
     LimitRangeSpec,
     Namespace,
+    NamespaceSpec,
     Node,
     NodeAffinity,
     NodeSelector,
@@ -147,40 +151,64 @@ def test_endpoints_with_subset(chart_info: ChartInfo, endpoints_with_subset: End
         assert endpoints_info["ENDPOINTS"][0] == "10.9.8.7"
 
 
-@pytest.fixture
-def empty_event(object_meta_event, event_obj_ref):
-    return Event(object_meta_event, event_obj_ref)
-
-
-@pytest.fixture
-def non_empty_event(object_meta_event, event_obj_ref):
-    return Event(
-        object_meta_event,
-        event_obj_ref,
-        message="test message",
-        reason="testing",
-        type="test-type",
-    )
-
-
-def test_create_empty_event(chart_info: ChartInfo, empty_event: Event):
-    builder = ChartBuilder(chart_info, [empty_event])
+@pytest.mark.parametrize(
+    "event",
+    [
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            message="test message",
+            reason="testing",
+            type="test-type",
+        ),
+        Event(
+            ObjectMeta(name="test-event"), ObjectReference("test-pod", name="test-ref"),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            series=EventSeries(1),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            source=EventSource("test"),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            source=EventSource(host="test"),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            series=EventSeries(last_observed_time=datetime.now()),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref", namespace="default"),
+            event_time=datetime.now(),
+            first_timestamp=datetime.now(),
+            last_timestamp=datetime.now(),
+            reporting_instance="test",
+            reporting_component="test",
+            action="test",
+            reason="testing",
+        ),
+    ],
+)
+def test_event(chart_info: ChartInfo, event: Event):
+    builder = ChartBuilder(chart_info, [event])
     with ChartInstallationContext(builder):
         event_info = get_event_info()
-        assert event_info["TYPE"][0] == ""
-        assert event_info["REASON"][0] == ""
-        assert event_info["OBJECT"][0] == "objectreference/test-ref"
-        assert event_info["MESSAGE"][0] == ""
-
-
-def test_create_nonempty_event(chart_info: ChartInfo, non_empty_event: Event):
-    builder = ChartBuilder(chart_info, [non_empty_event])
-    with ChartInstallationContext(builder):
-        event_info = get_event_info()
-        assert event_info["TYPE"][0] == "test-type"
-        assert event_info["REASON"][0] == "testing"
-        assert event_info["OBJECT"][0] == "objectreference/test-ref"
-        assert event_info["MESSAGE"][0] == "test message"
+        assert event_info["TYPE"][0] == (event.type if event.type is not None else "")
+        assert event_info["REASON"][0] == (
+            event.reason if event.reason is not None else ""
+        )
+        assert event_info["OBJECT"][0] == f"objectreference/{event.involvedObject.name}"
+        assert event_info["MESSAGE"][0] == (
+            event.message if event.message is not None else ""
+        )
 
 
 @pytest.fixture
@@ -198,12 +226,16 @@ def test_create_limitrange(chart_info, limit_range):
         assert namespace_info["NAME"][0] == "test-range"
 
 
-@pytest.fixture
-def namespace():
-    return Namespace(ObjectMeta(name="test-namespace"))
-
-
-def test_create_namespace(chart_info, namespace):
+@pytest.mark.parametrize(
+    "namespace",
+    [
+        Namespace(ObjectMeta(name="test-namespace")),
+        Namespace(
+            ObjectMeta(name="test-namespace-finalizers"), NamespaceSpec(["kubernetes"])
+        ),
+    ],
+)
+def test_namespace(chart_info, namespace: Namespace):
     builder = ChartBuilder(chart_info, [namespace])
     with ChartInstallationContext(builder):
         namespace_info = kubectl_get("namespaces")

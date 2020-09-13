@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime
 from typing import List, Optional
 
 from avionix.kube.base_objects import KubernetesBaseObject
@@ -2916,33 +2916,6 @@ class PersistentVolumeClaimSpec(HelmYaml):
         self.volumeName = volume_name
 
 
-class PersistentVolumeClaimCondition(HelmYaml):
-    """
-    :param last_probe_time: Last time we probed the condition.
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: Human-readable message indicating details about last transition.
-    :param reason: Unique, this should be a short, machine understandable string that \
-        gives the reason for condition's last transition. If it reports \
-        "ResizeStarted" that means the underlying persistent volume is being resized.
-    :param type: None
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
 class PersistentVolumeClaim(KubernetesBaseObject):
     """
     :param metadata: Standard object's metadata. More info: \
@@ -3457,7 +3430,7 @@ class Taint(HelmYaml):
     :param value: The taint value corresponding to the taint key.
     """
 
-    def __init__(self, effect: str, key: str, time_added: time, value: str):
+    def __init__(self, effect: str, key: str, time_added: datetime, value: str):
         self.effect = effect
         self.key = key
         self.timeAdded = time_added
@@ -3601,7 +3574,7 @@ class EventSource(HelmYaml):
     :param host: Node name on which the event is generated.
     """
 
-    def __init__(self, component: str, host: str):
+    def __init__(self, component: Optional[str] = None, host: Optional[str] = None):
         self.component = component
         self.host = host
 
@@ -3777,9 +3750,14 @@ class EventSeries(HelmYaml):
         for 1.18
     """
 
-    def __init__(self, count: int, last_observed_time: time, state: str):
+    def __init__(
+        self,
+        count: Optional[int] = None,
+        last_observed_time: Optional[datetime] = None,
+        state: Optional[str] = None,
+    ):
         self.count = count
-        self.lastObservedTime = last_observed_time
+        self.lastObservedTime = self._get_kube_date_string(last_observed_time)
         self.state = state
 
 
@@ -3820,9 +3798,9 @@ class Event(KubernetesBaseObject):
         involved_object: ObjectReference,
         action: Optional[str] = None,
         count: Optional[int] = None,
-        event_time: Optional[time] = None,
-        first_timestamp: Optional[time] = None,
-        last_timestamp: Optional[time] = None,
+        event_time: Optional[datetime] = None,
+        first_timestamp: Optional[datetime] = None,
+        last_timestamp: Optional[datetime] = None,
         message: Optional[str] = None,
         reason: Optional[str] = None,
         related: Optional[ObjectReference] = None,
@@ -3838,9 +3816,9 @@ class Event(KubernetesBaseObject):
         self.involvedObject = involved_object
         self.action = action
         self.count = count
-        self.eventTime = event_time
-        self.firstTimestamp = first_timestamp
-        self.lastTimestamp = last_timestamp
+        self.eventTime = self._get_kube_date_string(event_time)
+        self.firstTimestamp = self._get_kube_date_string(first_timestamp)
+        self.lastTimestamp = self._get_kube_date_string(last_timestamp)
         self.message = message
         self.reason = reason
         self.related = related

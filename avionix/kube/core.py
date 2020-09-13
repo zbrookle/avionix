@@ -3591,24 +3591,6 @@ class AttachedVolume(HelmYaml):
         self.devicePath = device_path
 
 
-class DaemonEndpoint(HelmYaml):
-    """
-    :param port: Port number of the given endpoint.
-    """
-
-    def __init__(self, port: int):
-        self.Port = port
-
-
-class NodeDaemonEndpoints(HelmYaml):
-    """
-    :param kubelet_endpoint: Endpoint on which Kubelet is listening.
-    """
-
-    def __init__(self, kubelet_endpoint: DaemonEndpoint):
-        self.kubeletEndpoint = kubelet_endpoint
-
-
 class NodeConfigSource(HelmYaml):
     """
     :param config_map: ConfigMap is a reference to a Node's ConfigMap

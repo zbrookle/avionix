@@ -556,37 +556,46 @@ def test_projected_volumes(chart_info, volume: Volume):
     "pod,other_resources",
     [
         (get_pod_with_options(), None),
-        (get_pod_with_options(pod_security_context=PodSecurityContext(10000)), None),
         (
             get_pod_with_options(
-                pod_security_context=PodSecurityContext(
-                    sysctls=[Sysctl("kernel.shm_rmid_forced", "0")]
-                )
+                name="pod-security-1", pod_security_context=PodSecurityContext(10000)
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="pod-security-2",
+                pod_security_context=PodSecurityContext(
+                    sysctls=[Sysctl("kernel.shm_rmid_forced", "0")]
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="env-var-config-map",
                 environment_var=EnvVar(
                     "from_config_map",
                     value_from=EnvVarSource(ConfigMapKeySelector("config-map", "key")),
-                )
+                ),
             ),
             [ConfigMap(ObjectMeta(name="config-map"), {"key": "value"})],
         ),
         (
             get_pod_with_options(
+                name="env-var-objectfield",
                 environment_var=EnvVar(
                     "from_field_selector",
                     value_from=EnvVarSource(
                         field_ref=ObjectFieldSelector("metadata.name")
                     ),
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="env-var-resource",
                 environment_var=EnvVar(
                     "from_resource_field_selector",
                     value_from=EnvVarSource(
@@ -594,80 +603,94 @@ def test_projected_volumes(chart_info, volume: Volume):
                             "test-container-0", "requests.memory"
                         )
                     ),
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="env-var-secret-key",
                 environment_var=EnvVar(
                     "from_resource_field_selector",
                     value_from=EnvVarSource(
                         secret_key_ref=SecretKeySelector("test-secret", "secret_key")
                     ),
-                )
+                ),
             ),
             [Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"})],
         ),
         (
             get_pod_with_options(
+                name="secuirty-context-all",
                 container_security_context=SecurityContext(
                     capabilities=Capabilities(["ALL"])
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="security-context-drop",
                 container_security_context=SecurityContext(
                     capabilities=Capabilities(drop=["NET_BIND_SERVICE"])
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="security-context-linux",
                 container_security_context=SecurityContext(
                     se_linux_options=SELinuxOptions(level="2")
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
-                lifecycle=Lifecycle(pre_stop=Handler(tcp_socket=TCPSocketAction(8080)))
+                name="lifecyle-pre-stop",
+                lifecycle=Lifecycle(pre_stop=Handler(tcp_socket=TCPSocketAction(8080))),
             ),
             None,
         ),
         (
             get_pod_with_options(
-                lifecycle=Lifecycle(post_start=Handler(ExecAction(["echo", "yes"])))
+                name="lifecyle-post-start",
+                lifecycle=Lifecycle(post_start=Handler(ExecAction(["echo", "yes"]))),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="lifecyle-http",
                 lifecycle=Lifecycle(
                     post_start=Handler(http_get=HTTPGetAction("/my/path", 8080))
-                )
+                ),
             ),
             None,
         ),
-        (get_pod_with_options(host_alias=HostAlias(["test.com"], "129.0.0.0")), None),
         (
             get_pod_with_options(
+                name="host-alias", host_alias=HostAlias(["test.com"], "129.0.0.0")
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="security-context-windows",
                 container_security_context=SecurityContext(
                     windows_options=WindowsSecurityContextOptions("test", "test")
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="env-from",
                 env_from=[
                     EnvFromSource(ConfigMapEnvSource("config-map")),
                     EnvFromSource(secret_ref=SecretEnvSource("test-secret")),
-                ]
+                ],
             ),
             [
                 ConfigMap(ObjectMeta(name="config-map"), {"key": "value"}),
@@ -676,20 +699,28 @@ def test_projected_volumes(chart_info, volume: Volume):
         ),
         (
             get_pod_with_options(
-                topology_spread=TopologySpreadConstraint(1, "t", "ScheduleAnyway")
+                name="topology-spread",
+                topology_spread=TopologySpreadConstraint(1, "t", "ScheduleAnyway"),
             ),
             None,
         ),
         (
             get_pod_with_options(
-                dns_config=PodDNSConfig(None, [PodDNSConfigOption("test")], None)
+                name="dns-config-option",
+                dns_config=PodDNSConfig(options=[PodDNSConfigOption("test")]),
             ),
             None,
         ),
-        (get_pod_with_options(dns_config=PodDNSConfig(["1.1.1.1"])), None),
-        (get_pod_with_options(ephemeral=True), None),
         (
             get_pod_with_options(
+                name="dns-config-no-option", dns_config=PodDNSConfig(["1.1.1.1"])
+            ),
+            None,
+        ),
+        (get_pod_with_options(name="epehemeral", ephemeral=True), None),
+        (
+            get_pod_with_options(
+                name="required-node-affinity",
                 affinity=Affinity(
                     node_affinity=NodeAffinity(
                         required_during_scheduling_ignored_during_execution=NodeSelector(
@@ -704,12 +735,13 @@ def test_projected_volumes(chart_info, volume: Volume):
                             ]
                         )
                     )
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="node-affinity",
                 affinity=Affinity(
                     node_affinity=NodeAffinity(
                         [
@@ -733,12 +765,13 @@ def test_projected_volumes(chart_info, volume: Volume):
                             ),
                         ],
                     )
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="pod-affinity",
                 affinity=Affinity(
                     PodAffinity(
                         [
@@ -754,12 +787,13 @@ def test_projected_volumes(chart_info, volume: Volume):
                             ),
                         ],
                     ),
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="required-pod-affinity",
                 affinity=Affinity(
                     PodAffinity(
                         required_during_scheduling_ignored_during_execution=[
@@ -775,12 +809,13 @@ def test_projected_volumes(chart_info, volume: Volume):
                             ),
                         ]
                     ),
-                )
+                ),
             ),
             [get_pod_with_options(name="affinity-pod")],
         ),
         (
             get_pod_with_options(
+                name="anti-affinity",
                 affinity=Affinity(
                     pod_anti_affinity=PodAntiAffinity(
                         [
@@ -789,19 +824,20 @@ def test_projected_volumes(chart_info, volume: Volume):
                             )
                         ],
                     ),
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="required-anti-affinity",
                 affinity=Affinity(
                     pod_anti_affinity=PodAntiAffinity(
                         required_during_scheduling_ignored_during_execution=[
                             PodAffinityTerm(topology_key="t")
                         ],
                     ),
-                )
+                ),
             ),
             None,
         ),

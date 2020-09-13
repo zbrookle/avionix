@@ -1,4 +1,4 @@
-name: avionix_airflow
+name: avionix
 dependencies:
   - pip
   - pyyaml=5.3.1

@@ -1,18 +1,18 @@
 import pytest
 
 from avionix import ChartBuilder, ChartInfo
-from avionix.kube.core import Event
+from avionix.kube.core import Event, ObjectMeta, ObjectReference
 from avionix.testing.installation_context import ChartInstallationContext
 from avionix.tests.utils import get_event_info
 
 
 @pytest.fixture
-def my_event_object(object_meta_event, event_obj_ref):
+def my_event_object():
     class MyEvent(Event):
         def __init__(self):
             super().__init__(
-                metadata=object_meta_event,
-                involved_object=event_obj_ref,
+                metadata=ObjectMeta(name="test-event"),
+                involved_object=ObjectReference("test-pod", name="test-ref"),
                 message="test message",
                 reason="testing",
                 type="test-type",

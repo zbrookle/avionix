@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from pandas import DataFrame
@@ -6,20 +7,26 @@ import pytest
 from avionix import ChartBuilder, ChartInfo, ObjectMeta
 from avionix.kube.base_objects import KubernetesBaseObject
 from avionix.kube.core import (
+    Affinity,
     Binding,
     Capabilities,
     ClientIPConfig,
     ConfigMap,
+    ConfigMapEnvSource,
     ConfigMapKeySelector,
+    ConfigMapNodeConfigSource,
     ConfigMapProjection,
     DownwardAPIProjection,
     DownwardAPIVolumeFile,
     EndpointAddress,
     Endpoints,
     EndpointSubset,
+    EnvFromSource,
     EnvVar,
     EnvVarSource,
     Event,
+    EventSeries,
+    EventSource,
     ExecAction,
     Handler,
     HostAlias,
@@ -27,12 +34,19 @@ from avionix.kube.core import (
     HTTPGetAction,
     HTTPHeader,
     KeyToPath,
+    LabelSelector,
     Lifecycle,
     LimitRange,
     LimitRangeItem,
     LimitRangeSpec,
     Namespace,
+    NamespaceSpec,
     Node,
+    NodeAffinity,
+    NodeConfigSource,
+    NodeSelector,
+    NodeSelectorRequirement,
+    NodeSelectorTerm,
     NodeSpec,
     ObjectFieldSelector,
     PersistentVolume,
@@ -41,8 +55,14 @@ from avionix.kube.core import (
     PersistentVolumeClaimVolumeSource,
     PersistentVolumeSpec,
     Pod,
+    PodAffinity,
+    PodAffinityTerm,
+    PodAntiAffinity,
+    PodDNSConfig,
+    PodDNSConfigOption,
     PodSecurityContext,
     PodTemplate,
+    PreferredSchedulingTerm,
     Probe,
     ProjectedVolumeSource,
     ReplicationController,
@@ -54,6 +74,7 @@ from avionix.kube.core import (
     ScopedResourceSelectorRequirement,
     ScopeSelector,
     Secret,
+    SecretEnvSource,
     SecretKeySelector,
     SecretProjection,
     SecurityContext,
@@ -64,11 +85,16 @@ from avionix.kube.core import (
     ServiceSpec,
     SessionAffinityConfig,
     Sysctl,
+    Taint,
     TCPSocketAction,
+    TopologySpreadConstraint,
     Volume,
     VolumeMount,
     VolumeProjection,
+    WeightedPodAffinityTerm,
+    WindowsSecurityContextOptions,
 )
+from avionix.kube.meta import LabelSelectorRequirement
 from avionix.kube.reference import ObjectReference
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
@@ -128,40 +154,64 @@ def test_endpoints_with_subset(chart_info: ChartInfo, endpoints_with_subset: End
         assert endpoints_info["ENDPOINTS"][0] == "10.9.8.7"
 
 
-@pytest.fixture
-def empty_event(object_meta_event, event_obj_ref):
-    return Event(object_meta_event, event_obj_ref)
-
-
-@pytest.fixture
-def non_empty_event(object_meta_event, event_obj_ref):
-    return Event(
-        object_meta_event,
-        event_obj_ref,
-        message="test message",
-        reason="testing",
-        type="test-type",
-    )
-
-
-def test_create_empty_event(chart_info: ChartInfo, empty_event: Event):
-    builder = ChartBuilder(chart_info, [empty_event])
+@pytest.mark.parametrize(
+    "event",
+    [
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            message="test message",
+            reason="testing",
+            type="test-type",
+        ),
+        Event(
+            ObjectMeta(name="test-event"), ObjectReference("test-pod", name="test-ref"),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            series=EventSeries(1),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            source=EventSource("test"),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            source=EventSource(host="test"),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref"),
+            series=EventSeries(last_observed_time=datetime.now()),
+        ),
+        Event(
+            ObjectMeta(name="test-event"),
+            ObjectReference("test-pod", name="test-ref", namespace="default"),
+            event_time=datetime.now(),
+            first_timestamp=datetime.now(),
+            last_timestamp=datetime.now(),
+            reporting_instance="test",
+            reporting_component="test",
+            action="test",
+            reason="testing",
+        ),
+    ],
+)
+def test_event(chart_info: ChartInfo, event: Event):
+    builder = ChartBuilder(chart_info, [event])
     with ChartInstallationContext(builder):
         event_info = get_event_info()
-        assert event_info["TYPE"][0] == ""
-        assert event_info["REASON"][0] == ""
-        assert event_info["OBJECT"][0] == "objectreference/test-ref"
-        assert event_info["MESSAGE"][0] == ""
-
-
-def test_create_nonempty_event(chart_info: ChartInfo, non_empty_event: Event):
-    builder = ChartBuilder(chart_info, [non_empty_event])
-    with ChartInstallationContext(builder):
-        event_info = get_event_info()
-        assert event_info["TYPE"][0] == "test-type"
-        assert event_info["REASON"][0] == "testing"
-        assert event_info["OBJECT"][0] == "objectreference/test-ref"
-        assert event_info["MESSAGE"][0] == "test message"
+        assert event_info["TYPE"][0] == (event.type if event.type is not None else "")
+        assert event_info["REASON"][0] == (
+            event.reason if event.reason is not None else ""
+        )
+        assert event_info["OBJECT"][0] == f"objectreference/{event.involvedObject.name}"
+        assert event_info["MESSAGE"][0] == (
+            event.message if event.message is not None else ""
+        )
 
 
 @pytest.fixture
@@ -179,26 +229,20 @@ def test_create_limitrange(chart_info, limit_range):
         assert namespace_info["NAME"][0] == "test-range"
 
 
-@pytest.fixture
-def namespace():
-    return Namespace(ObjectMeta(name="test-namespace"))
-
-
-def test_create_namespace(chart_info, namespace):
+@pytest.mark.parametrize(
+    "namespace",
+    [
+        Namespace(ObjectMeta(name="test-namespace")),
+        Namespace(
+            ObjectMeta(name="test-namespace-finalizers"), NamespaceSpec(["kubernetes"])
+        ),
+    ],
+)
+def test_namespace(chart_info, namespace: Namespace):
     builder = ChartBuilder(chart_info, [namespace])
     with ChartInstallationContext(builder):
         namespace_info = kubectl_get("namespaces")
         assert "test-namespace" in namespace_info["NAME"]
-
-
-@pytest.fixture
-def node_metadata():
-    return ObjectMeta(name="test-node")
-
-
-@pytest.fixture
-def node(node_metadata):
-    return Node(node_metadata, NodeSpec(external_id="12345", pod_cidr="10.0.0.0/24"))
 
 
 def get_node_info():
@@ -206,12 +250,56 @@ def get_node_info():
     return node_info[node_info["NAME"] != "minikube"].reset_index(drop=True)
 
 
-def test_create_non_empty_node(chart_info, node):
+class NodeInstallationContext(ChartInstallationContext):
+    def wait_for_uninstall(self):
+        pass
+
+
+@pytest.mark.parametrize(
+    "node",
+    [
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(external_id="12345", pod_cidr="10.0.0.0/24"),
+        ),
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(
+                external_id="12345",
+                pod_cidr="10.0.0.0/24",
+                config_source=NodeConfigSource(
+                    ConfigMapNodeConfigSource("test", "test", "default")
+                ),
+            ),
+        ),
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(
+                external_id="12345",
+                pod_cidr="10.0.0.0/24",
+                taints=[Taint("NoSchedule", "test")],
+            ),
+        ),
+        Node(
+            ObjectMeta(name="test-node"),
+            NodeSpec(
+                external_id="12345",
+                pod_cidr="10.0.0.0/24",
+                taints=[Taint("NoSchedule", "test", datetime.now())],
+            ),
+        ),
+    ],
+)
+def test_node(chart_info, node: Node):
     builder = ChartBuilder(chart_info, [node])
-    with ChartInstallationContext(builder):
+    with NodeInstallationContext(
+        builder,
+        status_resource="node",
+        expected_status={"Ready", "Unknown", "NotReady"},
+    ):
         node_info = get_node_info()
-        assert node_info["NAME"][0] == "test-node"
-        assert node_info["STATUS"][0] == "Unknown"
+        assert node_info["NAME"][0] == node.metadata.name
+        assert node_info["STATUS"][0] in {"NotReady", "Unknown"}
         assert node_info["VERSION"][0] == ""
 
 
@@ -537,37 +625,46 @@ def test_projected_volumes(chart_info, volume: Volume):
     "pod,other_resources",
     [
         (get_pod_with_options(), None),
-        (get_pod_with_options(pod_security_context=PodSecurityContext(10000)), None),
         (
             get_pod_with_options(
-                pod_security_context=PodSecurityContext(
-                    sysctls=[Sysctl("kernel.shm_rmid_forced", "0")]
-                )
+                name="pod-security-1", pod_security_context=PodSecurityContext(10000)
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="pod-security-2",
+                pod_security_context=PodSecurityContext(
+                    sysctls=[Sysctl("kernel.shm_rmid_forced", "0")]
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="env-var-config-map",
                 environment_var=EnvVar(
                     "from_config_map",
                     value_from=EnvVarSource(ConfigMapKeySelector("config-map", "key")),
-                )
+                ),
             ),
             [ConfigMap(ObjectMeta(name="config-map"), {"key": "value"})],
         ),
         (
             get_pod_with_options(
+                name="env-var-objectfield",
                 environment_var=EnvVar(
                     "from_field_selector",
                     value_from=EnvVarSource(
                         field_ref=ObjectFieldSelector("metadata.name")
                     ),
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="env-var-resource",
                 environment_var=EnvVar(
                     "from_resource_field_selector",
                     value_from=EnvVarSource(
@@ -575,66 +672,244 @@ def test_projected_volumes(chart_info, volume: Volume):
                             "test-container-0", "requests.memory"
                         )
                     ),
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="env-var-secret-key",
                 environment_var=EnvVar(
                     "from_resource_field_selector",
                     value_from=EnvVarSource(
                         secret_key_ref=SecretKeySelector("test-secret", "secret_key")
                     ),
-                )
+                ),
             ),
             [Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"})],
         ),
         (
             get_pod_with_options(
+                name="secuirty-context-all",
                 container_security_context=SecurityContext(
                     capabilities=Capabilities(["ALL"])
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="security-context-drop",
                 container_security_context=SecurityContext(
                     capabilities=Capabilities(drop=["NET_BIND_SERVICE"])
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="security-context-linux",
                 container_security_context=SecurityContext(
                     se_linux_options=SELinuxOptions(level="2")
-                )
+                ),
             ),
             None,
         ),
         (
             get_pod_with_options(
-                lifecycle=Lifecycle(pre_stop=Handler(tcp_socket=TCPSocketAction(8080)))
+                name="lifecyle-pre-stop",
+                lifecycle=Lifecycle(pre_stop=Handler(tcp_socket=TCPSocketAction(8080))),
             ),
             None,
         ),
         (
             get_pod_with_options(
-                lifecycle=Lifecycle(post_start=Handler(ExecAction(["echo", "yes"])))
+                name="lifecyle-post-start",
+                lifecycle=Lifecycle(post_start=Handler(ExecAction(["echo", "yes"]))),
             ),
             None,
         ),
         (
             get_pod_with_options(
+                name="lifecyle-http",
                 lifecycle=Lifecycle(
                     post_start=Handler(http_get=HTTPGetAction("/my/path", 8080))
-                )
+                ),
             ),
             None,
         ),
-        (get_pod_with_options(host_alias=HostAlias(["test.com"], "129.0.0.0")), None),
+        (
+            get_pod_with_options(
+                name="host-alias", host_alias=HostAlias(["test.com"], "129.0.0.0")
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="security-context-windows",
+                container_security_context=SecurityContext(
+                    windows_options=WindowsSecurityContextOptions("test", "test")
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="env-from",
+                env_from=[
+                    EnvFromSource(ConfigMapEnvSource("config-map")),
+                    EnvFromSource(secret_ref=SecretEnvSource("test-secret")),
+                ],
+            ),
+            [
+                ConfigMap(ObjectMeta(name="config-map"), {"key": "value"}),
+                Secret(ObjectMeta(name="test-secret"), {"secret_key": "test"}),
+            ],
+        ),
+        (
+            get_pod_with_options(
+                name="topology-spread",
+                topology_spread=TopologySpreadConstraint(1, "t", "ScheduleAnyway"),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="dns-config-option",
+                dns_config=PodDNSConfig(options=[PodDNSConfigOption("test")]),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="dns-config-no-option", dns_config=PodDNSConfig(["1.1.1.1"])
+            ),
+            None,
+        ),
+        (get_pod_with_options(name="epehemeral", ephemeral=True), None),
+        (
+            get_pod_with_options(
+                name="required-node-affinity",
+                affinity=Affinity(
+                    node_affinity=NodeAffinity(
+                        required_during_scheduling_ignored_during_execution=NodeSelector(
+                            [
+                                NodeSelectorTerm(
+                                    match_expressions=[
+                                        NodeSelectorRequirement(
+                                            "kubernetes.io/os", "Exists"
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    )
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="node-affinity",
+                affinity=Affinity(
+                    node_affinity=NodeAffinity(
+                        [
+                            PreferredSchedulingTerm(
+                                NodeSelectorTerm(
+                                    match_fields=[
+                                        NodeSelectorRequirement(
+                                            "metadata.name", "In", ["minikube"]
+                                        ),
+                                    ]
+                                ),
+                                weight=2,
+                            ),
+                            PreferredSchedulingTerm(
+                                NodeSelectorTerm(
+                                    match_expressions=[
+                                        NodeSelectorRequirement("test", "Exists")
+                                    ],
+                                ),
+                                weight=1,
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="pod-affinity",
+                affinity=Affinity(
+                    PodAffinity(
+                        [
+                            WeightedPodAffinityTerm(
+                                PodAffinityTerm(
+                                    "minikube.k8s.io/name", namespaces=["default"],
+                                ),
+                                weight=10,
+                            ),
+                            WeightedPodAffinityTerm(
+                                PodAffinityTerm(topology_key="minikube.k8s.io/name"),
+                                weight=3,
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="required-pod-affinity",
+                affinity=Affinity(
+                    PodAffinity(
+                        required_during_scheduling_ignored_during_execution=[
+                            PodAffinityTerm(
+                                "kubernetes.io/arch",
+                                LabelSelector(
+                                    match_expressions=[
+                                        LabelSelectorRequirement(
+                                            "app.kubernetes.io/managed-by", "Exists",
+                                        )
+                                    ],
+                                ),
+                            ),
+                        ]
+                    ),
+                ),
+            ),
+            [get_pod_with_options(name="affinity-pod")],
+        ),
+        (
+            get_pod_with_options(
+                name="anti-affinity",
+                affinity=Affinity(
+                    pod_anti_affinity=PodAntiAffinity(
+                        [
+                            WeightedPodAffinityTerm(
+                                PodAffinityTerm("T", namespaces=["default"]), weight=2
+                            )
+                        ],
+                    ),
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="required-anti-affinity",
+                affinity=Affinity(
+                    pod_anti_affinity=PodAntiAffinity(
+                        required_during_scheduling_ignored_during_execution=[
+                            PodAffinityTerm(topology_key="t")
+                        ],
+                    ),
+                ),
+            ),
+            None,
+        ),
     ],
 )
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
@@ -642,8 +917,11 @@ def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
         other_resources = []
     builder = ChartBuilder(chart_info, [pod] + other_resources)
     with ChartInstallationContext(builder):
-        pod_info = kubectl_get("pods")
-        assert pod_info["NAME"][0] == "test-pod"
+        pod_info = DataFrame(kubectl_get("pods"))
+        pod_info = pod_info[pod_info["NAME"] == pod.metadata.name].reset_index(
+            drop=True
+        )
+        assert pod_info["NAME"][0] == pod.metadata.name
         assert pod_info["READY"][0] == "1/1"
         assert pod_info["STATUS"][0] == "Running"
 

@@ -1,6 +1,7 @@
 from copy import deepcopy
+from datetime import datetime
 import re
-from typing import Union
+from typing import Optional, Union
 
 from yaml import dump
 
@@ -70,6 +71,14 @@ class HelmYaml:
     def to_dict(self):
         dictionary = deepcopy(self.__dict__)
         return self.__clean_nested(dictionary)
+
+    @staticmethod
+    def _get_kube_date_string(datetime_obj: Optional[datetime]):
+        return (
+            datetime_obj.strftime("%Y-%m-%dT%H:%M:%S.%fZ%Z")
+            if datetime_obj
+            else datetime_obj
+        )
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value

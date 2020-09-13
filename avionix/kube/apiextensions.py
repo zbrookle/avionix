@@ -7,8 +7,7 @@ from avionix.yaml.yaml_handling import HelmYaml
 
 
 class JSONSchemaPropsOrBool(HelmYaml):
-    """
-    """
+    """"""
 
     pass
 
@@ -50,15 +49,13 @@ class WebhookClientConfig(HelmYaml):
 
 
 class JSON(HelmYaml):
-    """
-    """
+    """"""
 
     pass
 
 
 class JSONSchemaPropsOrArray(HelmYaml):
-    """
-    """
+    """"""
 
     pass
 

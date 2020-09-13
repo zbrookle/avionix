@@ -93,8 +93,16 @@ class ManagedFieldsEntry(HelmYaml):
         self.fieldsV1 = fields_v1
         self.manager = manager
         self.operation = operation
-        self.time = time.strftime("%Y-%m-%dT%H:%M:%SZ%Z") if time else time
+        self.time = self._get_kube_date_string(time)
         self.apiVersion = api_version
+
+    @staticmethod
+    def _get_kube_date_string(datetime_obj: Optional[datetime]):
+        return (
+            datetime_obj.strftime("%Y-%m-%dT%H:%M:%SZ%Z")
+            if datetime_obj
+            else datetime_obj
+        )
 
 
 class OwnerReference(KubernetesBaseObject):
@@ -224,7 +232,7 @@ class LabelSelectorRequirement(HelmYaml):
         merge patch.
     """
 
-    def __init__(self, key: str, operator: str, values: List[str]):
+    def __init__(self, key: str, operator: str, values: Optional[List[str]] = None):
         self.key = key
         self.operator = operator
         self.values = values
@@ -242,7 +250,7 @@ class LabelSelector(HelmYaml):
 
     def __init__(
         self,
-        match_labels: dict,
+        match_labels: Optional[dict] = None,
         match_expressions: Optional[List[LabelSelectorRequirement]] = None,
     ):
         self.matchLabels = match_labels
@@ -277,8 +285,7 @@ class ListMeta(HelmYaml):
 
 
 class Patch(HelmYaml):
-    """
-    """
+    """"""
 
     pass
 
@@ -523,8 +530,7 @@ class Status(KubernetesBaseObject):
 
 
 class MicroTime(HelmYaml):
-    """
-    """
+    """"""
 
     pass
 
@@ -546,7 +552,6 @@ class WatchEvent(HelmYaml):
 
 
 class Time(HelmYaml):
-    """
-    """
+    """"""
 
     pass

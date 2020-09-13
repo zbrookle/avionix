@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime
 from typing import List, Optional
 
 from avionix.kube.base_objects import KubernetesBaseObject
@@ -501,7 +501,7 @@ class SecretEnvSource(HelmYaml):
     :param optional: Specify whether the Secret must be defined
     """
 
-    def __init__(self, name: str, optional: bool):
+    def __init__(self, name: str, optional: Optional[bool] = None):
         self.name = name
         self.optional = optional
 
@@ -513,7 +513,7 @@ class ConfigMapEnvSource(HelmYaml):
     :param optional: Specify whether the ConfigMap must be defined
     """
 
-    def __init__(self, name: str, optional: bool):
+    def __init__(self, name: str, optional: Optional[bool] = None):
         self.name = name
         self.optional = optional
 
@@ -528,9 +528,9 @@ class EnvFromSource(HelmYaml):
 
     def __init__(
         self,
-        config_map_ref: Optional[ConfigMapEnvSource],
-        prefix: Optional[str],
-        secret_ref: Optional[SecretEnvSource],
+        config_map_ref: Optional[ConfigMapEnvSource] = None,
+        prefix: Optional[str] = None,
+        secret_ref: Optional[SecretEnvSource] = None,
     ):
         self.configMapRef = config_map_ref
         self.prefix = prefix
@@ -982,9 +982,6 @@ class PodSecurityContext(HelmYaml):
 
 class TopologySpreadConstraint(HelmYaml):
     """
-    :param label_selector: LabelSelector is used to find matching pods. Pods that match \
-        this label selector are counted to determine the number of pods in their \
-        corresponding topology domain.
     :param max_skew: MaxSkew describes the degree to which pods may be unevenly \
         distributed. It's the maximum permitted difference between the number of \
         matching pods in any two topology domains of a given topology type. For \
@@ -1000,24 +997,29 @@ class TopologySpreadConstraint(HelmYaml):
         We consider each <key, value> as a "bucket", and try to put balanced number of \
         pods into each bucket. It's a required field.
     :param when_unsatisfiable: WhenUnsatisfiable indicates how to deal with a pod if it \
-        doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the \
-        scheduler not to schedule it - ScheduleAnyway tells the scheduler to still \
-        schedule it It's considered as "Unsatisfiable" if and only if placing incoming \
-        pod on any topology violates "MaxSkew". For example, in a 3-zone cluster, \
-        MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | \
-        zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set \
-        to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become \
-        3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other \
-        words, the cluster can still be imbalanced, but scheduler won't make it *more* \
-        imbalanced. It's a required field.
+        doesn't satisfy the spread constraint.
+            - DoNotSchedule (default) tells the scheduler not to schedule it
+            - ScheduleAnyway tells the scheduler to still schedule it It's considered as
+             "Unsatisfiable" if and only if placing incoming pod on any topology
+             violates "MaxSkew". For example, in a 3-zone cluster, MaxSkew is set to 1,
+             and pods with the same labelSelector spread as
+             3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   |
+         If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be
+         scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on
+         zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be
+         imbalanced, but scheduler won't make it *more* imbalanced. It's a required
+         field.
+    :param label_selector: LabelSelector is used to find matching pods. Pods that match \
+        this label selector are counted to determine the number of pods in their \
+        corresponding topology domain.
     """
 
     def __init__(
         self,
-        label_selector: LabelSelector,
         max_skew: int,
         topology_key: str,
         when_unsatisfiable: str,
+        label_selector: Optional[LabelSelector] = None,
     ):
         self.labelSelector = label_selector
         self.maxSkew = max_skew
@@ -1031,7 +1033,7 @@ class PodDNSConfigOption(HelmYaml):
     :param value: None
     """
 
-    def __init__(self, name: str, value: str):
+    def __init__(self, name: str, value: Optional[str] = None):
         self.name = name
         self.value = value
 
@@ -1052,9 +1054,9 @@ class PodDNSConfig(HelmYaml):
 
     def __init__(
         self,
-        nameservers: List[str],
-        options: List[PodDNSConfigOption],
-        searches: List[str],
+        nameservers: Optional[List[str]] = None,
+        options: Optional[List[PodDNSConfigOption]] = None,
+        searches: Optional[List[str]] = None,
     ):
         self.nameservers = nameservers
         self.options = options
@@ -1146,11 +1148,11 @@ class EphemeralContainer(HelmYaml):
     def __init__(
         self,
         name: str,
-        image: str,
-        ports: List[ContainerPort],
-        resources: ResourceRequirements,
-        startup_probe: Probe,
-        target_container_name: str,
+        image: Optional[str] = None,
+        ports: Optional[List[ContainerPort]] = None,
+        resources: Optional[ResourceRequirements] = None,
+        startup_probe: Optional[Probe] = None,
+        target_container_name: Optional[str] = None,
         args: Optional[List[str]] = None,
         command: Optional[List[str]] = None,
         env: Optional[List[EnvVar]] = None,
@@ -2189,18 +2191,21 @@ class Toleration(HelmYaml):
 
 class PodAffinityTerm(HelmYaml):
     """
-    :param label_selector: A label query over a set of resources, in this case pods.
-    :param namespaces: namespaces specifies which namespaces the labelSelector applies \
-        to (matches against); null or empty list means "this pod's namespace"
     :param topology_key: This pod should be co-located (affinity) or not co-located \
         (anti-affinity) with the pods matching the labelSelector in the specified \
         namespaces, where co-located is defined as running on a node whose value of \
         the label with key topologyKey matches that of any node on which any of the \
         selected pods is running. Empty topologyKey is not allowed.
+    :param label_selector: A label query over a set of resources, in this case pods.
+    :param namespaces: namespaces specifies which namespaces the labelSelector applies \
+        to (matches against); null or empty list means "this pod's namespace"
     """
 
     def __init__(
-        self, label_selector: LabelSelector, namespaces: List[str], topology_key: str
+        self,
+        topology_key: str,
+        label_selector: Optional[LabelSelector] = None,
+        namespaces: Optional[List[str]] = None,
     ):
         self.labelSelector = label_selector
         self.namespaces = namespaces
@@ -2215,7 +2220,9 @@ class WeightedPodAffinityTerm(HelmYaml):
         in the range 1-100.
     """
 
-    def __init__(self, pod_affinity_term: PodAffinityTerm, weight: int):
+    def __init__(
+        self, pod_affinity_term: PodAffinityTerm, weight: Optional[int] = None,
+    ):
         self.podAffinityTerm = pod_affinity_term
         self.weight = weight
 
@@ -2244,10 +2251,12 @@ class PodAffinity(HelmYaml):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ],
-        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
+        preferred_during_scheduling_ignored_during_execution: Optional[
+            List[WeightedPodAffinityTerm]
+        ] = None,
+        required_during_scheduling_ignored_during_execution: Optional[
+            List[PodAffinityTerm]
+        ] = None,
     ):
         self.preferredDuringSchedulingIgnoredDuringExecution = (
             preferred_during_scheduling_ignored_during_execution
@@ -2281,10 +2290,12 @@ class PodAntiAffinity(HelmYaml):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ],
-        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm],
+        preferred_during_scheduling_ignored_during_execution: Optional[
+            List[WeightedPodAffinityTerm]
+        ] = None,
+        required_during_scheduling_ignored_during_execution: Optional[
+            List[PodAffinityTerm]
+        ] = None,
     ):
         self.preferredDuringSchedulingIgnoredDuringExecution = (
             preferred_during_scheduling_ignored_during_execution
@@ -2306,7 +2317,9 @@ class NodeSelectorRequirement(HelmYaml):
         replaced during a strategic merge patch.
     """
 
-    def __init__(self, key: str, operator: str, values: List[str]):
+    def __init__(
+        self, key: str, operator: str, values: Optional[List[str]] = None,
+    ):
         self.key = key
         self.operator = operator
         self.values = values
@@ -2320,7 +2333,7 @@ class NodeSelectorTerm(HelmYaml):
 
     def __init__(
         self,
-        match_fields: List[NodeSelectorRequirement],
+        match_fields: Optional[List[NodeSelectorRequirement]] = None,
         match_expressions: Optional[List[NodeSelectorRequirement]] = None,
     ):
         self.matchFields = match_fields
@@ -2334,7 +2347,9 @@ class PreferredSchedulingTerm(HelmYaml):
         in the range 1-100.
     """
 
-    def __init__(self, preference: NodeSelectorTerm, weight: int):
+    def __init__(
+        self, preference: NodeSelectorTerm, weight: int,
+    ):
         self.preference = preference
         self.weight = weight
 
@@ -2370,10 +2385,12 @@ class NodeAffinity(HelmYaml):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            PreferredSchedulingTerm
-        ],
-        required_during_scheduling_ignored_during_execution: NodeSelector,
+        preferred_during_scheduling_ignored_during_execution: Optional[
+            List[PreferredSchedulingTerm]
+        ] = None,
+        required_during_scheduling_ignored_during_execution: Optional[
+            NodeSelector
+        ] = None,
     ):
         self.preferredDuringSchedulingIgnoredDuringExecution = (
             preferred_during_scheduling_ignored_during_execution
@@ -2394,8 +2411,8 @@ class Affinity(HelmYaml):
 
     def __init__(
         self,
-        pod_affinity: PodAffinity,
-        pod_anti_affinity: PodAntiAffinity,
+        pod_affinity: Optional[PodAffinity] = None,
+        pod_anti_affinity: Optional[PodAntiAffinity] = None,
         node_affinity: Optional[NodeAffinity] = None,
     ):
         self.podAffinity = pod_affinity
@@ -2897,33 +2914,6 @@ class PersistentVolumeClaimSpec(HelmYaml):
         self.storageClassName = storage_class_name
         self.volumeMode = volume_mode
         self.volumeName = volume_name
-
-
-class PersistentVolumeClaimCondition(HelmYaml):
-    """
-    :param last_probe_time: Last time we probed the condition.
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: Human-readable message indicating details about last transition.
-    :param reason: Unique, this should be a short, machine understandable string that \
-        gives the reason for condition's last transition. If it reports \
-        "ResizeStarted" that means the underlying persistent volume is being resized.
-    :param type: None
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
 
 
 class PersistentVolumeClaim(KubernetesBaseObject):
@@ -3440,11 +3430,25 @@ class Taint(HelmYaml):
     :param value: The taint value corresponding to the taint key.
     """
 
-    def __init__(self, effect: str, key: str, time_added: time, value: str):
+    def __init__(
+        self,
+        effect: str,
+        key: str,
+        time_added: Optional[datetime] = None,
+        value: Optional[str] = None,
+    ):
         self.effect = effect
         self.key = key
-        self.timeAdded = time_added
+        self.timeAdded = self._get_kube_date_string(time_added)
         self.value = value
+
+    @staticmethod
+    def _get_kube_date_string(datetime_obj: Optional[datetime]):
+        return (
+            datetime_obj.strftime("%Y-%m-%dT%H:%M:%SZ%Z")
+            if datetime_obj
+            else datetime_obj
+        )
 
 
 class ConfigMapNodeConfigSource(HelmYaml):
@@ -3467,7 +3471,7 @@ class ConfigMapNodeConfigSource(HelmYaml):
         self,
         name: str,
         kubelet_config_key: str,
-        namespace: Optional[str] = None,
+        namespace: str,
         resource_version: Optional[str] = None,
         uid: Optional[str] = None,
     ):
@@ -3584,7 +3588,7 @@ class EventSource(HelmYaml):
     :param host: Node name on which the event is generated.
     """
 
-    def __init__(self, component: str, host: str):
+    def __init__(self, component: Optional[str] = None, host: Optional[str] = None):
         self.component = component
         self.host = host
 
@@ -3601,49 +3605,6 @@ class AttachedVolume(HelmYaml):
         self.devicePath = device_path
 
 
-class NodeCondition(HelmYaml):
-    """
-    :param last_heartbeat_time: Last time we got an update on a given condition.
-    :param last_transition_time: Last time the condition transit from one status to \
-        another.
-    :param message: Human readable message indicating details about last transition.
-    :param reason: (brief) reason for the condition's last transition.
-    :param type: Type of node condition.
-    """
-
-    def __init__(
-        self,
-        last_heartbeat_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastHeartbeatTime = last_heartbeat_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
-class DaemonEndpoint(HelmYaml):
-    """
-    :param port: Port number of the given endpoint.
-    """
-
-    def __init__(self, port: int):
-        self.Port = port
-
-
-class NodeDaemonEndpoints(HelmYaml):
-    """
-    :param kubelet_endpoint: Endpoint on which Kubelet is listening.
-    """
-
-    def __init__(self, kubelet_endpoint: DaemonEndpoint):
-        self.kubeletEndpoint = kubelet_endpoint
-
-
 class NodeConfigSource(HelmYaml):
     """
     :param config_map: ConfigMap is a reference to a Node's ConfigMap
@@ -3651,76 +3612,6 @@ class NodeConfigSource(HelmYaml):
 
     def __init__(self, config_map: ConfigMapNodeConfigSource):
         self.configMap = config_map
-
-
-class ContainerImage(HelmYaml):
-    """
-    :param names: Names by which this image is known. e.g. \
-        ["k8s.gcr.io/hyperkube:v1.0.7", \
-        "dockerhub.io/google_containers/hyperkube:v1.0.7"]
-    :param size_bytes: The size of the image in bytes.
-    """
-
-    def __init__(self, names: List[str], size_bytes: int):
-        self.names = names
-        self.sizeBytes = size_bytes
-
-
-class NodeAddress(HelmYaml):
-    """
-    :param address: The node address.
-    :param type: Node address type, one of Hostname, ExternalIP or InternalIP.
-    """
-
-    def __init__(self, address: str, type: str):
-        self.address = address
-        self.type = type
-
-
-class NodeSystemInfo(HelmYaml):
-    """
-    :param architecture: The Architecture reported by the node
-    :param boot_id: Boot ID reported by the node.
-    :param container_runtime_version: ContainerRuntime Version reported by the node \
-        through runtime remote API (e.g. docker://1.5.0).
-    :param kernel_version: Kernel Version reported by the node from 'uname -r' (e.g. \
-        3.16.0-0.bpo.4-amd64).
-    :param kube_proxy_version: KubeProxy Version reported by the node.
-    :param kubelet_version: Kubelet Version reported by the node.
-    :param machine_id: MachineID reported by the node. For unique machine \
-        identification in the cluster this field is preferred. Learn more from man(5) \
-        machine-id: http://man7.org/linux/man-pages/man5/machine-id.5.html
-    :param operating_system: The Operating System reported by the node
-    :param os_image: OS Image reported by the node from /etc/os-release (e.g. Debian \
-        GNU/Linux 7 (wheezy)).
-    :param system_uuid: SystemUUID reported by the node. For unique machine \
-        identification MachineID is preferred. This field is specific to Red Hat hosts \
-        https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/getting-system-uuid.html  # noqa
-    """
-
-    def __init__(
-        self,
-        architecture: str,
-        boot_id: str,
-        container_runtime_version: str,
-        kernel_version: str,
-        kube_proxy_version: str,
-        kubelet_version: str,
-        machine_id: str,
-        operating_system: str,
-        os_image: str,
-        system_uuid: str,
-    ):
-        self.architecture = architecture
-        self.bootID = boot_id
-        self.containerRuntimeVersion = container_runtime_version
-        self.kernelVersion = kernel_version
-        self.kubeProxyVersion = kube_proxy_version
-        self.kubeletVersion = kubelet_version
-        self.machineID = machine_id
-        self.operatingSystem = operating_system
-        self.osImage = os_image
-        self.systemUUID = system_uuid
 
 
 class NodeSpec(HelmYaml):
@@ -3813,109 +3704,6 @@ class LimitRange(KubernetesBaseObject):
         self.spec = spec
 
 
-class NamespaceCondition(HelmYaml):
-    """
-    :param last_transition_time: None
-    :param message: None
-    :param reason: None
-    :param type: Type of namespace controller condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
-class ContainerStateWaiting(HelmYaml):
-    """
-    :param message: Message regarding why the container is not yet running.
-    :param reason: (brief) reason the container is not yet running.
-    """
-
-    def __init__(self, message: str, reason: str):
-        self.message = message
-        self.reason = reason
-
-
-class ReplicationControllerCondition(HelmYaml):
-    """
-    :param last_transition_time: The last time the condition transitioned from one \
-        status to another.
-    :param message: A human readable message indicating details about the transition.
-    :param reason: The reason for the condition's last transition.
-    :param type: Type of replication controller condition.
-    """
-
-    def __init__(
-        self, last_transition_time: time, message: str, reason: str, type: str
-    ):
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
-        self.type = type
-
-
-class ContainerStateRunning(HelmYaml):
-    """
-    :param started_at: Time at which the container was last (re-)started
-    """
-
-    def __init__(self, started_at: time):
-        self.startedAt = started_at
-
-
-class ContainerStateTerminated(HelmYaml):
-    """
-    :param container_id: Container's ID in the format 'docker://<container_id>'
-    :param exit_code: Exit status from the last termination of the container
-    :param finished_at: Time at which the container last terminated
-    :param message: Message regarding the last termination of the container
-    :param reason: (brief) reason from the last termination of the container
-    :param signal: Signal from the last termination of the container
-    :param started_at: Time at which previous execution of the container started
-    """
-
-    def __init__(
-        self,
-        container_id: str,
-        exit_code: int,
-        finished_at: time,
-        message: str,
-        reason: str,
-        signal: int,
-        started_at: time,
-    ):
-        self.containerID = container_id
-        self.exitCode = exit_code
-        self.finishedAt = finished_at
-        self.message = message
-        self.reason = reason
-        self.signal = signal
-        self.startedAt = started_at
-
-
-class ContainerState(HelmYaml):
-    """
-    :param running: Details about a running container
-    :param terminated: Details about a terminated container
-    :param waiting: Details about a waiting container
-    """
-
-    def __init__(
-        self,
-        running: ContainerStateRunning,
-        terminated: ContainerStateTerminated,
-        waiting: ContainerStateWaiting,
-    ):
-        self.running = running
-        self.terminated = terminated
-        self.waiting = waiting
-
-
 class NamespaceSpec(HelmYaml):
     """
     :param finalizers: Finalizers is an opaque list of values that must be empty to \
@@ -3958,9 +3746,14 @@ class EventSeries(HelmYaml):
         for 1.18
     """
 
-    def __init__(self, count: int, last_observed_time: time, state: str):
+    def __init__(
+        self,
+        count: Optional[int] = None,
+        last_observed_time: Optional[datetime] = None,
+        state: Optional[str] = None,
+    ):
         self.count = count
-        self.lastObservedTime = last_observed_time
+        self.lastObservedTime = self._get_kube_date_string(last_observed_time)
         self.state = state
 
 
@@ -4001,9 +3794,9 @@ class Event(KubernetesBaseObject):
         involved_object: ObjectReference,
         action: Optional[str] = None,
         count: Optional[int] = None,
-        event_time: Optional[time] = None,
-        first_timestamp: Optional[time] = None,
-        last_timestamp: Optional[time] = None,
+        event_time: Optional[datetime] = None,
+        first_timestamp: Optional[datetime] = None,
+        last_timestamp: Optional[datetime] = None,
         message: Optional[str] = None,
         reason: Optional[str] = None,
         related: Optional[ObjectReference] = None,
@@ -4019,9 +3812,9 @@ class Event(KubernetesBaseObject):
         self.involvedObject = involved_object
         self.action = action
         self.count = count
-        self.eventTime = event_time
-        self.firstTimestamp = first_timestamp
-        self.lastTimestamp = last_timestamp
+        self.eventTime = self._get_kube_date_string(event_time)
+        self.firstTimestamp = self._get_kube_date_string(first_timestamp)
+        self.lastTimestamp = self._get_kube_date_string(last_timestamp)
         self.message = message
         self.reason = reason
         self.related = related
@@ -4029,42 +3822,6 @@ class Event(KubernetesBaseObject):
         self.reportingInstance = reporting_instance
         self.series = series
         self.source = source
-        self.type = type
-
-
-class PodIP(HelmYaml):
-    """
-    :param ip: ip is an IP address (IPv4 or IPv6) assigned to the pod
-    """
-
-    def __init__(self, ip: str):
-        self.ip = ip
-
-
-class PodCondition(HelmYaml):
-    """
-    :param last_probe_time: Last time we probed the condition.
-    :param last_transition_time: Last time the condition transitioned from one status \
-        to another.
-    :param message: Human-readable message indicating details about last transition.
-    :param reason: Unique, one-word, CamelCase reason for the condition's last \
-        transition.
-    :param type: Type is the type of the condition. More info: \
-        https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions  # noqa
-    """
-
-    def __init__(
-        self,
-        last_probe_time: time,
-        last_transition_time: time,
-        message: str,
-        reason: str,
-        type: str,
-    ):
-        self.lastProbeTime = last_probe_time
-        self.lastTransitionTime = last_transition_time
-        self.message = message
-        self.reason = reason
         self.type = type
 
 

@@ -224,7 +224,7 @@ class LabelSelectorRequirement(HelmYaml):
         merge patch.
     """
 
-    def __init__(self, key: str, operator: str, values: List[str]):
+    def __init__(self, key: str, operator: str, values: Optional[List[str]] = None):
         self.key = key
         self.operator = operator
         self.values = values
@@ -242,7 +242,7 @@ class LabelSelector(HelmYaml):
 
     def __init__(
         self,
-        match_labels: dict,
+        match_labels: Optional[dict] = None,
         match_expressions: Optional[List[LabelSelectorRequirement]] = None,
     ):
         self.matchLabels = match_labels

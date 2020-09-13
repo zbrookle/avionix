@@ -2191,21 +2191,21 @@ class Toleration(HelmYaml):
 
 class PodAffinityTerm(HelmYaml):
     """
-    :param label_selector: A label query over a set of resources, in this case pods.
-    :param namespaces: namespaces specifies which namespaces the labelSelector applies \
-        to (matches against); null or empty list means "this pod's namespace"
     :param topology_key: This pod should be co-located (affinity) or not co-located \
         (anti-affinity) with the pods matching the labelSelector in the specified \
         namespaces, where co-located is defined as running on a node whose value of \
         the label with key topologyKey matches that of any node on which any of the \
         selected pods is running. Empty topologyKey is not allowed.
+    :param label_selector: A label query over a set of resources, in this case pods.
+    :param namespaces: namespaces specifies which namespaces the labelSelector applies \
+        to (matches against); null or empty list means "this pod's namespace"
     """
 
     def __init__(
         self,
+        topology_key: str,
         label_selector: Optional[LabelSelector] = None,
         namespaces: Optional[List[str]] = None,
-        topology_key: Optional[str] = None,
     ):
         self.labelSelector = label_selector
         self.namespaces = namespaces
@@ -2221,9 +2221,7 @@ class WeightedPodAffinityTerm(HelmYaml):
     """
 
     def __init__(
-        self,
-        pod_affinity_term: Optional[PodAffinityTerm] = None,
-        weight: Optional[int] = None,
+        self, pod_affinity_term: PodAffinityTerm, weight: Optional[int] = None,
     ):
         self.podAffinityTerm = pod_affinity_term
         self.weight = weight
@@ -2320,10 +2318,7 @@ class NodeSelectorRequirement(HelmYaml):
     """
 
     def __init__(
-        self,
-        key: Optional[str] = None,
-        operator: Optional[str] = None,
-        values: Optional[List[str]] = None,
+        self, key: str, operator: str, values: Optional[List[str]] = None,
     ):
         self.key = key
         self.operator = operator
@@ -2353,9 +2348,7 @@ class PreferredSchedulingTerm(HelmYaml):
     """
 
     def __init__(
-        self,
-        preference: Optional[NodeSelectorTerm] = None,
-        weight: Optional[int] = None,
+        self, preference: NodeSelectorTerm, weight: int,
     ):
         self.preference = preference
         self.weight = weight

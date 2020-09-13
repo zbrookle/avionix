@@ -30,6 +30,7 @@ from avionix.kube.core import (
     HTTPGetAction,
     HTTPHeader,
     KeyToPath,
+    LabelSelector,
     Lifecycle,
     LimitRange,
     LimitRangeItem,
@@ -86,6 +87,7 @@ from avionix.kube.core import (
     WeightedPodAffinityTerm,
     WindowsSecurityContextOptions,
 )
+from avionix.kube.meta import LabelSelectorRequirement
 from avionix.kube.reference import ObjectReference
 from avionix.testing import kubectl_get
 from avionix.testing.installation_context import ChartInstallationContext
@@ -689,59 +691,17 @@ def test_projected_volumes(chart_info, volume: Volume):
         (
             get_pod_with_options(
                 affinity=Affinity(
-                    PodAffinity(
-                        [
-                            WeightedPodAffinityTerm(
-                                PodAffinityTerm(namespaces=["default"])
-                            ),
-                            WeightedPodAffinityTerm(PodAffinityTerm(topology_key="T")),
-                            WeightedPodAffinityTerm(weight=2),
-                        ],
-                    ),
-                )
-            ),
-            None,
-        ),
-        (
-            get_pod_with_options(
-                affinity=Affinity(
-                    PodAffinity(
-                        required_during_scheduling_ignored_during_execution=[
-                            PodAffinityTerm(topology_key="t")
-                        ]
-                    ),
-                )
-            ),
-            None,
-        ),
-        (
-            get_pod_with_options(
-                affinity=Affinity(
-                    pod_anti_affinity=PodAntiAffinity(
-                        [WeightedPodAffinityTerm(weight=2)],
-                    ),
-                )
-            ),
-            None,
-        ),
-        (
-            get_pod_with_options(
-                affinity=Affinity(
-                    pod_anti_affinity=PodAntiAffinity(
-                        required_during_scheduling_ignored_during_execution=[
-                            PodAffinityTerm(topology_key="t")
-                        ],
-                    ),
-                )
-            ),
-            None,
-        ),
-        (
-            get_pod_with_options(
-                affinity=Affinity(
                     node_affinity=NodeAffinity(
                         required_during_scheduling_ignored_during_execution=NodeSelector(
-                            [NodeSelectorTerm([NodeSelectorRequirement("test")])]
+                            [
+                                NodeSelectorTerm(
+                                    match_expressions=[
+                                        NodeSelectorRequirement(
+                                            "kubernetes.io/os", "Exists"
+                                        )
+                                    ]
+                                )
+                            ]
                         )
                     )
                 )
@@ -755,20 +715,92 @@ def test_projected_volumes(chart_info, volume: Volume):
                         [
                             PreferredSchedulingTerm(
                                 NodeSelectorTerm(
-                                    [
-                                        NodeSelectorRequirement("test"),
-                                        NodeSelectorRequirement(operator="Equal"),
+                                    match_fields=[
+                                        NodeSelectorRequirement(
+                                            "metadata.name", "In", ["minikube"]
+                                        ),
                                     ]
                                 ),
+                                weight=2,
                             ),
                             PreferredSchedulingTerm(
                                 NodeSelectorTerm(
-                                    match_expressions=[NodeSelectorRequirement("test")],
+                                    match_expressions=[
+                                        NodeSelectorRequirement("test", "Exists")
+                                    ],
                                 ),
+                                weight=1,
                             ),
-                            PreferredSchedulingTerm(weight=2),
                         ],
                     )
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    PodAffinity(
+                        [
+                            WeightedPodAffinityTerm(
+                                PodAffinityTerm(
+                                    "minikube.k8s.io/name", namespaces=["default"],
+                                ),
+                                weight=10,
+                            ),
+                            WeightedPodAffinityTerm(
+                                PodAffinityTerm(topology_key="minikube.k8s.io/name"),
+                                weight=3,
+                            ),
+                        ],
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    PodAffinity(
+                        required_during_scheduling_ignored_during_execution=[
+                            PodAffinityTerm(
+                                "kubernetes.io/arch",
+                                LabelSelector(
+                                    match_expressions=[
+                                        LabelSelectorRequirement(
+                                            "app.kubernetes.io/managed-by", "Exists",
+                                        )
+                                    ],
+                                ),
+                            ),
+                        ]
+                    ),
+                )
+            ),
+            [get_pod_with_options(name="affinity-pod")],
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    pod_anti_affinity=PodAntiAffinity(
+                        [
+                            WeightedPodAffinityTerm(
+                                PodAffinityTerm("T", namespaces=["default"]), weight=2
+                            )
+                        ],
+                    ),
+                )
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                affinity=Affinity(
+                    pod_anti_affinity=PodAntiAffinity(
+                        required_during_scheduling_ignored_during_execution=[
+                            PodAffinityTerm(topology_key="t")
+                        ],
+                    ),
                 )
             ),
             None,
@@ -780,8 +812,11 @@ def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
         other_resources = []
     builder = ChartBuilder(chart_info, [pod] + other_resources)
     with ChartInstallationContext(builder):
-        pod_info = kubectl_get("pods")
-        assert pod_info["NAME"][0] == "test-pod"
+        pod_info = DataFrame(kubectl_get("pods"))
+        pod_info = pod_info[pod_info["NAME"] == pod.metadata.name].reset_index(
+            drop=True
+        )
+        assert pod_info["NAME"][0] == pod.metadata.name
         assert pod_info["READY"][0] == "1/1"
         assert pod_info["STATUS"][0] == "Running"
 

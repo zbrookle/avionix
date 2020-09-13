@@ -83,6 +83,7 @@ def get_pod_with_options(
     dns_config: Optional[PodDNSConfig] = None,
     ephemeral: bool = False,
     affinity: Optional[Affinity] = None,
+    name: str = "test-pod",
 ):
     container = get_test_container(0, environment_var, ephemeral)
     if volume_mount is not None:
@@ -98,7 +99,7 @@ def get_pod_with_options(
     container.lifecycle = lifecycle
     container.envFrom = env_from
     return Pod(
-        ObjectMeta(name="test-pod"),
+        ObjectMeta(name=name),
         PodSpec(
             [container],
             volumes=[volume],
@@ -106,5 +107,6 @@ def get_pod_with_options(
             host_aliases=[host_alias],
             topology_spread_constraints=[topology_spread],
             dns_config=dns_config,
+            affinity=affinity,
         ),
     )

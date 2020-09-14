@@ -61,6 +61,7 @@ jobs:
       run: |
         ci/code_checks.sh doctests
         pip install sphinx
+        pip install sphinx_rtd_theme
         pip install -r docs/requirements.txt
         cd docs
         make html

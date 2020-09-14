@@ -2841,21 +2841,6 @@ class ServiceAccount(KubernetesBaseObject):
         self.secrets = secrets
 
 
-class ComponentCondition(HelmYaml):
-    """
-    :param error: Condition error code for a component. For example, a health check \
-        error code.
-    :param message: Message about the condition for a component. For example, \
-        information about a health check.
-    :param type: Type of condition for a component. Valid value: "Healthy"
-    """
-
-    def __init__(self, error: str, message: str, type: str):
-        self.error = error
-        self.message = message
-        self.type = type
-
-
 class TypedLocalObjectReference(KubernetesBaseObject):
     """
     :param name: Name is the name of resource being referenced

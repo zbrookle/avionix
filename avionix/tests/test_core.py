@@ -308,6 +308,29 @@ def test_node(chart_info, node: Node):
 modes_expected_value = "RWX"
 
 
+@pytest.fixture
+def persistent_volume_spec():
+    """
+    A generic persistent volume spec
+    """
+    return PersistentVolumeSpec(
+        ["ReadWriteMany"],
+        capacity={"storage": 1},
+        host_path=HostPathVolumeSource("/home/test/tmp"),
+        storage_class_name="standard",
+    )
+
+
+@pytest.fixture
+def persistent_volume(persistent_volume_spec):
+    """
+    A generic persistent volume
+    """
+    return PersistentVolume(
+        ObjectMeta(name="test-persistent-volume"), persistent_volume_spec,
+    )
+
+
 @pytest.mark.parametrize(
     "persistent_volume_spec",
     [
@@ -529,15 +552,17 @@ def test_create_binding(chart_info: ChartInfo, binding: Binding, pod: Pod):
 
 
 @pytest.fixture
-def persistent_volume_claim(persistent_volume_spec):
+def persistent_volume_claim(persistent_volume):
+    """
+    A generic persistent volume claim
+    """
     return PersistentVolumeClaim(
         ObjectMeta(name="test-pv-claim"),
         PersistentVolumeClaimSpec(
-            persistent_volume_spec.spec.accessModes,
+            persistent_volume.spec.accessModes,
             resources=ResourceRequirements(
-                requests={"storage": persistent_volume_spec.spec.capacity["storage"]}
+                requests={"storage": persistent_volume.spec.capacity["storage"]}
             ),
-            # volume_mode="Block"
         ),
     )
 
@@ -550,12 +575,12 @@ def persistent_volume_claim(persistent_volume_spec):
     ],
 )
 def test_persistent_volume_on_pod(
-    chart_info, persistent_volume_spec, persistent_volume_claim, mounts_or_devices: dict
+    chart_info, persistent_volume, persistent_volume_claim, mounts_or_devices: dict
 ):
     builder = ChartBuilder(
         chart_info,
         [
-            persistent_volume_spec,
+            persistent_volume,
             get_pod_with_options(
                 Volume(
                     "test-volume",

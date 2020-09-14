@@ -7,3 +7,4 @@ API Reference
 
    kubernetes/index
    chart
+   values

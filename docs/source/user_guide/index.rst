@@ -7,3 +7,4 @@ User Guide
    inheritance
    warnings
    using_external_helm_charts
+   using_values_yaml

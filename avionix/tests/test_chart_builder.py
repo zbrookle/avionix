@@ -57,18 +57,8 @@ def test_chart_installation(config_map):
         assert config_maps["DATA"][0] == "1"
 
 
-def test_chart_w_dependencies(dependency):
-    builder = ChartBuilder(
-        ChartInfo(
-            api_version="3.2.4",
-            name="test",
-            version="0.1.0",
-            app_version="v1",
-            dependencies=[dependency],
-        ),
-        [],
-        keep_chart=True,
-    )
+def test_chart_w_dependencies(dependency, dependency_chart_info):
+    builder = ChartBuilder(dependency_chart_info, [])
     with ChartInstallationContext(builder, timeout=60):
         # Check helm release
         helm_installation = get_helm_installations()

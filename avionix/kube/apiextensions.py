@@ -162,16 +162,17 @@ class JSONSchemaProps(HelmYaml):
         items.
     :param x_kubernetes_list_type: x-kubernetes-list-type annotates an array to further \
         describe its topology. This extension must only be used on lists and may have \
-        3 possible values:  1) `atomic`: the list is treated as a single entity, like \
-        a scalar.      Atomic lists will be entirely replaced when updated. This \
-        extension      may be used on any type of list (struct, scalar, ...). 2) \
-        `set`:      Sets are lists that must not have multiple items with the same \
-        value. Each      value must be a scalar, an object with x-kubernetes-map-type \
-        `atomic` or an      array with x-kubernetes-list-type `atomic`. 3) `map`:      \
-        These lists are like maps in that their elements have a non-index key      \
-        used to identify them. Order is preserved upon merge. The map tag      must \
-        only be used on a list with elements of type object. Defaults to atomic for \
-        arrays.
+        3 possible values:
+            1) `atomic`: the list is treated as a single entity, like a scalar.
+            Atomic lists will be entirely replaced when updated. This extension
+            may be used on any type of list (struct, scalar, ...).
+            2) `set`: Sets are lists that must not have multiple items with the same \
+            value. Each value must be a scalar, an object with x-kubernetes-map-type \
+            `atomic` or an array with x-kubernetes-list-type `atomic`.
+            3) `map`: These lists are like maps in that their elements have a non-index
+            key used to identify them. Order is preserved upon merge. The map tag must \
+            only be used on a list with elements of type object. Defaults to atomic
+            for arrays.
     :param x_kubernetes_map_type: x-kubernetes-map-type annotates an object to further \
         describe its topology. This extension must only be used when type is object \
         and may have 2 possible values:  1) `granular`:      These maps are actual \
@@ -434,9 +435,10 @@ class CustomResourceConversion(HelmYaml):
     :param strategy: strategy specifies how custom resources are converted between \
         versions. Allowed values are:
             - `None`: The converter only change the apiVersion and would not touch any
-            other field in the custom resource.
+                other field in the custom resource.
             - `Webhook`: API Server will call to an external webhook to do the
-            conversion.
+                conversion.
+
         Additional information is needed for this option. This requires \
         spec.preserveUnknownFields to be false, and spec.conversion.webhook to be set.
     """

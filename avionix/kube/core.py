@@ -1000,10 +1000,11 @@ class TopologySpreadConstraint(HelmYaml):
         doesn't satisfy the spread constraint.
             - DoNotSchedule (default) tells the scheduler not to schedule it
             - ScheduleAnyway tells the scheduler to still schedule it It's considered as
-             "Unsatisfiable" if and only if placing incoming pod on any topology
-             violates "MaxSkew". For example, in a 3-zone cluster, MaxSkew is set to 1,
-             and pods with the same labelSelector spread as
-             3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   |
+                "Unsatisfiable" if and only if placing incoming pod on any topology
+                 violates "MaxSkew". For example, in a 3-zone cluster, MaxSkew is set to
+                 1, and pods with the same labelSelector spread as
+                 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   |
+
          If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be
          scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on
          zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be
@@ -2839,21 +2840,6 @@ class ServiceAccount(KubernetesBaseObject):
         self.automountServiceAccountToken = automount_service_account_token
         self.imagePullSecrets = image_pull_secrets
         self.secrets = secrets
-
-
-class ComponentCondition(HelmYaml):
-    """
-    :param error: Condition error code for a component. For example, a health check \
-        error code.
-    :param message: Message about the condition for a component. For example, \
-        information about a health check.
-    :param type: Type of condition for a component. Valid value: "Healthy"
-    """
-
-    def __init__(self, error: str, message: str, type: str):
-        self.error = error
-        self.message = message
-        self.type = type
 
 
 class TypedLocalObjectReference(KubernetesBaseObject):

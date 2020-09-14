@@ -60,6 +60,11 @@ jobs:
       shell: bash -l {0}
       run: |
         ci/code_checks.sh doctests
+        pip install sphinx
+        pip install sphinx_rtd_theme
+        pip install -r docs/requirements.txt
+        cd docs
+        make html
       if: always()
 
     - name: Docstring validation

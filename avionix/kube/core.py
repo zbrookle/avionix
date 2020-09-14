@@ -1000,10 +1000,11 @@ class TopologySpreadConstraint(HelmYaml):
         doesn't satisfy the spread constraint.
             - DoNotSchedule (default) tells the scheduler not to schedule it
             - ScheduleAnyway tells the scheduler to still schedule it It's considered as
-             "Unsatisfiable" if and only if placing incoming pod on any topology
-             violates "MaxSkew". For example, in a 3-zone cluster, MaxSkew is set to 1,
-             and pods with the same labelSelector spread as
-             3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   |
+                "Unsatisfiable" if and only if placing incoming pod on any topology
+                 violates "MaxSkew". For example, in a 3-zone cluster, MaxSkew is set to
+                 1, and pods with the same labelSelector spread as
+                 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   |
+
          If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be
          scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on
          zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be

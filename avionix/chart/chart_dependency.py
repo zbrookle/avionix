@@ -1,7 +1,5 @@
 from typing import Optional
 
-from yaml import dump
-
 from avionix._process_utils import custom_check_output
 from avionix.kube.base_objects import HelmYaml
 
@@ -35,9 +33,7 @@ class ChartDependency(HelmYaml):
         self.__local_repo_name = local_repo_name
 
     def get_values_yaml(self):
-        return dump({self.name: self.__values})
+        return {self.name: self.__values}
 
     def add_repo(self):
-        custom_check_output(
-            f"helm repo add {self.__local_repo_name} " f"{self.repository}"
-        )
+        custom_check_output(f"helm repo add {self.__local_repo_name} {self.repository}")

@@ -5,9 +5,12 @@ import shutil
 import subprocess
 from typing import Dict, List, Optional
 
+import yaml
+
 from avionix._process_utils import custom_check_output
 from avionix.chart.chart_info import ChartInfo
 from avionix.chart.utils import get_helm_installations
+from avionix.chart.values_yaml import Values
 from avionix.errors import (
     ChartNotInstalledError,
     ErrorFactory,
@@ -38,6 +41,7 @@ class ChartBuilder:
         output_directory: Optional[str] = None,
         keep_chart: bool = False,
         namespace: Optional[str] = None,
+        values: Optional[Values] = None,
     ):
         self.chart_info = chart_info
         self.kubernetes_objects = kubernetes_objects
@@ -45,6 +49,7 @@ class ChartBuilder:
         self.__templates_directory = self.chart_folder_path / "templates"
         self.__chart_yaml = self.chart_folder_path / "Chart.yaml"
         self.__keep_chart = keep_chart
+        self.__values = values
         self.namespace = namespace
         if output_directory:
             self.__templates_directory = Path(output_directory) / str(
@@ -62,6 +67,8 @@ class ChartBuilder:
     def generate_chart(self):
         """
         Generates the chart but does not install it on kubernetes
+
+        :returns The template directory
         """
         self.__delete_chart_directory()
         os.makedirs(self.__templates_directory, exist_ok=True)
@@ -84,6 +91,7 @@ class ChartBuilder:
             self.__templates_directory.parent / "values.yaml", "w"
         ) as values_file:
             values_file.write(self.__get_values_yaml())
+        return self.__templates_directory
 
     def add_dependency_repos(self):
         """
@@ -94,10 +102,12 @@ class ChartBuilder:
             dependency.add_repo()
 
     def __get_values_yaml(self):
-        values_text = ""
+        values = {}
         for dependency in self.chart_info.dependencies:
-            values_text += dependency.get_values_yaml() + "\n"
-        return values_text
+            values.update(dependency.get_values_yaml())
+        if self.__values:
+            values.update(self.__values.values)
+        return yaml.dump(values)
 
     @staticmethod
     def __parse_options(options: Optional[Dict[str, Optional[str]]] = None):

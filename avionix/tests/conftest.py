@@ -84,5 +84,16 @@ def dependency():
 
 
 @pytest.fixture
+def dependency_chart_info(dependency):
+    return ChartInfo(
+        api_version="3.2.4",
+        name="test",
+        version="0.1.0",
+        app_version="v1",
+        dependencies=[dependency],
+    )
+
+
+@pytest.fixture
 def access_modes():
     return ["ReadWriteMany"]

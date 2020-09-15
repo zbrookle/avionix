@@ -1,3 +1,7 @@
+"""
+Classes for token based authentication
+"""
+
 from typing import List, Optional
 
 from avionix.kube.base_objects import Authentication

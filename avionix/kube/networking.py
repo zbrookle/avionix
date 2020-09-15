@@ -1,3 +1,7 @@
+"""
+Classes related to networking (NetworkPolicy and IngressClass)
+"""
+
 from typing import List, Optional
 
 from avionix.kube.base_objects import Networking

@@ -1,5 +1,5 @@
 """
-For the time being this will not be implemented as it seems there is no helm support
+For the time being this will not be implemented as there is no helm support
 """
 # from typing import List, Optional
 #

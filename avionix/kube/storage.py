@@ -1,3 +1,7 @@
+"""
+Classes related to management of storage resources
+"""
+
 from typing import List, Optional
 
 from avionix.kube.base_objects import Storage

@@ -1,3 +1,7 @@
+"""
+Classes related to scaling Kubernetes pods
+"""
+
 from typing import Optional
 
 from avionix.kube.base_objects import Autoscaling

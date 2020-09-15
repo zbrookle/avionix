@@ -1,3 +1,7 @@
+"""
+Various Endpoint related classes
+"""
+
 from typing import List, Optional
 
 from avionix.kube.base_objects import Discovery

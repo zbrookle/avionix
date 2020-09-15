@@ -1,3 +1,7 @@
+"""
+Contains classes related to Role Based Access Control
+"""
+
 from typing import List, Optional
 
 from avionix.kube.base_objects import RbacAuthorization

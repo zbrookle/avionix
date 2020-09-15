@@ -1,3 +1,7 @@
+"""
+Classes related to Deployments, StatefulSets, ReplicaSets and DaemonSets
+"""
+
 from typing import List, Optional, Union
 
 from avionix.kube.base_objects import Apps

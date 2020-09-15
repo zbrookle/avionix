@@ -1,3 +1,7 @@
+"""
+Contains Lease class
+"""
+
 from datetime import time
 from typing import Optional
 

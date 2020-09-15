@@ -1,3 +1,7 @@
+"""
+Classes related to metadata
+"""
+
 from datetime import datetime
 from typing import List, Optional
 

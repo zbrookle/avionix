@@ -1,3 +1,7 @@
+"""
+Various webhook configurations
+"""
+
 from typing import List, Optional
 
 from avionix.kube.apiextensions import WebhookClientConfig

@@ -1,3 +1,7 @@
+"""
+Contains PriorityClass class
+"""
+
 from typing import Optional
 
 from avionix.kube.base_objects import Scheduling

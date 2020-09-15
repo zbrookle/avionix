@@ -1,3 +1,7 @@
+"""
+Classes related to running and scheduling Kubernetes jobs
+"""
+
 from typing import Optional
 
 from avionix.kube.base_objects import Batch

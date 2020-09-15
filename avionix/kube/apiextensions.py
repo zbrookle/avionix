@@ -1,3 +1,7 @@
+"""
+Classes for creating custom Kubernetes objects
+"""
+
 from typing import List, Optional, Union
 
 from avionix.kube.apiregistration import ServiceReference

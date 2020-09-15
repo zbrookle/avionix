@@ -1,9 +1,9 @@
 from typing import Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Core
 
 
-class ObjectReference(KubernetesBaseObject):
+class ObjectReference(Core):
     """
     :param field_path: If referring to a piece of an object instead of an entire \
         object, this string should contain a valid JSON/Go field access statement, \

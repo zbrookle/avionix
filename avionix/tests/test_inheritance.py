@@ -42,6 +42,7 @@ def test_installing_from_child_class_with_extra_instance_vars(
     builder = ChartBuilder(
         ChartInfo(api_version="3.2.4", name="test", version="0.1.0", app_version="v1"),
         [my_event_object],
+        keep_chart=True,
     )
     with ChartInstallationContext(builder):
         event_info = get_event_info()

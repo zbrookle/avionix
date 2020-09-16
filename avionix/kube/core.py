@@ -5,7 +5,7 @@ Core Kubernetes classes
 from datetime import datetime
 from typing import List, Optional
 
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Core
 from avionix.kube.meta import LabelSelector, ObjectMeta
 from avionix.kube.reference import ObjectReference
 from avionix.yaml.yaml_handling import HelmYaml
@@ -185,7 +185,7 @@ class ResourceQuotaSpec(HelmYaml):
         self.scopes = scopes
 
 
-class ResourceQuota(KubernetesBaseObject):
+class ResourceQuota(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -1469,7 +1469,7 @@ class GlusterfsVolumeSource(HelmYaml):
         self.readOnly = read_only
 
 
-class AzureDiskVolumeSource(KubernetesBaseObject):
+class AzureDiskVolumeSource(Core):
     """
     :param caching_mode: Host Caching mode: None, Read Only, Read Write.
     :param disk_name: The Name of the data disk in the blob storage
@@ -2660,7 +2660,7 @@ class PodTemplateSpec(HelmYaml):
         self.spec = spec
 
 
-class PodTemplate(KubernetesBaseObject):
+class PodTemplate(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -2809,7 +2809,7 @@ class TopologySelectorTerm(HelmYaml):
         self.matchLabelExpressions = match_label_expressions
 
 
-class ServiceAccount(KubernetesBaseObject):
+class ServiceAccount(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -2846,7 +2846,7 @@ class ServiceAccount(KubernetesBaseObject):
         self.secrets = secrets
 
 
-class TypedLocalObjectReference(KubernetesBaseObject):
+class TypedLocalObjectReference(Core):
     """
     :param name: Name is the name of resource being referenced
     :param api_group: APIGroup is the group for the resource being referenced. If \
@@ -2906,7 +2906,7 @@ class PersistentVolumeClaimSpec(HelmYaml):
         self.volumeName = volume_name
 
 
-class PersistentVolumeClaim(KubernetesBaseObject):
+class PersistentVolumeClaim(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -3544,7 +3544,7 @@ class EndpointSubset(HelmYaml):
         self.ports = ports
 
 
-class Endpoints(KubernetesBaseObject):
+class Endpoints(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -3642,7 +3642,7 @@ class NodeSpec(HelmYaml):
         self.unschedulable = unschedulable
 
 
-class Node(KubernetesBaseObject):
+class Node(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -3671,7 +3671,7 @@ class LimitRangeSpec(HelmYaml):
         self.limits = limits
 
 
-class LimitRange(KubernetesBaseObject):
+class LimitRange(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -3705,7 +3705,7 @@ class NamespaceSpec(HelmYaml):
         self.finalizers = finalizers
 
 
-class Namespace(KubernetesBaseObject):
+class Namespace(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -3747,7 +3747,7 @@ class EventSeries(HelmYaml):
         self.state = state
 
 
-class Event(KubernetesBaseObject):
+class Event(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -3993,7 +3993,7 @@ class ServiceSpec(HelmYaml):
         self.type = type
 
 
-class Service(KubernetesBaseObject):
+class Service(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -4013,7 +4013,7 @@ class Service(KubernetesBaseObject):
         self.spec = spec
 
 
-class ConfigMap(KubernetesBaseObject):
+class ConfigMap(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -4051,7 +4051,7 @@ class ConfigMap(KubernetesBaseObject):
         self.immutable = immutable
 
 
-class Binding(KubernetesBaseObject):
+class Binding(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -4107,7 +4107,7 @@ class ReplicationControllerSpec(HelmYaml):
         self.replicas = replicas
 
 
-class ReplicationController(KubernetesBaseObject):
+class ReplicationController(Core):
     """
     :param metadata: If the Labels of a ReplicationController are empty, they are \
         defaulted to be the same as the Pod(s) that the replication controller \
@@ -4133,7 +4133,7 @@ class ReplicationController(KubernetesBaseObject):
         self.spec = spec
 
 
-class Pod(KubernetesBaseObject):
+class Pod(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -4153,7 +4153,7 @@ class Pod(KubernetesBaseObject):
         self.spec = spec
 
 
-class Secret(KubernetesBaseObject):
+class Secret(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
@@ -4193,7 +4193,7 @@ class Secret(KubernetesBaseObject):
         self.type = type
 
 
-class PersistentVolume(KubernetesBaseObject):
+class PersistentVolume(Core):
     """
     :param metadata: Standard object's metadata. More info: \
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa

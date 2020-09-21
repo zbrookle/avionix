@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import shutil
 
-from avionix import ChartBuilder, ChartDependency, ChartInfo, ChartMaintainer
+from avionix import ChartBuilder, ChartInfo, ChartMaintainer
 from avionix._process_utils import custom_check_output
 from avionix.chart.chart_builder import get_helm_installations
 from avionix.kube.apps import Deployment
@@ -62,7 +62,7 @@ def remove_stable_repo():
     custom_check_output("helm repo remove stable")
 
 
-def test_chart_w_dependencies(dependency, dependency_chart_info):
+def test_chart_w_dependencies(grafana_dependency, dependency_chart_info):
     builder = ChartBuilder(dependency_chart_info, [])
     with ChartInstallationContext(builder, timeout=60):
         # Check helm release
@@ -80,28 +80,16 @@ def test_chart_w_dependencies(dependency, dependency_chart_info):
     remove_stable_repo()
 
 
-def test_chart_w_multiple_dependencies_repo_not_present(dependency):
+def test_chart_w_multiple_dependencies_repo_not_present(
+    grafana_dependency, kube2iam_dependency
+):
     builder = ChartBuilder(
         ChartInfo(
             api_version="3.2.4",
             name="test",
             version="0.1.0",
             app_version="v1",
-            dependencies=[
-                ChartDependency(
-                    "grafana",
-                    "5.5.2",
-                    "https://kubernetes-charts.storage.googleapis.com/",
-                    "stable",
-                    values={"resources": {"requests": {"memory": "100Mi"}}},
-                ),
-                ChartDependency(
-                    "kube2iam",
-                    "2.5.1",
-                    "https://kubernetes-charts.storage.googleapis.com/",
-                    "stable",
-                ),
-            ],
+            dependencies=[grafana_dependency, kube2iam_dependency],
         ),
         [],
     )
@@ -145,14 +133,14 @@ def test_helm_upgrade(chart_info):
         assert helm_installation["NAMESPACE"][0] == "default"
 
 
-def test_helm_upgrade_w_dependencies(chart_info, dependency):
+def test_helm_upgrade_w_dependencies(chart_info, grafana_dependency):
     builder = ChartBuilder(
         ChartInfo(
             api_version="3.2.4",
             name="test",
             version="0.1.0",
             app_version="v1",
-            dependencies=[dependency],
+            dependencies=[grafana_dependency],
         ),
         [],
     )

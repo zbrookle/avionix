@@ -68,6 +68,10 @@ def test_chart_w_dependencies(dependency, dependency_chart_info):
 
         assert builder.is_installed
 
+    # Test reinstalling the same helm chart / repo
+    with ChartInstallationContext(builder, timeout=60):
+        assert builder.is_installed
+
 
 def test_installation_with_value_args(chart_info):
     builder = ChartBuilder(chart_info, [], namespace="test")

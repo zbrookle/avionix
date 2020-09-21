@@ -94,8 +94,16 @@ class ChartBuilder:
             values_file.write(self.__get_values_yaml())
         return self.__templates_directory
 
+    def _helm_list_repos(self) -> List[str]:
+        try:
+            return custom_check_output("helm repo list").split("\n")[1:]
+        except subprocess.CalledProcessError as err:
+            if err.output.decode("utf-8").strip() == "Error: no repositories to show":
+                return []
+            raise err
+
     def get_helm_repos(self):
-        repo_lines = custom_check_output("helm repo list").split("\n")[1:]
+        repo_lines = self._helm_list_repos()
         repo_to_url_dict = {}
         for repo_line in repo_lines:
             repo_line_no_extra_space = repo_line.strip()

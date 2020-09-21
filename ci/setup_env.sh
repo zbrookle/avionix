@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-chmod 400 /home/runner/.kube/config
+chmod 600 /home/runner/.kube/config
 
 # Install helm
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3

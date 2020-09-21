@@ -132,6 +132,7 @@ class ChartBuilder:
             if installed_repos.get(dependency.local_repo_name) == dependency.repository:
                 continue
             dependency.add_repo()
+            installed_repos[dependency.local_repo_name] = dependency.repository
 
     def __get_values_yaml(self):
         values = {}

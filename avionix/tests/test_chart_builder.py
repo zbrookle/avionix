@@ -3,7 +3,8 @@ from pathlib import Path
 import re
 import shutil
 
-from avionix import ChartBuilder, ChartInfo, ChartMaintainer
+from avionix import ChartBuilder, ChartDependency, ChartInfo, ChartMaintainer
+from avionix._process_utils import custom_check_output
 from avionix.chart.chart_builder import get_helm_installations
 from avionix.kube.apps import Deployment
 from avionix.testing import kubectl_get
@@ -57,6 +58,10 @@ def test_chart_installation(config_map):
         assert config_maps["DATA"][0] == "1"
 
 
+def remove_stable_repo():
+    custom_check_output("helm repo remove stable")
+
+
 def test_chart_w_dependencies(dependency, dependency_chart_info):
     builder = ChartBuilder(dependency_chart_info, [])
     with ChartInstallationContext(builder, timeout=60):
@@ -71,6 +76,40 @@ def test_chart_w_dependencies(dependency, dependency_chart_info):
     # Test reinstalling the same helm chart / repo
     with ChartInstallationContext(builder, timeout=60):
         assert builder.is_installed
+
+    remove_stable_repo()
+
+
+def test_chart_w_multiple_dependencies_repo_not_present(dependency):
+    builder = ChartBuilder(
+        ChartInfo(
+            api_version="3.2.4",
+            name="test",
+            version="0.1.0",
+            app_version="v1",
+            dependencies=[
+                ChartDependency(
+                    "grafana",
+                    "5.5.2",
+                    "https://kubernetes-charts.storage.googleapis.com/",
+                    "stable",
+                    values={"resources": {"requests": {"memory": "100Mi"}}},
+                ),
+                ChartDependency(
+                    "kube2iam",
+                    "2.5.1",
+                    "https://kubernetes-charts.storage.googleapis.com/",
+                    "stable",
+                ),
+            ],
+        ),
+        [],
+    )
+    assert "stable" not in builder.get_helm_repos()
+    with ChartInstallationContext(builder):
+        assert builder.is_installed
+
+    remove_stable_repo()
 
 
 def test_installation_with_value_args(chart_info):
@@ -124,6 +163,8 @@ def test_helm_upgrade_w_dependencies(chart_info, dependency):
         assert helm_installation["REVISION"][0] == "2"
         assert helm_installation["STATUS"][0] == "deployed"
         assert helm_installation["NAMESPACE"][0] == "default"
+
+    remove_stable_repo()
 
 
 def test_installing_two_components(

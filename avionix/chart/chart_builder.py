@@ -1,6 +1,7 @@
 from logging import info
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 from typing import Dict, List, Optional
@@ -93,12 +94,33 @@ class ChartBuilder:
             values_file.write(self.__get_values_yaml())
         return self.__templates_directory
 
+    def get_helm_repos(self):
+        repo_lines = custom_check_output("helm repo list").split("\n")[1:]
+        repo_to_url_dict = {}
+        for repo_line in repo_lines:
+            repo_line_no_extra_space = repo_line.strip()
+            match = re.match(
+                "(?P<repo_name>.+?)\s+(?P<url>.+)", repo_line_no_extra_space
+            )
+            if not repo_line_no_extra_space:
+                continue
+            if not match:
+                raise Exception(
+                    f"Could not match repo name pattern from output for "
+                    f"line {repo_line_no_extra_space}"
+                )
+            repo_to_url_dict[match.group("repo_name")] = match.group("url")
+        return repo_to_url_dict
+
     def add_dependency_repos(self):
         """
         Adds repos for all dependencies listed
         """
         info("Adding dependencies...")
+        installed_repos = self.get_helm_repos()
         for dependency in self.chart_info.dependencies:
+            if installed_repos.get(dependency.local_repo_name) == dependency.repository:
+                continue
             dependency.add_repo()
 
     def __get_values_yaml(self):

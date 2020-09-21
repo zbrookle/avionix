@@ -1,4 +1,4 @@
-from logging import info
+from logging import error, info
 import os
 from pathlib import Path
 import re
@@ -98,8 +98,10 @@ class ChartBuilder:
         try:
             return custom_check_output("helm repo list").split("\n")[1:]
         except subprocess.CalledProcessError as err:
-            if err.output.decode("utf-8").strip() == "Error: no repositories to show":
+            error_message = err.output.decode("utf-8").strip()
+            if error_message == "Error: no repositories to show":
                 return []
+            error(error_message)
             raise err
 
     def get_helm_repos(self):

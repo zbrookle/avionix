@@ -32,8 +32,10 @@ class ChartDependency(HelmYaml):
         self.__values = values
         self.__local_repo_name = local_repo_name
 
-    def get_values_yaml(self):
-        return {self.name: self.__values}
+    def get_values_yaml(self) -> dict:
+        if self.__values:
+            return {self.name: self.__values}
+        return {}
 
     def add_repo(self):
         custom_check_output(f"helm repo add {self.__local_repo_name} {self.repository}")

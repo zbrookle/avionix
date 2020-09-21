@@ -73,7 +73,7 @@ def config_map2():
 
 
 @pytest.fixture
-def dependency():
+def grafana_dependency():
     return ChartDependency(
         "grafana",
         "5.5.2",
@@ -84,13 +84,23 @@ def dependency():
 
 
 @pytest.fixture
-def dependency_chart_info(dependency):
+def kube2iam_dependency():
+    return ChartDependency(
+        "kube2iam",
+        "2.5.1",
+        "https://kubernetes-charts.storage.googleapis.com/",
+        "stable",
+    )
+
+
+@pytest.fixture
+def dependency_chart_info(grafana_dependency):
     return ChartInfo(
         api_version="3.2.4",
         name="test",
         version="0.1.0",
         app_version="v1",
-        dependencies=[dependency],
+        dependencies=[grafana_dependency],
     )
 
 

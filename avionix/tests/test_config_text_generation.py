@@ -106,6 +106,7 @@ spec:
         name: test-container-1
         ports:
         - containerPort: 8080
+          name: port
 """
     )
 

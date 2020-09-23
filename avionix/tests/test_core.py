@@ -789,6 +789,15 @@ def test_projected_volumes(chart_info, volume: Volume):
         ),
         (
             get_pod_with_options(
+                name="lifecyle-http",
+                lifecycle=Lifecycle(
+                    post_start=Handler(http_get=HTTPGetAction("/my/path", "port"))
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
                 name="host-alias", host_alias=HostAlias(["test.com"], "129.0.0.0")
             ),
             None,

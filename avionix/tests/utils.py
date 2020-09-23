@@ -40,7 +40,7 @@ def get_test_container(
         name=f"test-container-{number}",
         image="k8s.gcr.io/echoserver:1.4",
         env=[env_var],
-        ports=[ContainerPort(8080)],
+        ports=[ContainerPort(8080, name="port")],
     )
 
 

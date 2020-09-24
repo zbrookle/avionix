@@ -1,2 +1,3 @@
 include versioneer.py
 include avionix/_version.py
+include avionix/py.typed

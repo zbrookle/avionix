@@ -2705,7 +2705,7 @@ class CSIPersistentVolumeSource(HelmYaml):
         volume plugin’s CreateVolume to refer to the volume on all subsequent calls.
         Required.
     :param fs_type: Filesystem type to mount. Must be a filesystem type supported by
-    the host operating system. Ex. "ext4", "xfs", "ntfs".
+        the host operating system. Ex. "ext4", "xfs", "ntfs".
     :param volume_attributes: Attributes of the volume to publish.
     :param controller_expand_secret_ref: ControllerExpandSecretRef is a reference to
         the secret object containing sensitive information to pass to the CSI driver
@@ -3868,7 +3868,7 @@ class ServicePort(HelmYaml):
 class ServiceSpec(HelmYaml):
     """
     :param ports: The list of ports that are exposed by this service. More info:
-        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
+        :kubernetes_service_networking:`service/#virtual-ips-and-service-proxies`
     :param cluster_ip: clusterIP is the IP address of the service and is usually
         assigned randomly by the master. If an address is specified manually and is
         not in use by others, it will be allocated to the service; otherwise, creation
@@ -3877,11 +3877,11 @@ class ServiceSpec(HelmYaml):
         specified for headless services when proxying is not required. Only applies to
         types ClusterIP, NodePort, and LoadBalancer. Ignored if type is ExternalName.
         More info:
-        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
+        :kubernetes_service_networking:`service/#virtual-ips-and-service-proxies`
     :param external_ips: externalIPs is a list of IP addresses for which nodes in the
         cluster will also accept traffic for this service.  These IPs are not managed
-        by Kubernetes.  The user is responsible for ensuring that traffic arrives at a
-        node with this IP.  A common example is external load-balancers that are not
+        by Kubernetes. The user is responsible for ensuring that traffic arrives at a
+        node with this IP. A common example is external load-balancers that are not
         part of the Kubernetes system.
     :param external_name: externalName is the external reference that kubedns or
         equivalent will return as a CNAME record for this service. No proxying will be
@@ -3917,7 +3917,7 @@ class ServiceSpec(HelmYaml):
         this will restrict traffic through the cloud-provider load-balancer will be
         restricted to the specified client IPs. This field will be ignored if the
         cloud-provider does not support the feature." More info:
-        https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/  # noqa
+        :kubernetes_access_application_cluster:`configure-cloud-provider-firewall/`
     :param publish_not_ready_addresses: publishNotReadyAddresses, when set to true,
         indicates that DNS implementations must publish the notReadyAddresses of
         subsets for the Endpoints associated with the Service. The default value is
@@ -3929,11 +3929,11 @@ class ServiceSpec(HelmYaml):
         external process managing its endpoints, which Kubernetes will not modify.
         Only applies to types ClusterIP, NodePort, and LoadBalancer. Ignored if type
         is ExternalName. More info:
-        https://kubernetes.io/docs/concepts/services-networking/service/
+        :kubernetes_service_networking:`service/`
     :param session_affinity: Supports "ClientIP" and "None". Used to maintain session
         affinity. Enable client IP based session affinity. Must be ClientIP or None.
         Defaults to None. More info:
-        https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies  # noqa
+        :kubernetes_service_networking:`service/#virtual-ips-and-service-proxies`
     :param session_affinity_config: sessionAffinityConfig contains the configurations
         of session affinity.
     :param topology_keys: topologyKeys is a preference-order list of topology keys
@@ -3947,7 +3947,7 @@ class ServiceSpec(HelmYaml):
         "*" may be used to mean "any topology". This catch-all value, if used, only
         makes sense as the last value in the list. If this is not specified or empty,
         no topology constraints will be applied.
-    :param typeValid options are ExternalName, ClusterIP, NodePort, and LoadBalancer.
+    :param typeValid: options are ExternalName, ClusterIP, NodePort, and LoadBalancer.
         "ExternalName" maps to the specified externalName. "ClusterIP" allocates a
         cluster-internal IP address for load-balancing to endpoints. Endpoints are
         determined by the selector or if that is not specified, by manual construction
@@ -3957,7 +3957,7 @@ class ServiceSpec(HelmYaml):
         to the clusterIP. "LoadBalancer" builds on NodePort and creates an external
         load-balancer (if supported in the current cloud) which routes to the
         clusterIP. More info:
-        https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types  # noqa
+        :kubernetes_service_networking:`service/#publishing-services-service-types`
     """
 
     def __init__(

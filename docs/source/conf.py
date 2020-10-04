@@ -48,6 +48,7 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",
+    "sphinx.ext.extlinks",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -70,3 +71,15 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
+
+# Add any links that may be too long to add in a docstring
+extlinks = {
+    "kubernetes_service_networking": (
+        "https://kubernetes.io/docs/concepts/services-networking/%s",
+        "https://kubernetes.io/docs/concepts/services-networking/",
+    ),
+    "kubernetes_access_application_cluster": (
+        "https://kubernetes.io/docs/tasks/access-application-cluster/%s",
+        "https://kubernetes.io/docs/tasks/access-application-cluster/",
+    ),
+}

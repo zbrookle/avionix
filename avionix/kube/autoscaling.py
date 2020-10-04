@@ -56,7 +56,7 @@ class HorizontalPodAutoscaler(Autoscaling):
     :param metadata: Standard object metadata. More info:
         :kubernetes_api_conventions:`metadata`
     :param spec: behaviour of autoscaler. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status.  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:

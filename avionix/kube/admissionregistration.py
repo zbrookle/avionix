@@ -183,7 +183,7 @@ class ValidatingWebhook(HelmYaml):
 class ValidatingWebhookConfiguration(AdmissionRegistration):
     """
     :param metadata: Standard object metadata; More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param webhooks: Webhooks is a list of webhooks and the affected resources and
         operations.
     :param api_version: APIVersion defines the versioned schema of this representation
@@ -345,7 +345,7 @@ class MutatingWebhook(HelmYaml):
 class MutatingWebhookConfiguration(AdmissionRegistration):
     """
     :param metadata: Standard object metadata; More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param webhooks: Webhooks is a list of webhooks and the affected resources and
         operations.
     :param api_version: APIVersion defines the versioned schema of this representation

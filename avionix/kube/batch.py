@@ -14,13 +14,13 @@ class JobSpec(HelmYaml):
     """
     :param template: Describes the pod that will be created when executing a job. More
         info:
-        https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
+        :kubernetes_controllers:`jobs-run-to-completion/`
     :param completions: Specifies the desired number of successfully finished pods the
         job should be run with.  Setting to nil means that the success of any pod
         signals the success of all pods, and allows parallelism to have any positive
         value.  Setting to 1 means that parallelism is limited to 1 and the success of
         that pod signals the success of the job. More info:
-        https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
+        :kubernetes_controllers:`jobs-run-to-completion/`
     :param manual_selector: manualSelector controls generation of pod labels and pod
         selectors. Leave `manualSelector` unset unless you are certain what you are
         doing. When false or unset, the system pick labels unique to this job and
@@ -29,13 +29,13 @@ class JobSpec(HelmYaml):
         unique label may cause this and other jobs to not function correctly. 
         However, You may see `manualSelector=true` in jobs that were created with the
         old `extensions/v1beta1` API. More info:
-        https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/#specifying-your-own-pod-selector  # noqa
+        :kubernetes_controllers:`jobs-run-to-completion/#specifying-your-own-pod-selector`
     :param parallelism: Specifies the maximum desired number of pods the job should run
         at any given time. The actual number of pods running in steady state will be
         less than this number when ((.spec.completions - .status.successful) <
         .spec.parallelism), i.e. when the work left to do is less than max
         parallelism. More info:
-        https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/  # noqa
+        :kubernetes_controllers:`jobs-run-to-completion/`
     :param selector: A label query over pods that should match the pod count. Normally,
         the system sets this field for you. More info:
         https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa

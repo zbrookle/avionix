@@ -88,7 +88,7 @@ class PodDisruptionBudget(Policy):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     _non_standard_version = "v1beta1"
@@ -111,7 +111,7 @@ class Eviction(Policy):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     _non_standard_version = "v1beta1"
@@ -364,12 +364,12 @@ class PodSecurityPolicySpec(HelmYaml):
 class PodSecurityPolicy(Policy):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: spec defines the policy enforced.
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     _non_standard_version = "v1beta1"

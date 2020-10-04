@@ -11,7 +11,7 @@ from avionix.kube.meta import ObjectMeta
 class PriorityClass(Scheduling):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param value: The value of this priority class. This is the actual priority that
         pods receive when they have the name of this class in their pod spec.
     :param global_default: globalDefault specifies whether this PriorityClass should be
@@ -29,7 +29,7 @@ class PriorityClass(Scheduling):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(

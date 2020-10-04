@@ -23,7 +23,7 @@ class ObjectReference(Core):
         https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     :param resource_version: Specific resourceVersion to which this reference is made,
         if any. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency  # noqa
+        :kubernetes_api_conventions:`concurrency-control-and-consistency`
     :param uid: UID of the referent. More info:
         https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
     :param api_version: API version of the referent.

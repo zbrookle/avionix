@@ -78,13 +78,13 @@ class JobSpec(HelmYaml):
 class Job(Batch):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Specification of the desired behavior of a job. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -98,10 +98,10 @@ class Job(Batch):
 class JobTemplateSpec(HelmYaml):
     """
     :param spec: Specification of the desired behavior of the job. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param metadata: Standard object's metadata of the jobs created from this template.
         More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     """
 
     def __init__(
@@ -157,14 +157,14 @@ class CronJobSpec(HelmYaml):
 class CronJob(Batch):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Specification of the desired behavior of a cron job, including the
         schedule. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     _non_standard_version = "v1beta1"

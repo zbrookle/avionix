@@ -75,7 +75,7 @@ class CSINodeSpec(HelmYaml):
 class StorageClass(Storage):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param provisioner: Provisioner indicates the type of the provisioner.
     :param allow_volume_expansion: AllowVolumeExpansion shows whether the storage class
         allow volume expand
@@ -98,7 +98,7 @@ class StorageClass(Storage):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -163,13 +163,13 @@ class VolumeAttachmentSpec(HelmYaml):
 class VolumeAttachment(Storage):
     """
     :param metadata: Standard object metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Specification of the desired attach/detach volume behavior. Populated
         by the Kubernetes system.
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -246,7 +246,7 @@ class CSINode(Storage):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -264,12 +264,12 @@ class CSIDriver(Storage):
         the CSI GetPluginName() call for that driver. The driver name must be 63
         characters or less, beginning and ending with an alphanumeric character
         ([a-z0-9A-Z]) with dashes (-), dots (.), and alphanumerics between. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Specification of the CSI Driver.
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(

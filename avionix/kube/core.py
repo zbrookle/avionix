@@ -188,13 +188,13 @@ class ResourceQuotaSpec(HelmYaml):
 class ResourceQuota(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the desired quota.
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -2654,9 +2654,9 @@ class PodSpec(HelmYaml):
 class PodTemplateSpec(HelmYaml):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Specification of the desired behavior of the pod. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     """
 
     def __init__(self, metadata: ObjectMeta, spec: PodSpec):
@@ -2667,14 +2667,14 @@ class PodTemplateSpec(HelmYaml):
 class PodTemplate(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param template: Template defines the pods that will be created from this pod
         template.
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -2816,7 +2816,7 @@ class TopologySelectorTerm(HelmYaml):
 class ServiceAccount(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param automount_service_account_token: AutomountServiceAccountToken indicates
         whether pods running as this service account should have an API token
         automatically mounted. Can be overridden at the pod level.
@@ -2832,7 +2832,7 @@ class ServiceAccount(Core):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -2913,14 +2913,14 @@ class PersistentVolumeClaimSpec(HelmYaml):
 class PersistentVolumeClaim(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the desired characteristics of a volume requested by a
         pod author. More info:
         https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -3551,7 +3551,7 @@ class EndpointSubset(HelmYaml):
 class Endpoints(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param subsets: The set of all endpoints is the union of all subsets. Addresses are
         placed into subsets according to the IPs they share. A single address with
         multiple ports, some of which are ready and some of which are not (because
@@ -3562,7 +3562,7 @@ class Endpoints(Core):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -3649,13 +3649,13 @@ class NodeSpec(HelmYaml):
 class Node(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the behavior of a node.
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -3678,13 +3678,13 @@ class LimitRangeSpec(HelmYaml):
 class LimitRange(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the limits enforced. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -3712,13 +3712,13 @@ class NamespaceSpec(HelmYaml):
 class Namespace(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the behavior of the Namespace. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -3754,7 +3754,7 @@ class EventSeries(HelmYaml):
 class Event(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param involved_object: The object that this event is about.
     :param action: What action was taken/failed regarding to the Regarding object.
     :param count: The number of times this event has occurred.
@@ -3779,7 +3779,7 @@ class Event(Core):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -4000,13 +4000,13 @@ class ServiceSpec(HelmYaml):
 class Service(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the behavior of a service.
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -4020,7 +4020,7 @@ class Service(Core):
 class ConfigMap(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param data: Data contains the configuration data. Each key must consist of
         alphanumeric characters, '-', '_' or '.'. Values with non-UTF-8 byte sequences
         must use the BinaryData field. The keys stored in Data must not overlap with
@@ -4037,7 +4037,7 @@ class ConfigMap(Core):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -4058,12 +4058,12 @@ class ConfigMap(Core):
 class Binding(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param target: The target object that you want to bind to the standard object.
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -4116,14 +4116,14 @@ class ReplicationController(Core):
     :param metadata: If the Labels of a ReplicationController are empty, they are
         defaulted to be the same as the Pod(s) that the replication controller
         manages. Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the specification of the desired behavior of the
         replication controller. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -4140,13 +4140,13 @@ class ReplicationController(Core):
 class Pod(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Specification of the desired behavior of the pod. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -4160,7 +4160,7 @@ class Pod(Core):
 class Secret(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param data: Data contains the secret data. Each key must consist of alphanumeric
         characters, '-', '_' or '.'. The serialized form of the secret data is a
         base64 encoded string, representing the arbitrary (possibly non-string) data
@@ -4177,7 +4177,7 @@ class Secret(Core):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -4200,14 +4200,14 @@ class Secret(Core):
 class PersistentVolume(Core):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines a specification of a persistent volume owned by the
         cluster. Provisioned by an administrator. More info:
         https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes  # noqa
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(

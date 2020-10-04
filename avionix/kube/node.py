@@ -42,7 +42,7 @@ class Scheduling(HelmYaml):
 class RuntimeClass(Node):
     """
     :param metadata: More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param handler: Handler specifies the underlying runtime and configuration that the
         CRI implementation will use to handle pods of this class. The possible values
         are specific to the node & CRI configuration.  It is assumed that all handlers
@@ -62,7 +62,7 @@ class RuntimeClass(Node):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     _non_standard_version = "v1beta1"

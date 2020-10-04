@@ -173,7 +173,7 @@ class ObjectMeta(HelmYaml):
         ServerTimeout indicating a unique name could not be found in the time
         allotted, and the client should retry (optionally after the time indicated in
         the Retry-After header).  Applied only if Name is not specified. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency  # noqa
+        :kubernetes_api_conventions:`idempotency`
     :param labels: Map of string keys and values that can be used to organize and
         categorize (scope and select) objects. May match selectors of replication
         controllers and services. More info:
@@ -392,7 +392,7 @@ class APIGroup(Meta):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -451,7 +451,7 @@ class DeleteOptions(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -486,7 +486,7 @@ class APIVersions(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -503,7 +503,7 @@ class APIVersions(KubernetesBaseObject):
 class Status(KubernetesBaseObject):
     """
     :param metadata: Standard list metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds  # noqa
+        :kubernetes_api_conventions:`types-kinds`
     :param code: Suggested HTTP return code for this status, 0 if not set.
     :param message: A human-readable description of the status of this operation.
     :param reason: A machine-readable description of why this operation is in the
@@ -515,7 +515,7 @@ class Status(KubernetesBaseObject):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(

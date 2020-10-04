@@ -12,8 +12,7 @@ class KubernetesBaseObject(HelmYaml):
     """
     Base object for other kubernetes objects to inherit from
     Required fields come from
-    https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
-    """
+    :kubernetes_working_with_objects:`kubernetes-objects/`"""
 
     _version_prefix = ""
     _base_object_name = "KubernetesBaseObject"
@@ -54,8 +53,7 @@ class Core(KubernetesBaseObject):
     """
     Base object for other kubernetes objects to inherit from
     Required fields come from
-    https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
-    """
+    :kubernetes_working_with_objects:`kubernetes-objects/`"""
 
 
 class Apps(KubernetesBaseObject):

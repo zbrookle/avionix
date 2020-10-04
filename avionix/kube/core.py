@@ -229,7 +229,7 @@ class KeyToPath(HelmYaml):
 class SecretProjection(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param optional: Specify whether the Secret or its key must be defined
     :param items: If unspecified, each key-value pair in the Data field of the
         referenced Secret will be projected into the volume as a file whose name is
@@ -280,7 +280,7 @@ class VolumeDevice(HelmYaml):
 class ConfigMapKeySelector(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param key: The key to select.
     :param optional: Specify whether the ConfigMap or its key must be defined
     """
@@ -294,7 +294,7 @@ class ConfigMapKeySelector(HelmYaml):
 class SecretKeySelector(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param key: The key of the secret to select from.  Must be a valid secret key.
     :param optional: Specify whether the Secret or its key must be defined
     """
@@ -501,7 +501,7 @@ class SecurityContext(HelmYaml):
 class SecretEnvSource(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param optional: Specify whether the Secret must be defined
     """
 
@@ -513,7 +513,7 @@ class SecretEnvSource(HelmYaml):
 class ConfigMapEnvSource(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param optional: Specify whether the ConfigMap must be defined
     """
 
@@ -1208,7 +1208,7 @@ class EphemeralContainer(HelmYaml):
 class LocalObjectReference(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     """
 
     def __init__(self, name: str):
@@ -1676,7 +1676,7 @@ class ServiceAccountTokenProjection(HelmYaml):
 class ConfigMapProjection(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param optional: Specify whether the ConfigMap or its keys must be defined
     :param items: If unspecified, each key-value pair in the Data field of the
         referenced ConfigMap will be projected into the volume as a file whose name is
@@ -1967,7 +1967,7 @@ class NFSVolumeSource(HelmYaml):
 class ConfigMapVolumeSource(HelmYaml):
     """
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param optional: Specify whether the ConfigMap or its keys must be defined
     :param default_mode: Optional: mode bits to use on created files by default. Must
         be a value between 0 and 0777. Defaults to 0644. Directories within the path
@@ -2029,7 +2029,7 @@ class Volume(HelmYaml):
     """
     :param name: Volume's name. Must be a DNS_LABEL and unique within the pod. More
         info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param config_map: ConfigMap represents a configMap that should populate this
         volume
     :param downward_api: DownwardAPI represents downward API about the pod that should
@@ -4088,7 +4088,7 @@ class ReplicationControllerSpec(HelmYaml):
         template. Label keys and values that must match in order to be controlled by
         this replication controller, if empty defaulted to labels on Pod template.
         More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+        :kubernetes_working_with_objects:`labels/#label-selectors`
     :param min_ready_seconds: Minimum number of seconds for which a newly created pod
         should be ready without any of its container crashing, for it to be considered
         available. Defaults to 0 (pod will be considered available as soon as it is

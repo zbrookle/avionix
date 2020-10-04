@@ -129,9 +129,8 @@ class ValidatingWebhook(HelmYaml):
                 ]
             }
 
-        See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
-        for more examples of label selectors. Default to the empty LabelSelector,
-        which matches everything.
+        See :kubernetes_working_with_objects:`labels` for more examples of label
+        selectors. Default to the empty LabelSelector, which matches everything.
     :param object_selector: ObjectSelector decides whether to run the webhook based on
         if the object has matching labels. objectSelector is evaluated against both
         the oldObject and newObject that would be sent to the webhook, and is
@@ -275,9 +274,8 @@ class MutatingWebhook(HelmYaml):
                 ]
             }
 
-        See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
-        for more examples of label selectors.  Default to the empty LabelSelector,
-        which matches everything.
+        See :kubernetes_working_with_objects:`labels/` for more examples of label
+        selectors. Default to the empty LabelSelector, which matches everything.
     :param object_selector: ObjectSelector decides whether to run the webhook based on
         if the object has matching labels. objectSelector is evaluated against both
         the oldObject and newObject that would be sent to the webhook, and is

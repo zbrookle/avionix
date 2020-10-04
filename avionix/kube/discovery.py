@@ -39,15 +39,17 @@ class Endpoint(HelmYaml):
         this endpoint.
     :param topology: topology contains arbitrary topology information associated with
         the endpoint. These key/value pairs must conform with the label format.
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
-        Topology may include a maximum of 16 key/value pairs. This includes, but is
-        not limited to the following well known keys: * kubernetes.io/hostname: the
-        value indicates the hostname of the node   where the endpoint is located. This
-        should match the corresponding   node label. * topology.kubernetes.io/zone:
-        the value indicates the zone where the   endpoint is located. This should
-        match the corresponding node label. * topology.kubernetes.io/region: the value
-        indicates the region where the   endpoint is located. This should match the
-        corresponding node label.
+        :kubernetes_working_with_objects:`labels` Topology may include a maximum of 16
+        key/value pairs. This includes, but is not limited to the following well
+        known keys:
+
+            * kubernetes.io/hostname: the value indicates the hostname of the node \
+            where the endpoint is located. This should match the corresponding node \
+            label.
+            * topology.kubernetes.io/zone: the value indicates the zone where the \
+            endpoint is located. This should match the corresponding node label.
+            * topology.kubernetes.io/region: the value indicates the region where the \
+            endpoint is located. This should match the corresponding node label.
     """
 
     def __init__(

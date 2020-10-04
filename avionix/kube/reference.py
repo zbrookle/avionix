@@ -18,15 +18,15 @@ class ObjectReference(Core):
         (container with index 2 in this pod). This syntax is chosen only to have some
         well-defined way of referencing a part of an object.
     :param name: Name of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names  # noqa
+        :kubernetes_working_with_objects:`names/#names`
     :param namespace: Namespace of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+        :kubernetes_working_with_objects:`namespaces/`
     :param resource_version: Specific resourceVersion to which this reference is made,
         if any. More info:
         :kubernetes_api_conventions:`concurrency-control-and-consistency`
     :param uid: UID of the referent. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
-    :param api_version: API version of the referent.
+        :kubernetes_working_with_objects:`names/#uids`:param api_version: API version of
+        the referent.
     """
 
     def __init__(

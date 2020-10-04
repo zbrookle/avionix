@@ -13,8 +13,7 @@ from avionix.yaml.yaml_handling import HelmYaml
 class JobSpec(HelmYaml):
     """
     :param template: Describes the pod that will be created when executing a job. More
-        info:
-        :kubernetes_controllers:`jobs-run-to-completion/`
+        info: :kubernetes_controllers:`jobs-run-to-completion/`
     :param completions: Specifies the desired number of successfully finished pods the
         job should be run with.  Setting to nil means that the success of any pod
         signals the success of all pods, and allows parallelism to have any positive
@@ -26,7 +25,7 @@ class JobSpec(HelmYaml):
         doing. When false or unset, the system pick labels unique to this job and
         appends those labels to the pod template.  When true, the user is responsible
         for picking unique labels and specifying the selector.  Failure to pick a
-        unique label may cause this and other jobs to not function correctly. 
+        unique label may cause this and other jobs to not function correctly.
         However, You may see `manualSelector=true` in jobs that were created with the
         old `extensions/v1beta1` API. More info:
         :kubernetes_controllers:`jobs-run-to-completion/#specifying-your-own-pod-selector`
@@ -38,7 +37,7 @@ class JobSpec(HelmYaml):
         :kubernetes_controllers:`jobs-run-to-completion/`
     :param selector: A label query over pods that should match the pod count. Normally,
         the system sets this field for you. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+        :kubernetes_working_with_objects:`labels/#label-selectors`
     :param ttl_seconds_after_finished: ttlSecondsAfterFinished limits the lifetime of a
         Job that has finished execution (either Complete or Failed). If this field is
         set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be

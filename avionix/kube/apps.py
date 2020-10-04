@@ -45,7 +45,7 @@ class StatefulSetSpec(HelmYaml):
         StatefulSet.
     :param selector: selector is a label query over pods that should match the replica
         count. It must match the pod template's labels. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+        :kubernetes_working_with_objects:`labels/#label-selectors`
     :param service_name: serviceName is the name of the service that governs this
         StatefulSet. This service must exist before the StatefulSet, and is
         responsible for the network identity of the set. Pods get DNS/hostnames that
@@ -106,7 +106,7 @@ class StatefulSet(Apps):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -123,13 +123,13 @@ class StatefulSet(Apps):
 class ControllerRevision(Apps):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param data: Data is the serialized representation of the state.
     :param revision: Revision indicates the revision of the state represented by Data.
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -219,11 +219,11 @@ class DaemonSetSpec(HelmYaml):
         DaemonSet will create exactly one copy of this pod on every node that matches
         the template's node selector (or on every node if no node selector is
         specified). More info:
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template  # noqa
+        :kubernetes_controllers:`replicationcontroller#pod-template`
     :param selector: A label query over pods that are managed by the daemon set. Must
         match in order to be controlled. It must match the pod template's labels. More
         info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+        :kubernetes_working_with_objects:`labels/#label-selectors`
     :param min_ready_seconds: The minimum number of seconds for which a newly created
         DaemonSet pod should be ready without any of its container crashing, for it to
         be considered available. Defaults to 0 (pod will be considered available as
@@ -253,13 +253,13 @@ class DaemonSetSpec(HelmYaml):
 class DaemonSet(Apps):
     """
     :param metadata: Standard object's metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: The desired behavior of this daemon set. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -277,18 +277,19 @@ class ReplicaSetSpec(HelmYaml):
     """
     :param template: Template is the object that describes the pod that will be created
         if insufficient replicas are detected. More info:
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template  # noqa
+        :kubernetes_controllers:`replicationcontroller#pod-template`
     :param selector: Selector is a label query over pods that should match the replica
         count. Label keys and values that must match in order to be controlled by this
         replica set. It must match the pod template's labels. More info:
-        https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors  # noqa
+        :kubernetes_working_with_objects:`labels/#label-selectors`
     :param min_ready_seconds: Minimum number of seconds for which a newly created pod
         should be ready without any of its container crashing, for it to be considered
         available. Defaults to 0 (pod will be considered available as soon as it is
         ready)
     :param replicas: Replicas is the number of desired replicas. This is a pointer to
-        distinguish between explicit zero and unspecified. Defaults to 1. More info:
-        https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller  # noqa
+        distinguish between explicit zero and unspecified. Defaults to 1.
+        More info:
+        :kubernetes_controllers:`replicationcontroller/#what-is-a-replicationcontroller`
     """
 
     def __init__(
@@ -309,14 +310,14 @@ class ReplicaSet(Apps):
     :param metadata: If the Labels of a ReplicaSet are empty, they are defaulted to be
         the same as the Pod(s) that the ReplicaSet manages. Standard object's
         metadata. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata  # noqa
+        :kubernetes_api_conventions:`metadata`
     :param spec: Spec defines the specification of the desired behavior of the
         ReplicaSet. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status  # noqa
+        :kubernetes_api_conventions:`spec-and-status`
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(
@@ -401,7 +402,7 @@ class Deployment(Apps):
     :param api_version: APIVersion defines the versioned schema of this representation
         of an object. Servers should convert recognized schemas to the latest internal
         value, and may reject unrecognized values. More info:
-        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
+        :kubernetes_api_conventions:`resources`
     """
 
     def __init__(

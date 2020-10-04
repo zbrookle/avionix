@@ -82,4 +82,18 @@ extlinks = {
         "https://kubernetes.io/docs/tasks/access-application-cluster/%s",
         "https://kubernetes.io/docs/tasks/access-application-cluster/",
     ),
+    "kubernetes_controllers": (
+        "https://kubernetes.io/docs/concepts/workloads/controllers/%s",
+        "https://kubernetes.io/docs/concepts/workloads/controllers/",
+    ),
+    "kubernetes_working_with_objects": (
+        "https://kubernetes.io/docs/concepts/overview/working-with-objects/%s",
+        "https://kubernetes.io/docs/concepts/overview/working-with-objects/",
+    ),
+    "kubernetes_api_conventions": (
+        "https://git.k8s.io/community/contributors/devel/sig-architecture/api"
+        "-conventions.md#%s",
+        "https://git.k8s.io/community/contributors/devel/sig-architecture/api"
+        "-conventions.md#",
+    ),
 }

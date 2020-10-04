@@ -17,6 +17,9 @@ from avionix.testing.installation_context import ChartInstallationContext
 @pytest.mark.parametrize(
     "ingress_spec",
     [
+        IngressSpec(
+            "ingress-class", backend=IngressBackend("test-service-string", "service")
+        ),
         IngressSpec("ingress-class", backend=IngressBackend("test-service", 1)),
         IngressSpec(
             rules=[

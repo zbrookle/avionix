@@ -780,9 +780,18 @@ def test_projected_volumes(chart_info, volume: Volume):
         ),
         (
             get_pod_with_options(
-                name="lifecyle-http",
+                name="lifecycle-http-int",
                 lifecycle=Lifecycle(
                     post_start=Handler(http_get=HTTPGetAction("/my/path", 8080))
+                ),
+            ),
+            None,
+        ),
+        (
+            get_pod_with_options(
+                name="lifecycle-http-name",
+                lifecycle=Lifecycle(
+                    post_start=Handler(http_get=HTTPGetAction("/my/path", "port"))
                 ),
             ),
             None,
@@ -964,7 +973,7 @@ def test_projected_volumes(chart_info, volume: Volume):
 def test_pod(chart_info, pod: Pod, other_resources: List[KubernetesBaseObject]):
     if other_resources is None:
         other_resources = []
-    builder = ChartBuilder(chart_info, [pod] + other_resources)
+    builder = ChartBuilder(chart_info, other_resources + [pod])
     with ChartInstallationContext(builder):
         pod_info = DataFrame(kubectl_get("pods"))
         pod_info = pod_info[pod_info["NAME"] == pod.metadata.name].reset_index(

@@ -3,7 +3,7 @@ Core Kubernetes classes
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from avionix.kube.base_objects import Core
 from avionix.kube.meta import LabelSelector, ObjectMeta
@@ -579,7 +579,7 @@ class HTTPGetAction(HelmYaml):
     def __init__(
         self,
         path: str,
-        port: int,
+        port: Union[int, str],
         http_headers: Optional[List[HTTPHeader]] = None,
         host: Optional[str] = None,
         scheme: Optional[str] = None,

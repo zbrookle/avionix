@@ -50,4 +50,6 @@ setup(
     ],
     long_description_content_type="text/markdown",
     include_package_data=True,
+    package_data={"avionix": ["py.typed"]},
+    zip_safe=False,
 )

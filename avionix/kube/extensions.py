@@ -2,7 +2,7 @@
 Classes related to Ingress
 """
 
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from avionix.kube.base_objects import Extensions
 from avionix.kube.core import TypedLocalObjectReference
@@ -40,7 +40,7 @@ class IngressBackend(HelmYaml):
     def __init__(
         self,
         service_name: str,
-        service_port: int,
+        service_port: Union[int, str],
         resource: Optional[TypedLocalObjectReference] = None,
     ):
         self.resource = resource

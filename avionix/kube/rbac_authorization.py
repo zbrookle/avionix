@@ -11,20 +11,20 @@ from avionix.yaml.yaml_handling import HelmYaml
 
 class PolicyRule(HelmYaml):
     """
-    :param api_groups: APIGroups is the name of the APIGroup that contains the \
-        resources.  If multiple API groups are specified, any action requested against \
+    :param api_groups: APIGroups is the name of the APIGroup that contains the
+        resources.  If multiple API groups are specified, any action requested against
         one of the enumerated resources in any API group will be allowed.
-    :param resources: Resources is a list of resources this rule applies to.  \
+    :param resources: Resources is a list of resources this rule applies to.
         ResourceAll represents all resources.
-    :param verbs: Verbs is a list of Verbs that apply to ALL the ResourceKinds and \
+    :param verbs: Verbs is a list of Verbs that apply to ALL the ResourceKinds and
         AttributeRestrictions contained in this rule.  VerbAll represents all kinds.
-    :param resource_names: ResourceNames is an optional white list of names that the \
+    :param resource_names: ResourceNames is an optional white list of names that the
         rule applies to.  An empty set means that everything is allowed.
-    :param non_resource_urls: NonResourceURLs is a set of partial urls that a user \
-        should have access to.  '*'s are allowed, but only as the full, final step in \
-        the path Since non-resource URLs are not namespaced, this field is only \
-        applicable for ClusterRoles referenced from a ClusterRoleBinding. Rules can \
-        either apply to API resources (such as "pods" or "secrets") or non-resource \
+    :param non_resource_urls: NonResourceURLs is a set of partial urls that a user
+        should have access to.  '*'s are allowed, but only as the full, final step in
+        the path Since non-resource URLs are not namespaced, this field is only
+        applicable for ClusterRoles referenced from a ClusterRoleBinding. Rules can
+        either apply to API resources (such as "pods" or "secrets") or non-resource
         URL paths (such as "/api"),  but not both.
     """
 
@@ -47,9 +47,9 @@ class Role(RbacAuthorization):
     """
     :param metadata: Standard object's metadata.
     :param rules: Rules holds all the PolicyRules for this Role
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
+    :param api_version: APIVersion defines the versioned schema of this representation
+        of an object. Servers should convert recognized schemas to the latest internal
+        value, and may reject unrecognized values. More info:
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
@@ -80,14 +80,14 @@ class RoleRef(HelmYaml):
 class Subject(HelmYaml):
     """
     :param name: Name of the object being referenced.
-    :param kind: Kind of object being referenced. Values defined by this API group are \
-        "User", "Group", and "ServiceAccount". If the Authorizer does not recognized \
+    :param kind: Kind of object being referenced. Values defined by this API group are
+        "User", "Group", and "ServiceAccount". If the Authorizer does not recognized
         the kind value, the Authorizer should report an error.
-    :param api_group: APIGroup holds the API group of the referenced subject. Defaults \
-        to "" for ServiceAccount subjects. Defaults to "rbac.authorization.k8s.io" for \
+    :param api_group: APIGroup holds the API group of the referenced subject. Defaults
+        to "" for ServiceAccount subjects. Defaults to "rbac.authorization.k8s.io" for
         User and Group subjects.
-    :param namespace: Namespace of the referenced object.  If the object kind is \
-        non-namespace, such as "User" or "Group", and this value is not empty the \
+    :param namespace: Namespace of the referenced object.  If the object kind is
+        non-namespace, such as "User" or "Group", and this value is not empty the
         Authorizer should report an error.
     """
 
@@ -107,13 +107,13 @@ class Subject(HelmYaml):
 class RoleBinding(RbacAuthorization):
     """
     :param metadata: Standard object's metadata.
-    :param role_ref: RoleRef can reference a Role in the current namespace or a \
-        ClusterRole in the global namespace. If the RoleRef cannot be resolved, the \
+    :param role_ref: RoleRef can reference a Role in the current namespace or a
+        ClusterRole in the global namespace. If the RoleRef cannot be resolved, the
         Authorizer must return an error.
     :param subjects: Subjects holds references to the objects the role applies to.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
+    :param api_version: APIVersion defines the versioned schema of this representation
+        of an object. Servers should convert recognized schemas to the latest internal
+        value, and may reject unrecognized values. More info:
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
@@ -132,8 +132,8 @@ class RoleBinding(RbacAuthorization):
 
 class AggregationRule(HelmYaml):
     """
-    :param cluster_role_selectors: ClusterRoleSelectors holds a list of selectors which \
-        will be used to find ClusterRoles and create the rules. If any of the \
+    :param cluster_role_selectors: ClusterRoleSelectors holds a list of selectors which
+        will be used to find ClusterRoles and create the rules. If any of the
         selectors match, then the ClusterRole's permissions will be added
     """
 
@@ -144,14 +144,14 @@ class AggregationRule(HelmYaml):
 class ClusterRole(RbacAuthorization):
     """
     :param metadata: Standard object's metadata.
-    :param aggregation_rule: AggregationRule is an optional field that describes how to \
-        build the Rules for this ClusterRole. If AggregationRule is set, then the \
-        Rules are controller managed and direct changes to Rules will be stomped by \
+    :param aggregation_rule: AggregationRule is an optional field that describes how to
+        build the Rules for this ClusterRole. If AggregationRule is set, then the
+        Rules are controller managed and direct changes to Rules will be stomped by
         the controller.
     :param rules: Rules holds all the PolicyRules for this ClusterRole
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
+    :param api_version: APIVersion defines the versioned schema of this representation
+        of an object. Servers should convert recognized schemas to the latest internal
+        value, and may reject unrecognized values. More info:
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 
@@ -171,12 +171,12 @@ class ClusterRole(RbacAuthorization):
 class ClusterRoleBinding(RbacAuthorization):
     """
     :param metadata: Standard object's metadata.
-    :param role_ref: RoleRef can only reference a ClusterRole in the global namespace. \
+    :param role_ref: RoleRef can only reference a ClusterRole in the global namespace.
         If the RoleRef cannot be resolved, the Authorizer must return an error.
     :param subjects: Subjects holds references to the objects the role applies to.
-    :param api_version: APIVersion defines the versioned schema of this representation \
-        of an object. Servers should convert recognized schemas to the latest internal \
-        value, and may reject unrecognized values. More info: \
+    :param api_version: APIVersion defines the versioned schema of this representation
+        of an object. Servers should convert recognized schemas to the latest internal
+        value, and may reject unrecognized values. More info:
         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources  # noqa
     """
 

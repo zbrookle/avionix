@@ -27,11 +27,11 @@ class ChartBuilder:
 
     :param chart_info: Contains all chart metadata and dependency info
     :param kubernetes_objects: A list of kubernetes objects
-    :param output_directory: A path to the directory in which to place the generated \
+    :param output_directory: A path to the directory in which to place the generated
         chart
     :param keep_chart: Whether or not to keep the chart after installation
-    :param namespace: The namespace in which all chart components should be installed \
-        This allows the convenience of not passing the namespace option to both \
+    :param namespace: The namespace in which all chart components should be installed
+        This allows the convenience of not passing the namespace option to both
         install and uninstall
     """
 
@@ -324,7 +324,7 @@ class ChartBuilder:
     @property
     def is_installed(self):
         """
-        :return: True if chart with the given name is already installed in the chart \
+        :return: True if chart with the given name is already installed in the chart
             builders namespace, else False
         """
         installations = get_helm_installations(self.namespace)

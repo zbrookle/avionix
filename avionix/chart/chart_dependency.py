@@ -14,7 +14,7 @@ class ChartDependency(HelmYaml):
     :param name: Name of chart
     :param version: The version of the chart
     :param repository: The url of the repository that this chart originates from
-    :param values: A dictionary representing the yaml to be output in the values.yaml \
+    :param values: A dictionary representing the yaml to be output in the values.yaml
         file for this dependency
     """
 

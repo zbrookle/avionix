@@ -1,4 +1,4 @@
-![logo](../imgs/logo.png?raw=true)
+![logo](./imgs/logo.png)
 
 # Avionix
 

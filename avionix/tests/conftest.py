@@ -77,7 +77,7 @@ def grafana_dependency():
     return ChartDependency(
         "grafana",
         "5.5.2",
-        "https://kubernetes-charts.storage.googleapis.com/",
+        "https://charts.helm.sh/stable",
         "stable",
         values={"resources": {"requests": {"memory": "100Mi"}}},
     )
@@ -86,10 +86,7 @@ def grafana_dependency():
 @pytest.fixture
 def kube2iam_dependency():
     return ChartDependency(
-        "kube2iam",
-        "2.5.1",
-        "https://kubernetes-charts.storage.googleapis.com/",
-        "stable",
+        "kube2iam", "2.5.1", "https://charts.helm.sh/stable", "stable",
     )
 
 

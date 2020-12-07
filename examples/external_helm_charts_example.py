@@ -11,7 +11,7 @@ if __name__ == "__main__":
                 ChartDependency(
                     "grafana",
                     "5.5.2",
-                    "https://kubernetes-charts.storage.googleapis.com/",
+                    "https://charts.helm.sh/stable",
                     "stable",
                     values={"resources": {"requests": {"memory": "100Mi"}}},
                 )

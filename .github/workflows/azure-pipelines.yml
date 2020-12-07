@@ -10,6 +10,10 @@ jobs:
   checks:
     name: Checks
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8"]
     steps:
 
     - name: Checkout
@@ -22,11 +26,12 @@ jobs:
         CACHE_NUMBER: 0
       with:
         path: ~/conda_pkgs_dir
-        key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
-    - uses: goanpeca/setup-miniconda@v1
+        key: ${{ runner.os }}-conda-${{ matrix.python-version }}-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
+    - uses: conda-incubator/setup-miniconda@v2
       with:
+        auto-update-conda: true
         activate-environment: avionix
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
         channel-priority: strict
         environment-file: environment.yml
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
@@ -80,7 +85,7 @@ jobs:
       if: always()
 
     - name: Setup Minikube
-      uses: manusa/actions-setup-minikube@v2.0.0
+      uses: manusa/actions-setup-minikube@v2.0.1
       with:
         minikube version: 'v1.11.0'
         kubernetes version: 'v1.18.3'

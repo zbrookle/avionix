@@ -17,7 +17,7 @@ chart:
 
 .. code-block:: bash
 
-    helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+    helm repo add stable https://charts.helm.sh/stable
     helm install <path_to_my_chart> --dependency-update
 
 The *values.yaml* will end up as:

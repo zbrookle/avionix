@@ -20,7 +20,31 @@ chart:
     helm repo add stable https://charts.helm.sh/stable
     helm install <path_to_my_chart> --dependency-update
 
-The *values.yaml* will end up as:
+This will generate a directory with the following structure:
+
+.. code-block:: bash
+
+    my_chart/
+    ├── Chart.yaml
+    ├── charts
+    │   └── grafana-5.5.2.tgz
+    ├── templates
+    └── values.yaml
+
+The *Chart.yaml* will be:
+
+.. code-block:: yaml
+
+    apiVersion: 3.2.4
+    appVersion: v1
+    dependencies:
+    - name: grafana
+    repository: https://charts.helm.sh/stable
+    version: 5.5.2
+    name: my_chart
+    version: 0.1.0
+
+The *values.yaml* will be:
 
 .. code-block:: yaml
 
@@ -28,3 +52,7 @@ The *values.yaml* will end up as:
         resources:
             requests:
                 memory: 100Mi
+
+*templates* is empty in this case because there are no kubernetes objects added to the builder.
+
+*charts* will contain the zipped external charts that you've included as dependencies.

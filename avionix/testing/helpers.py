@@ -48,7 +48,7 @@ def parse_output_to_dict(output: str):
         if line.strip():
             values = _split_using_locations(value_locations, line)
             value_rows.append(values)
-    return {names[i]: row for i, row in enumerate(zip(*value_rows))}
+    return {names[i].strip(): row for i, row in enumerate(zip(*value_rows))}
 
 
 class KubectlGetException(Exception):

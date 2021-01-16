@@ -28,7 +28,7 @@ setup(
     description="A package for soldifying kubernetes structure and development by "
     "using objects and code rather than yaml",
     python_requires=">=3.6.1",
-    install_requires=["pyyaml==5.3.1"],
+    install_requires=["pyyaml >=5.3, <5.4"],
     project_urls={
         "Source Code": "https://github.com/zbrookle/avionix",
         "Documentation": "https://github.com/zbrookle/avionix",

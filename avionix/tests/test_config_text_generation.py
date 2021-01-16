@@ -1,7 +1,9 @@
+from typing import Optional
+
 import pytest
 
 from avionix.kube.apps import Deployment
-from avionix.kube.base_objects import KubernetesBaseObject
+from avionix.kube.base_objects import Extensions, KubernetesBaseObject
 from avionix.kube.meta import ObjectMeta
 from avionix.options import DEFAULTS
 from avionix.tests.utils import get_test_deployment
@@ -121,3 +123,23 @@ def test_default_version_option():
 
     # Restore option state
     DEFAULTS["default_api_version"] = "v1"
+
+
+@pytest.mark.parametrize(
+    "version,expected_api_version",
+    [(None, "extensions/v1beta1"), ("networking.k8s.io/v1", "networking.k8s.io/v1")],
+)
+def test_user_version_priority(
+    version: str, expected_api_version: str, dependency_chart_info
+):
+    class NonStandardVersionClass(Extensions):
+        _non_standard_version = "v1beta1"
+
+        def __init__(self, metadata: ObjectMeta, api_version: Optional[str] = None):
+            super().__init__(api_version)
+            self.metadata = metadata
+
+    version_class = NonStandardVersionClass(
+        ObjectMeta(name="test"), api_version=version
+    )
+    assert version_class.apiVersion == expected_api_version

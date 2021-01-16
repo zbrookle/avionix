@@ -35,11 +35,11 @@ class KubernetesBaseObject(HelmYaml):
         self.metadata = metadata
 
     def _get_api_version(self, api_version: Optional[str]):
+        if api_version is not None:
+            return api_version
         if self._non_standard_version:
             return self._version_prefix + self._non_standard_version
-        if api_version is None:
-            return self._version_prefix + DEFAULTS["default_api_version"]
-        return api_version
+        return self._version_prefix + DEFAULTS["default_api_version"]
 
     def __get_kube_object_type(self):
         # Get all inherited to find classes exact kube object

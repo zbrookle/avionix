@@ -14,7 +14,14 @@ if __name__ == "__main__":
                     "https://charts.helm.sh/stable",
                     "stable",
                     values={"resources": {"requests": {"memory": "100Mi"}}},
-                )
+                ),
+                ChartDependency(
+                    "local-chart",
+                    "0.1.0",
+                    "file:///path/to/my/local-chart",
+                    "local-repo",
+                    is_local=True,
+                ),
             ],
         ),
         [],

@@ -28,6 +28,7 @@ This will generate a directory with the following structure:
     ├── Chart.yaml
     ├── charts
     │   └── grafana-5.5.2.tgz
+    |   └── local-chart-0.1.0.tgz
     ├── templates
     └── values.yaml
 
@@ -39,8 +40,11 @@ The *Chart.yaml* will be:
     appVersion: v1
     dependencies:
     - name: grafana
-    repository: https://charts.helm.sh/stable
-    version: 5.5.2
+      repository: https://charts.helm.sh/stable
+      version: 5.5.2
+    - name: local-chart
+      repository: file:///path/to/my/local-chart
+      version: 0.1.0
     name: my_chart
     version: 0.1.0
 
@@ -56,3 +60,6 @@ The *values.yaml* will be:
 *templates* is empty in this case because there are no kubernetes objects added to the builder.
 
 *charts* will contain the zipped external charts that you've included as dependencies.
+    
+Note that the parameters are slightly different for installing a local chart, it must be marked as local
+and the repo uri must be *file://* followed by the absolute path to the chart folder.

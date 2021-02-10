@@ -110,7 +110,7 @@ class ChartBuilder:
         for repo_line in repo_lines:
             repo_line_no_extra_space = repo_line.strip()
             match = re.match(
-                "(?P<repo_name>.+?)\s+(?P<url>.+)", repo_line_no_extra_space
+                r"(?P<repo_name>.+?)\s+(?P<url>.+)", repo_line_no_extra_space
             )
             if not repo_line_no_extra_space:
                 continue
@@ -129,7 +129,10 @@ class ChartBuilder:
         info("Adding dependencies...")
         installed_repos = self.get_helm_repos()
         for dependency in self.chart_info.dependencies:
-            if installed_repos.get(dependency.local_repo_name) == dependency.repository:
+            if (
+                installed_repos.get(dependency.local_repo_name) == dependency.repository
+                or dependency.is_local
+            ):
                 continue
             dependency.add_repo()
             installed_repos[dependency.local_repo_name] = dependency.repository

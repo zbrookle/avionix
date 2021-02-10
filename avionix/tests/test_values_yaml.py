@@ -54,6 +54,8 @@ my_value: some_value
 def get_config_map_data():
     output = custom_check_output("kubectl describe configmap")
     match = re.match(r".*Data\n====\n(?P<data>.*)Events:.*", output, re.DOTALL)
+    if not match:
+        raise Exception("Match must exist to get config map data!")
     data_string = match.group("data").replace("----\n", "").replace(":\n", ": ")
     data = yaml.load(data_string)
     return data

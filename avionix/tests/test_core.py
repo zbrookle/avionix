@@ -369,6 +369,7 @@ def test_persistent_volume(chart_info, persistent_volume_spec):
     with ChartInstallationContext(builder):
         volume_info = kubectl_get("persistentvolumes")
         assert volume_info["NAME"][0] == persistent_volume.metadata.name
+        assert persistent_volume.spec.capacity is not None
         assert volume_info["CAPACITY"][0] == str(
             persistent_volume.spec.capacity["storage"]
         )

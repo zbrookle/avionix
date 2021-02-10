@@ -31,7 +31,7 @@ from avionix.testing.helpers import kubectl_get
 def get_test_container(
     number: int, env_var: Optional[EnvVar] = None, ephemeral: bool = False
 ):
-    container_class = Container
+    container_class: type = Container
     if ephemeral:
         container_class = EphemeralContainer
     if env_var is None:
@@ -98,14 +98,23 @@ def get_pod_with_options(
     container.command = command
     container.lifecycle = lifecycle
     container.envFrom = env_from
+    volumes = []
+    if volume is not None:
+        volumes.append(volume)
+    host_aliases = []
+    if host_alias is not None:
+        host_aliases.append(host_alias)
+    topology_spread_constraints = []
+    if topology_spread is not None:
+        topology_spread_constraints.append(topology_spread)
     return Pod(
         ObjectMeta(name=name),
         PodSpec(
             [container],
-            volumes=[volume],
+            volumes=volumes,
             security_context=pod_security_context,
-            host_aliases=[host_alias],
-            topology_spread_constraints=[topology_spread],
+            host_aliases=host_aliases,
+            topology_spread_constraints=topology_spread_constraints,
             dns_config=dns_config,
             affinity=affinity,
         ),

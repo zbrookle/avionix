@@ -43,33 +43,32 @@ def test_object_meta(chart_info: ChartInfo, object_meta: ObjectMeta):
         assert config_maps["DATA"][0] == str(len(config_map.data))
 
 
-@pytest.mark.xfail(
-    raises=HelmError, reason="Api Resource may not be able to be " "created"
+may_not_be_valid_resource_decorator = pytest.mark.xfail(
+    raises=HelmError, reason="Api Resource may not be able to be created"
 )
+
+
+@may_not_be_valid_resource_decorator
 def test_api_resource(chart_info):
     builder = ChartBuilder(
         chart_info,
-        [APIResource("test", None, None, None, None, None, None, None, None)],
+        [APIResource("test", None, None, None, None, None, None, None, None)],  # type: ignore
     )
     with ChartInstallationContext(builder):
         print(kubectl_get("apiresource"))
 
 
-@pytest.mark.xfail(
-    raises=HelmError, reason="Api Resource may not be able to be " "created"
-)
+@may_not_be_valid_resource_decorator
 def test_status_details(chart_info):
-    builder = ChartBuilder(chart_info, [StatusDetails("test", None, None)])
+    builder = ChartBuilder(chart_info, [StatusDetails("test", None, None)])  # type: ignore
     with ChartInstallationContext(builder):
         print(kubectl_get("statusdetails"))
 
 
-@pytest.mark.xfail(
-    raises=HelmError, reason="Api Resource may not be able to be " "created"
-)
+@may_not_be_valid_resource_decorator
 @pytest.mark.parametrize(
     "api_group",
-    [APIGroup("test", None, None, [GroupVersionForDiscovery("test", None)])],
+    [APIGroup("test", None, None, [GroupVersionForDiscovery("test", None)])],  # type: ignore
 )
 def test_api_group(chart_info, api_group: APIGroup):
     builder = ChartBuilder(chart_info, [api_group])

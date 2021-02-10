@@ -64,7 +64,7 @@ def test_pod_disruption_budget(chart_info, pod_disruption_budget):
 )
 def test_eviction(chart_info):
     builder = ChartBuilder(
-        chart_info, [Eviction(ObjectMeta(name="test-eviction"), None)],
+        chart_info, [Eviction(ObjectMeta(name="test-eviction"), None)],  # type: ignore
     )
     with ChartInstallationContext(builder):
         kubectl_get("eviction")

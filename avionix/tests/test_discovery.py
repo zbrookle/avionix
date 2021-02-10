@@ -16,6 +16,8 @@ def get_all_endpoint_ips(endpoint_slice: EndpointSlice) -> str:
 
 
 def get_all_endpoint_ports(endpoint_slice: EndpointSlice) -> str:
+    if endpoint_slice.ports is None:
+        raise Exception("Endpoint port cannot be none!")
     return ",".join([str(port_object.port) for port_object in endpoint_slice.ports])
 
 

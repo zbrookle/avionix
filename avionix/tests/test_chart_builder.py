@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import shutil
 
-from avionix import ChartBuilder, ChartInfo, ChartMaintainer
+from avionix import ChartBuilder, ChartDependency, ChartInfo, ChartMaintainer
 from avionix._process_utils import custom_check_output
 from avionix.chart.chart_builder import get_helm_installations
 from avionix.kube.apps import Deployment
@@ -17,7 +17,7 @@ def test_chart_folder_building(test_deployment1: Deployment):
     builder = ChartBuilder(
         ChartInfo(api_version="3.2.4", name="test", version="0.1.0"),
         [test_deployment1, test_deployment1],
-        test_folder,
+        str(test_folder),
     )
     builder.generate_chart()
     templates_folder = test_folder / builder.chart_info.name / "templates"
@@ -98,6 +98,37 @@ def test_chart_w_multiple_dependencies_repo_not_present(
         assert builder.is_installed
 
     remove_stable_repo()
+
+
+def test_install_local_dependency():
+    # Create "fake" chart
+    output_directory = Path.cwd() / "tmp"
+    chart_info = ChartInfo("3.2.4", "local-chart", "0.1.0")
+    builder = ChartBuilder(chart_info, [], output_directory=str(output_directory))
+    builder.generate_chart()
+
+    # Create chart with local dependency
+    local_dependency = ChartDependency(
+        name=chart_info.name,
+        version=chart_info.version,
+        local_repo_name="local-repo",
+        repository=f"file://{output_directory.resolve()}/{chart_info.name}",
+        is_local=True,
+    )
+    builder = ChartBuilder(
+        ChartInfo(
+            api_version="3.2.4",
+            name="local-repo-dep-test",
+            version="0.1.0",
+            app_version="v1",
+            dependencies=[local_dependency],
+        ),
+        [],
+        keep_chart=True,
+    )
+    builder.generate_chart()
+    with ChartInstallationContext(builder):
+        assert builder.is_installed
 
 
 def test_installation_with_value_args(chart_info):

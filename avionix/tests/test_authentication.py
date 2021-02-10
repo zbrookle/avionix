@@ -40,7 +40,7 @@ def test_token_request(chart_info):
         [
             TokenRequest(
                 ObjectMeta(name="token-request"),
-                TokenRequestSpec(["audience1", "audience2"], None, None),
+                TokenRequestSpec(["audience1", "audience2"], None, None),  # type: ignore
                 "v1",
             )
         ],

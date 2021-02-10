@@ -65,13 +65,14 @@ def test_network_policy(
     with ChartInstallationContext(builder):
         network_policy_info = kubectl_get("networkpolicy")
         assert network_policy_info["NAME"][0] == name
-        if selector is None:
-            selector = "<none>"
+        expected_selector = "<none>"
         if isinstance(selector, LabelSelector):
             match_labels = selector.matchLabels
+            if match_labels is None:
+                raise Exception("Match labels cannot be none in this case")
             first_key = list(match_labels.keys())[0]
-            selector = f"{first_key}={match_labels[first_key]}"
-        assert network_policy_info["POD-SELECTOR"][0] == selector
+            expected_selector = f"{first_key}={match_labels[first_key]}"
+        assert network_policy_info["POD-SELECTOR"][0] == expected_selector
 
 
 def test_ingress_class(chart_info):

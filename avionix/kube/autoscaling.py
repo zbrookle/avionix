@@ -16,7 +16,7 @@ class CrossVersionObjectReference(Autoscaling):
     :param api_version: API version of the referent
     """
 
-    def __init__(self, name: str, kind: str = "", api_version: Optional[str] = None):
+    def __init__(self, name: str, kind: str, api_version: Optional[str] = None):
         super().__init__(api_version)
         self.name = name
         self.kind = kind

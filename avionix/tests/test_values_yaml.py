@@ -57,7 +57,7 @@ def get_config_map_data():
     if not match:
         raise Exception("Match must exist to get config map data!")
     data_string = match.group("data").replace("----\n", "").replace(":\n", ": ")
-    data = yaml.load(data_string)
+    data = yaml.safe_load(data_string)
     return data
 
 

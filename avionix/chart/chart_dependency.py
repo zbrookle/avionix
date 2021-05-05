@@ -67,3 +67,7 @@ class ChartDependency(HelmYaml):
     @property
     def local_repo_name(self):
         return self.__local_repo_name
+
+    @staticmethod
+    def __sanitize_arg(arg: str):
+        return arg.replace("\"", "\\\"")

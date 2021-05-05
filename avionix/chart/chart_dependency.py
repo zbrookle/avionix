@@ -53,10 +53,10 @@ class ChartDependency(HelmYaml):
         credential_args = ""
 
         if self.__repo_username is not None:
-            credential_args += f" --username {self.__repo_username}"
+            credential_args += f" --username \"{self.__repo_username}\""
 
         if self.__repo_password is not None:
-            credential_args += f" --password {self.__repo_password}"
+            credential_args += f" --password \"{self.__repo_password}\""
 
         custom_check_output(f"helm repo add {credential_args} {self.__local_repo_name} {self.repository}")
 

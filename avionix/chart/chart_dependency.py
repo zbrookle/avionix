@@ -18,6 +18,10 @@ class ChartDependency(HelmYaml):
         file for this dependency
     :param is_local: If *True*, the repo will not be added on install. This setting \
         is required if using a local chart as a dependency
+    :param repo_username: If specified. The command to add the repo will include  \
+        the username
+    :param repo_password: If specified. The command to add the repo will include  \
+        the password
     """
 
     def __init__(
@@ -28,6 +32,8 @@ class ChartDependency(HelmYaml):
         local_repo_name: str,
         values: Optional[dict] = None,
         is_local: bool = False,
+        repo_username: Optional[str] = None,
+        repo_password: Optional[dict] = None,
     ):
         self.name = name
         self.version = version
@@ -35,6 +41,8 @@ class ChartDependency(HelmYaml):
         self.__values = values
         self.__local_repo_name = local_repo_name
         self.__is_local = is_local
+        self.__repo_username = repo_username
+        self.__repo_password = repo_password
 
     def get_values_yaml(self) -> dict:
         if self.__values:
@@ -42,7 +50,15 @@ class ChartDependency(HelmYaml):
         return {}
 
     def add_repo(self):
-        custom_check_output(f"helm repo add {self.__local_repo_name} {self.repository}")
+        credential_args = ""
+
+        if self.__repo_username is not None:
+            credential_args += f" --username {self.__repo_username}"
+
+        if self.__repo_password is not None:
+            credential_args += f" --password {self.__repo_password}"
+
+        custom_check_output(f"helm repo add {credential_args} {self.__local_repo_name} {self.repository}")
 
     @property
     def is_local(self):

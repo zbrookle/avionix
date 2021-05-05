@@ -33,7 +33,7 @@ class ChartDependency(HelmYaml):
         values: Optional[dict] = None,
         is_local: bool = False,
         repo_username: Optional[str] = None,
-        repo_password: Optional[dict] = None,
+        repo_password: Optional[str] = None,
     ):
         self.name = name
         self.version = version

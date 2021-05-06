@@ -54,13 +54,15 @@ class ChartDependency(HelmYaml):
 
         if self.__repo_username is not None:
             username = self.__sanitize_arg(self.__repo_username)
-            credential_args += f" --username \"{username}\""
+            credential_args += f' --username "{username}"'
 
         if self.__repo_password is not None:
             password = self.__sanitize_arg(self.__repo_password)
-            credential_args += f" --password \"{password}\""
+            credential_args += f' --password "{password}"'
 
-        custom_check_output(f"helm repo add {credential_args} {self.__local_repo_name} {self.repository}")
+        custom_check_output(
+            f"helm repo add {credential_args} {self.__local_repo_name} {self.repository}"
+        )
 
     @property
     def is_local(self):
@@ -72,4 +74,4 @@ class ChartDependency(HelmYaml):
 
     @staticmethod
     def __sanitize_arg(arg: str):
-        return arg.replace("\"", "\\\"")
+        return arg.replace('"', '\\"')

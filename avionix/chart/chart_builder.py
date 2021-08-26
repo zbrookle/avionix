@@ -69,7 +69,7 @@ class ChartBuilder:
         """
         Generates the chart but does not install it on kubernetes
 
-        :returns The template directory
+        :return: The template directory
         """
         self.__delete_chart_directory()
         os.makedirs(self.__templates_directory, exist_ok=True)

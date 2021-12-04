@@ -62,8 +62,8 @@ class ChartBuilder:
             )
 
     def __delete_chart_directory(self):
-        if os.path.exists(self.chart_info.name):
-            shutil.rmtree(self.chart_info.name)
+        if os.path.exists(self.chart_folder_path):
+            shutil.rmtree(self.chart_folder_path)
 
     def generate_chart(self):
         """

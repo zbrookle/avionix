@@ -8,7 +8,7 @@ from yaml import dump
 
 def is_empty_yaml(value):
     # If value is None, [], {} do not include value
-    return not value and not isinstance(value, (bool, str))
+    return not value and not isinstance(value, (bool, str, int))
 
 
 def is_private_var(key: str):

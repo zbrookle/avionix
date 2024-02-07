@@ -330,7 +330,14 @@ class ChartBuilder:
         :return: True if chart with the given name is already installed in the chart \
             builders namespace, else False
         """
-        installations = get_helm_installations(self.namespace)
-        if not installations:
+        command = f"helm status {self.chart_info.name}"
+        if self.namespace is not None:
+            command += f" -n {self.namespace}"
+        try:
+            output = subprocess.check_call(command.split(" "),
+                                           stdout=subprocess.DEVNULL,
+                                           stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
             return False
-        return self.chart_info.name in installations["NAME"]
+        else:
+            return True
